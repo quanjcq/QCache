@@ -1,4 +1,4 @@
-#Raft Based Distributed cache
+# Raft Based Distributed cache
 基于Raft论文实现的,github有个中文的[Raft中文翻译版本](https://github.com/maemual/raft-zh_cn)<br>
 翻译的很准,不过感觉还是英文的比较好,英文的读的慢思考时间更多。<br>
 学习用的应该有bug的,包括查资料,写代码,测试用了大概十多天的样子吧<br>
@@ -14,14 +14,14 @@
 * 缓存数据的备份(内存快照+写操作的日志 = 完整缓存数据)
 
 
-#技术点
+# 技术点
 * Raft算法
 * 一致性hash
 * NIO(处理客户端请求是基于nio) 
 * 并发编程
 
 
-#Quick Start
+# Quick Start
 * chmod -R 777 cache-example/
 * cd cache-example
 * ./build.sh 5    可以快速在本机上部署五个实例的集群(必须写正常的参数,shell脚本不太会,没处理异常的)
@@ -31,7 +31,7 @@
 * 反复创建(执行build.sh) 而没有对应关掉的话,自己jps 查看下手动kill
 * build.sh 之后一定要有kill，才能再build,pid文件存在创建实例的时候会自己退出
 
-#程序运行流程
+# 程序运行流程
 * load node 
 * load snaphot 
 * load raft logs
@@ -41,7 +41,7 @@
 * 启动监听客户端的消息的线程
 
 
-#总结(遇到的坑)
+# 总结(遇到的坑)
 * lock.lock() 一定要在finally里面unlock 释放锁，状态转换的时候可能会中断该线程，导致锁没有释放
     最后其他线程无限等待状态
 * lock 里面不要放io这种耗时操作，io 阻塞后的线程切换并不会释放锁，切换别的线程拿不到锁，也是白搞
