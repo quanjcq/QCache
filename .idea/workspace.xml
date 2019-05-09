@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5ec4c8de-1b03-4dc9-a98b-f1f0d2f45a57" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/QCache.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -46,7 +45,7 @@
           <entry key="cfg" value="96" />
           <entry key="dummy" value="39" />
           <entry key="java" value="44543" />
-          <entry key="md" value="1399" />
+          <entry key="md" value="1404" />
           <entry key="properties" value="150" />
           <entry key="text" value="894" />
           <entry key="xml" value="20" />
@@ -55,7 +54,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JAVA" value="44543" />
-          <entry key="Markdown" value="1093" />
+          <entry key="Markdown" value="1098" />
           <entry key="PLAIN_TEXT" value="1239" />
           <entry key="Properties" value="246" />
           <entry key="XML" value="20" />
@@ -67,7 +66,7 @@
           <entry key="class" value="2" />
           <entry key="groovy" value="1" />
           <entry key="java" value="285" />
-          <entry key="md" value="3" />
+          <entry key="md" value="4" />
           <entry key="pom" value="1" />
           <entry key="properties" value="6" />
           <entry key="text" value="4" />
@@ -78,7 +77,7 @@
           <entry key="CLASS" value="2" />
           <entry key="Groovy" value="1" />
           <entry key="JAVA" value="285" />
-          <entry key="Markdown" value="2" />
+          <entry key="Markdown" value="3" />
           <entry key="PLAIN_TEXT" value="5" />
           <entry key="Properties" value="11" />
           <entry key="XML" value="1" />
@@ -138,11 +137,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/main/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="562">
+              <first_editor relative-caret-position="1122">
                 <caret line="51" lean-forward="true" selection-start-line="51" selection-end-line="51" />
               </first_editor>
               <second_editor />
@@ -150,11 +149,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftState.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="7" column="4" selection-start-line="7" selection-start-column="4" selection-end-line="7" selection-end-column="4" />
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="352">
+                <caret line="16" column="5" lean-forward="true" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -218,7 +220,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/RaftMessageData.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/LastRaftMessage.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/RaftMessage.java" />
@@ -269,6 +270,7 @@
         <option value="$PROJECT_DIR$/src/java/resource/log4j.properties" />
         <option value="$PROJECT_DIR$/src/java/main/core/RaftNode.java" />
         <option value="$PROJECT_DIR$/src/java/main/README.md" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -283,7 +285,7 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="169" />
     <option name="y" value="72" />
     <option name="width" value="1918" />
@@ -350,7 +352,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="currenTerm&#9;PSI&#9;JAVA://core.message.RaftMessage#currentTerm" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1557367649124" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1557375000435" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Groovy JUnit" value="groovy.util.GroovyTestCase" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
@@ -504,7 +506,7 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="169" y="72" width="1918" height="1008" extended-state="0" />
+    <frame x="0" y="-6" width="1920" height="1086" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Designer" order="0" />
@@ -512,7 +514,7 @@
       <window_info id="Capture Tool" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" weight="0.32992464" />
       <window_info id="Image Layers" order="4" />
-      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.2349138" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.23466092" />
       <window_info id="Structure" order="6" side_tool="true" weight="0.2497309" />
       <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="1" weight="0.32929516" />
@@ -575,13 +577,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar:///usr/local/jdk/src.zip!/java/util/Map.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="415">
-          <caret line="174" column="31" selection-start-line="174" selection-start-column="26" selection-end-line="174" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="44">
@@ -938,7 +933,7 @@
     <entry file="file://$PROJECT_DIR$/src/java/main/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="562">
+          <first_editor relative-caret-position="1122">
             <caret line="51" lean-forward="true" selection-start-line="51" selection-end-line="51" />
           </first_editor>
           <second_editor />
@@ -947,6 +942,16 @@
       <provider editor-type-id="text-editor">
         <state relative-caret-position="793">
           <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="352">
+            <caret line="16" column="5" lean-forward="true" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
