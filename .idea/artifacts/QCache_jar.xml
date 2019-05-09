@@ -1,0 +1,15 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="QCache:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/QCache_jar</output-path>
+    <root id="root">
+      <element id="archive" name="QCache.jar">
+        <element id="module-output" name="QCache" />
+      </element>
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.25" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
+      <element id="library" level="project" name="Maven: org.hamcrest:hamcrest-core:1.3" />
+      <element id="library" level="project" name="Maven: junit:junit:4.12" />
+      <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
+    </root>
+  </artifact>
+</component>
