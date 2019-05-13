@@ -43,7 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RaftNode{
     private static final Logger log = LoggerFactory.getLogger(RaftNode.class);
     //状态，初始的时候为follower
-    private volatile RaftState state = RaftState.FOLLOWER;
+    private RaftState state = RaftState.FOLLOWER;
 
     // 服务器任期号(term)（初始化为 0，持续递增）
     private long currentTerm = 0;
