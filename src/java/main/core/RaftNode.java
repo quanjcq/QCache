@@ -46,22 +46,22 @@ public class RaftNode{
     private volatile RaftState state = RaftState.FOLLOWER;
 
     // 服务器任期号(term)（初始化为 0，持续递增）
-    private volatile long currentTerm = 0;
+    private long currentTerm = 0;
 
     // 在当前获得选票的候选人的Id，若这个值为负数，说明他没有把票投给其他节点
-    private volatile int votedFor = -1;
+    private int votedFor = -1;
 
     //该节点为candidate 时候获取的选票信息
-    private volatile  Set<Integer> votes = new TreeSet<Integer>();
+    private Set<Integer> votes = new TreeSet<Integer>();
 
     //这里存放着所有，最新提交的日志信息
     private Map<Integer, LastRaftMessage>  lastRaftMessageMap = new HashMap<Integer, LastRaftMessage>();
 
     // 最后被应用到状态机的日志条目索引值（初始化为 -1）
-    private volatile long lastAppliedIndex = -1 ;
+    private long lastAppliedIndex = -1 ;
 
     // 最后被应用到状态机的日志条目term（初始化为 -1持续递增）
-    private volatile long lastAppliedTerm = -1 ;
+    private long lastAppliedTerm = -1 ;
 
     //一致性hash
     private ConsistentHash consistentHash=null;
@@ -70,7 +70,7 @@ public class RaftNode{
     private String raftSnaphotPath = QCacheConfiguration.getRaftSnaphotPath();
 
     //记录上次leader 访问的时间，以此判断集群内是否有leader
-    private volatile long leaderConnectTime = 0;
+    private long leaderConnectTime = 0;
 
     //该节点信息
     private Node myNode;
@@ -207,9 +207,6 @@ public class RaftNode{
                 electionScheduledFuture.cancel(true);
             }
         }
-
-
-
     }
 
     /**
@@ -402,7 +399,6 @@ public class RaftNode{
         }catch (InterruptedException ex){
             ex.printStackTrace();
         }
-
         boolean tag = false;
         lock.lock();
         try{
@@ -843,6 +839,8 @@ public class RaftNode{
                     votedFor = message.getId();
                     state = RaftState.FOLLOWER;
                     currentTerm = term;
+                    //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
+                    leaderConnectTime = new Date().getTime();
 
                     // stop heartbeat
                     if (heartbeatScheduledFuture != null && !heartbeatScheduledFuture.isDone()) {
@@ -856,11 +854,15 @@ public class RaftNode{
                     if(canVoteFor(message)){
                         voteMessage.setVoteFor(true);
                         votedFor = message.getId();
+                        //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
+                        leaderConnectTime = new Date().getTime();
                     }else{
                         voteMessage.setVoteFor(false);
                     }
                 }else if(currentTerm < term){
                     voteMessage.setVoteFor(true);
+                    //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
+                    leaderConnectTime = new Date().getTime();
                     votedFor = message.getId();
                     currentTerm = term;
                 }
@@ -869,6 +871,8 @@ public class RaftNode{
                     voteMessage.setVoteFor(false);
                 }else if(currentTerm < term){  //接收并降级为follower
                     voteMessage.setVoteFor(true);
+                    //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
+                    leaderConnectTime = new Date().getTime();
                     currentTerm = term;
                     state = RaftState.FOLLOWER;
                     votedFor = message.getId();
@@ -885,6 +889,8 @@ public class RaftNode{
                         currentTerm = term;
                         state = RaftState.FOLLOWER;
                         voteMessage.setVoteFor(true);
+                        //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
+                        leaderConnectTime = new Date().getTime();
                         if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
                             electionScheduledFuture.cancel(true);
                         }
@@ -897,6 +903,8 @@ public class RaftNode{
                     voteMessage.setVoteFor(false);
                 }else {
                     voteMessage.setVoteFor(true);
+                    //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
+                    leaderConnectTime = new Date().getTime();
 
                     votedFor = message.getId();
                     currentTerm = term;

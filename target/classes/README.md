@@ -1,4 +1,4 @@
-#Raft Based Distributed cache
+# Raft Based Distributed cache
 基于Raft论文实现的,github有个中文的[Raft中文翻译版本](https://github.com/maemual/raft-zh_cn)<br>
 翻译的很准,不过感觉还是英文的比较好,英文的读的慢思考时间更多。<br>
 学习用的应该有bug的,包括查资料,写代码,测试用了大概十多天的样子吧<br>
@@ -14,14 +14,16 @@
 * 缓存数据的备份(内存快照+写操作的日志 = 完整缓存数据)
 
 
-#技术点
+# 技术点
 * Raft算法
 * 一致性hash
-* java NIO(处理客户端请求是基于nio) 
+* NIO(处理客户端请求是基于nio) 
 * 并发编程
 
 
-#Quick Start
+# Quick Start
+* chmod -R 777 cache-example/
+* cd cache-example
 * ./build.sh 5    可以快速在本机上部署五个实例的集群(必须写正常的参数,shell脚本不太会,没处理异常的)
 * ./kill_all.sh 5 可以关闭这五台集群(必须正确的参数)
 * ./kill.sh 1     可以关闭id = 1 的一个实例(必须正确的参数)
@@ -29,11 +31,17 @@
 * 反复创建(执行build.sh) 而没有对应关掉的话,自己jps 查看下手动kill
 * build.sh 之后一定要有kill，才能再build,pid文件存在创建实例的时候会自己退出
 
-#程序运行流程
+# 程序运行流程
+* load node 
+* load snaphot 
+* load raft logs
+* 加载缓存备份数据，恢复到之前的状态
+* init thread pool
+* 启动监听其它节点消息的线程
+* 启动监听客户端的消息的线程
 
 
-
-#总结(遇到的坑)
+# 总结(遇到的坑)
 * lock.lock() 一定要在finally里面unlock 释放锁，状态转换的时候可能会中断该线程，导致锁没有释放
     最后其他线程无限等待状态
 * lock 里面不要放io这种耗时操作，io 阻塞后的线程切换并不会释放锁，切换别的线程拿不到锁，也是白搞
@@ -41,6 +49,5 @@
     创建过多连接，导致线程池线程耗完，无法处理后续连接
 * 考虑所有的情况，不要在编码的时候合并流程（即使该流程是不会发生的）,可以在编码完成后再合并
 * NIO这块网上的demo基本没有能直接跑的,cpu跑满的,不管数据有多大，直接往buffer里面扔,发送给客户端也有
-* 心跳时间间隔没调好，算法收敛没那么快(启动的时候或者leader挂了，手速快的话可以在client那边看到)
 
 

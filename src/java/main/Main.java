@@ -124,8 +124,8 @@ public class Main {
             socket.close();
             outputStream.close();
             inputStream.close();
-    }catch (IOException ex){
-            ex.printStackTrace();
+        }catch (IOException ex){
+            System.out.println("节点:"+ip+":" + port + "丢失");
         }finally {
 
         }

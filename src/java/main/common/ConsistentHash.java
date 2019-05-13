@@ -70,7 +70,7 @@ public class ConsistentHash {
      * @return 返回服务器的个数
      */
     public synchronized int getSize() {
-        return circle.size();
+        return circle.size() / numberOfReplicas;
     }
 
     /**
