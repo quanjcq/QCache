@@ -146,7 +146,7 @@ public class RaftNode{
             public void run() {
                 startElection();
             }
-        }, getRandomElection() + RaftOptions.heartbeatPeriodMilliseconds, TimeUnit.MILLISECONDS);
+        }, getRandomElection(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -1414,15 +1414,13 @@ public class RaftNode{
      * @return
      */
     private boolean haveLeader(){
-        try{
-            if(state == RaftState.LEADER
-                    ||new Date().getTime() - leaderConnectTime <= RaftOptions.electionTimeoutMilliseconds){
-                log.info("server {} have leader on term {}",myNode.getNodeId(),currentTerm);
-                return true;
-            }
-        }finally {
-            lock.unlock();
+
+        if(state == RaftState.LEADER
+                ||new Date().getTime() - leaderConnectTime <= RaftOptions.electionTimeoutMilliseconds){
+            log.info("server {} have leader on term {}",myNode.getNodeId(),currentTerm);
+            return true;
         }
+
         log.info("server {} do not have leader on term {}",myNode.getNodeId(),currentTerm);
         return  false;
     }

@@ -9,13 +9,13 @@ public class RaftOptions {
      * follower 在一定时间内（electionTimeoutMilliseconds）没有接收到 来自leader 的心跳包，就会变成candidate,
      * 在随机时间（150~300 ms）内发起一轮选举
      */
-    public static final int electionTimeoutMilliseconds = 5000;
+    public static final int electionTimeoutMilliseconds = 3000;
 
     /**
      * leader 会每隔（heartbeatPeriodMilliseconds）向所有follower 发送心跳包，即使没有数据
      * 心跳包里携带leader 已经提交的日志信息，保证编号在这之前的日志都是已经提交的
       */
-    public static final int heartbeatPeriodMilliseconds = 800;
+    public static final int heartbeatPeriodMilliseconds = 600;
 
     /**
      *只有在log 文件大小到达指定大小(snapshotMaxnLogSize)才会出现snapshot

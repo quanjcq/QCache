@@ -112,7 +112,7 @@ public class ConsistentHash {
      * @return 返回md5加密后的字符串
      */
     private static long md5(final String key) {
-        MessageDigest md5 = null;
+        MessageDigest md5;
         try {
             md5 = MessageDigest.getInstance("MD5");
             md5.reset();
