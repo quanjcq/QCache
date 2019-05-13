@@ -43,7 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RaftNode{
     private static final Logger log = LoggerFactory.getLogger(RaftNode.class);
     //状态，初始的时候为follower
-    private RaftState state = RaftState.FOLLOWER;
+    private volatile RaftState state = RaftState.FOLLOWER;
 
     // 服务器任期号(term)（初始化为 0，持续递增）
     private long currentTerm = 0;
@@ -70,7 +70,7 @@ public class RaftNode{
     private String raftSnaphotPath = QCacheConfiguration.getRaftSnaphotPath();
 
     //记录上次leader 访问的时间，以此判断集群内是否有leader
-    private long leaderConnectTime = 0;
+    private volatile long leaderConnectTime = 0;
 
     //该节点信息
     private Node myNode;
@@ -1414,7 +1414,6 @@ public class RaftNode{
      * @return
      */
     private boolean haveLeader(){
-        lock.lock();
         try{
             if(state == RaftState.LEADER
                     ||new Date().getTime() - leaderConnectTime <= RaftOptions.electionTimeoutMilliseconds){
