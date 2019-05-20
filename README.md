@@ -1,4 +1,4 @@
-# Raft Based Distributed cache
+# Raft Based Distributed Cache
 基于Raft论文实现的,github有个中文的[Raft中文翻译版本](https://github.com/maemual/raft-zh_cn)<br>
 翻译的很准,不过简化了好多,感觉还是英文的比较好,英文的读的慢思考时间更多。<br>
 学习用的应该有bug的,包括查资料,写代码,测试用了大概十多天的样子吧<br>
