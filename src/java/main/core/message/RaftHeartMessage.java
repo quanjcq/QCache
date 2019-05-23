@@ -1,5 +1,5 @@
 package core.message;
 
-public class RaftHeartMessage extends RaftMessage{
+public class RaftHeartMessage extends RaftMessage {
 
 }

@@ -10,6 +10,6 @@ package core.cache.backup;
  * 系统重启的时候 加载RDB 和解析 AOF文件恢复到最新状态
  */
 public interface BackUpI {
-    int aofMaxSize = 256; //1m，这个数据小点不然不好测试
+    int aofMaxSize = 1024 * 1024; //1m，这个数据小点不然不好测试
 
 }

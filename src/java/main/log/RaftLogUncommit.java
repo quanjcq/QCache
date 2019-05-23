@@ -12,10 +12,11 @@ public class RaftLogUncommit extends RaftLog {
      */
     private Set<Integer> ack = new TreeSet<Integer>();
 
-    public boolean add(int id){
+    public boolean add(int id) {
         return ack.add(id);
     }
-    public int getSize(){
+
+    public int getSize() {
         return ack.size();
     }
 

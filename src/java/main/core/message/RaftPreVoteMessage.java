@@ -1,6 +1,6 @@
 package core.message;
 
-public class RaftPreVoteMessage extends RaftMessage{
+public class RaftPreVoteMessage extends RaftMessage {
     //是否把票投给他
     private boolean voteFor = false;
 

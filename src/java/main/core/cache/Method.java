@@ -8,13 +8,13 @@ package core.cache;
  * del key  删除数据
  */
 public class Method {
-    public static final  String status = "status";
-    public static final  String get = "get";
-    public static final  String set = "set";
-    public static final  String del = "del";
+    public static final String status = "status";
+    public static final String get = "get";
+    public static final String set = "set";
+    public static final String del = "del";
 
-    public static String[] getMethods(){
-        String res[] = {"status","set","get","del"};
+    public static String[] getMethods() {
+        String res[] = {"status", "set", "get", "del"};
         return res;
     }
 }

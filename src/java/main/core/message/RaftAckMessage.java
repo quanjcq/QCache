@@ -3,7 +3,7 @@ package core.message;
 /**
  * 未提交日志已经拷贝到follower消息确认
  */
-public class RaftAckMessage extends RaftMessage{
+public class RaftAckMessage extends RaftMessage {
     private long ackIndex;
     private long ackTerm;
 

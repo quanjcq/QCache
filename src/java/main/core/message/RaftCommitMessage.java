@@ -8,6 +8,7 @@ import java.util.List;
 public class RaftCommitMessage extends RaftMessage {
 
     private List<RaftLog> raftLogs;
+
     public List<RaftLog> getRaftLogs() {
         return raftLogs;
     }

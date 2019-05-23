@@ -2,19 +2,70 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5ec4c8de-1b03-4dc9-a98b-f1f0d2f45a57" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/cache-example/start.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/cache-example/start.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/QCache_jar/QCache.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/QCache_jar/QCache.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cache-example/artifacts/QCache_jar/QCache.jar" beforeDir="false" afterPath="$PROJECT_DIR$/src/cache-example/artifacts/QCache_jar/QCache.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/common/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/Node.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/common/Tools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/Tools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/core/RaftNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/RaftNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/Method.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/Method.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftAckMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftAckMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftCommitMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftCommitMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/log/LogParse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/LogParse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/RaftLog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLogUncommit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/RaftLogUncommit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/test/JsonMessageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/JsonMessageTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/test/LogTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/LogTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/test/NioTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/NioTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/test/PerformanceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/PerformanceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/common/ConsistentHash.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/ConsistentHash.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/Node.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/RaftSnaphot.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/RaftSnaphot.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/Tools.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/Tools.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/configuration/QCacheConfiguration.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/configuration/QCacheConfiguration.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/constant/RaftCommandMethod.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/constant/RaftCommandMethod.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/constant/RaftOptions.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/constant/RaftOptions.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$3.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$4.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$5.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$6.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$7.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$7.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$8.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$8.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$CacheServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$CacheServer.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeThread.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/CacheDataList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/CacheDataList.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/JsonMessage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/JsonMessage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpAof.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpAof.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftCommitMessage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/RaftCommitMessage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessage$RaftMessageType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/RaftMessage$RaftMessageType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/RaftMessage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/log/LogParse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log/LogParse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/log/RaftLogUncommit.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log/RaftLogUncommit.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/LogTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/LogTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/NioTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/NioTest.class" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -42,23 +93,26 @@
         <counts>
           <entry key="project.closed" value="3" />
           <entry key="project.open.time.1" value="1" />
-          <entry key="project.open.time.12" value="1" />
+          <entry key="project.open.time.10" value="2" />
+          <entry key="project.open.time.12" value="2" />
           <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.14" value="1" />
+          <entry key="project.open.time.16" value="1" />
           <entry key="project.open.time.17" value="1" />
+          <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="12" />
+          <entry key="project.opened" value="17" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="cfg" value="96" />
           <entry key="dummy" value="39" />
-          <entry key="java" value="44683" />
+          <entry key="java" value="44836" />
           <entry key="md" value="1404" />
           <entry key="properties" value="150" />
           <entry key="text" value="894" />
@@ -67,7 +121,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="44683" />
+          <entry key="JAVA" value="44836" />
           <entry key="Markdown" value="1098" />
           <entry key="PLAIN_TEXT" value="1239" />
           <entry key="Properties" value="246" />
@@ -78,9 +132,9 @@
         <counts>
           <entry key="MF" value="1" />
           <entry key="cfg" value="5" />
-          <entry key="class" value="2" />
+          <entry key="class" value="3" />
           <entry key="groovy" value="1" />
-          <entry key="java" value="293" />
+          <entry key="java" value="335" />
           <entry key="md" value="4" />
           <entry key="pom" value="1" />
           <entry key="properties" value="6" />
@@ -89,9 +143,9 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="2" />
+          <entry key="CLASS" value="3" />
           <entry key="Groovy" value="1" />
-          <entry key="JAVA" value="293" />
+          <entry key="JAVA" value="335" />
           <entry key="Manifest" value="1" />
           <entry key="Markdown" value="3" />
           <entry key="PLAIN_TEXT" value="5" />
@@ -106,108 +160,111 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/java/main/core/RaftNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2244">
-              <caret line="134" column="10" selection-start-line="134" selection-start-column="10" selection-end-line="134" selection-end-column="10" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/Main.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="132" lean-forward="true" selection-start-line="132" selection-end-line="132" />
+            <state relative-caret-position="-657">
+              <caret line="976" column="34" selection-start-line="976" selection-start-column="34" selection-end-line="976" selection-end-column="34" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#56117#56118#0" expanded="true" />
+                <element signature="e#56182#56183#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/common/ConsistentHash.java">
+        <entry file="file://$PROJECT_DIR$/src/java/test/LogTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2372">
-              <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
+            <state relative-caret-position="308">
+              <caret line="26" selection-start-line="26" selection-end-line="26" />
               <folding>
-                <element signature="e#1617#1618#0" expanded="true" />
-                <element signature="e#1672#1673#0" expanded="true" />
+                <element signature="e#533#534#0" expanded="true" />
+                <element signature="e#590#591#0" expanded="true" />
               </folding>
             </state>
           </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar:///usr/local/jdk/src.zip!/java/util/concurrent/ScheduledExecutorService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1320">
-              <caret line="93" column="17" selection-start-line="93" selection-start-column="17" selection-end-line="93" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="352">
-                <caret line="16" column="5" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/META-INF/MANIFEST.MF">
-          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="506">
-              <caret line="30" column="36" selection-start-line="30" selection-start-column="34" selection-end-line="30" selection-end-column="36" />
+            <state relative-caret-position="858">
+              <caret line="60" column="9" lean-forward="true" selection-start-line="60" selection-start-column="9" selection-end-line="60" selection-end-column="9" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="176">
-              <caret line="11" column="59" selection-start-line="11" selection-start-column="59" selection-end-line="11" selection-end-column="59" />
+              <caret line="8" column="11" lean-forward="true" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java">
+        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2640">
-              <caret line="124" column="5" selection-start-line="124" selection-start-column="5" selection-end-line="124" selection-end-column="5" />
+            <state relative-caret-position="396">
+              <caret line="26" column="24" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#3876#3877#0" expanded="true" />
-                <element signature="e#3921#3922#0" expanded="true" />
-                <element signature="e#4160#4161#0" expanded="true" />
-                <element signature="e#4208#4209#0" expanded="true" />
+                <element signature="e#3086#3087#0" expanded="true" />
+                <element signature="e#3146#3147#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/common/Tools.java">
+        <entry file="file://$PROJECT_DIR$/src/java/test/NioTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="16" column="36" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
+            <state relative-caret-position="330">
+              <caret line="21" column="39" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/test/PerformanceTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="20" column="24" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="198">
+              <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#149#150#0" expanded="true" />
+                <element signature="e#218#219#0" expanded="true" />
+                <element signature="e#263#264#0" expanded="true" />
+                <element signature="e#330#331#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataInt.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="308">
+              <caret line="14" column="35" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="242">
+              <caret line="11" selection-start-line="11" selection-end-line="11" />
             </state>
           </provider>
         </entry>
@@ -231,57 +288,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/java/main/core/RaftMessageData.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/LastRaftMessage.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/RaftMessage.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/RaftMessageInterface.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/message/RaftMessageInterface.java" />
         <option value="$PROJECT_DIR$/src/java/resource/q.cfg" />
-        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/message/LastRaftMessage.java" />
-        <option value="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftAckMessage.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftCommitMessage.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/message/RaftSnapHotMessage.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/message/RaftUnCommitMessage.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java" />
-        <option value="$PROJECT_DIR$/src/java/main/log/RaftLog.java" />
-        <option value="$PROJECT_DIR$/src/java/main/log/RaftLogUncommit.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/cache/recycle/gc.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/cache/recycle/Gc.java" />
         <option value="$PROJECT_DIR$/src/java/main/constant/RaftState.java" />
-        <option value="$PROJECT_DIR$/src/java/test/LogTest.java" />
         <option value="$PROJECT_DIR$/src/java/main/程序运行流程.text" />
         <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheServer.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheServerTest.java" />
         <option value="$PROJECT_DIR$/src/java/main/Client.java" />
-        <option value="$PROJECT_DIR$/src/java/main/common/Node.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java" />
-        <option value="$PROJECT_DIR$/src/java/main/common/Tools.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/Method.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheDataInt.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" />
-        <option value="$PROJECT_DIR$/src/java/main/log/LogParse.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAop.java" />
-        <option value="$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" />
         <option value="$PROJECT_DIR$/src/java/main/GetTest.java" />
-        <option value="$PROJECT_DIR$/src/java/test/JsonMessageTest.java" />
-        <option value="$PROJECT_DIR$/src/java/test/PerformanceTest.java" />
-        <option value="$PROJECT_DIR$/src/java/test/NioTest.java" />
         <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java" />
         <option value="$PROJECT_DIR$/src/java/resource/log4j.properties" />
         <option value="$PROJECT_DIR$/src/java/main/README.md" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/java/main/Main.java" />
         <option value="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/RaftNode.java" />
+        <option value="$PROJECT_DIR$/src/java/main/common/Node.java" />
+        <option value="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" />
+        <option value="$PROJECT_DIR$/src/java/main/common/Tools.java" />
+        <option value="$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java" />
+        <option value="$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java" />
         <option value="$PROJECT_DIR$/src/java/main/constant/RaftOptions.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/RaftNode.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/cache/Method.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftAckMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftCommitMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/log/LogParse.java" />
+        <option value="$PROJECT_DIR$/src/java/main/log/RaftLog.java" />
+        <option value="$PROJECT_DIR$/src/java/main/log/RaftLogUncommit.java" />
+        <option value="$PROJECT_DIR$/src/java/main/Main.java" />
+        <option value="$PROJECT_DIR$/src/java/test/JsonMessageTest.java" />
+        <option value="$PROJECT_DIR$/src/java/test/LogTest.java" />
+        <option value="$PROJECT_DIR$/src/java/test/NioTest.java" />
+        <option value="$PROJECT_DIR$/src/java/test/PerformanceTest.java" />
+        <option value="$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java" />
+        <option value="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" />
       </list>
     </option>
   </component>
@@ -310,7 +367,6 @@
     <panes>
       <pane id="PackagesPane" />
       <pane id="Scope" />
-      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -350,7 +406,7 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="constant" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
@@ -358,7 +414,38 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
+              <item name="cache" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
+              <item name="QCache" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="backup" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
+              <item name="QCache" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="message" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
+              <item name="QCache" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="log" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
+              <item name="QCache" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
@@ -368,11 +455,12 @@
           <select />
         </subPane>
       </pane>
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="currenTerm&#9;PSI&#9;JAVA://core.message.RaftMessage#currentTerm" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1557751092504" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1558600307252" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Groovy JUnit" value="groovy.util.GroovyTestCase" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
@@ -534,13 +622,13 @@
       <window_info id="Capture Tool" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" weight="0.32992464" />
       <window_info id="Image Layers" order="4" />
-      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.24919268" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.22012918" />
       <window_info id="Structure" order="6" side_tool="true" weight="0.2497309" />
       <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="1" weight="0.32929516" />
       <window_info anchor="bottom" id="Event Log" order="2" sideWeight="0.5080732" side_tool="true" weight="0.10792951" />
-      <window_info anchor="bottom" id="Messages" order="3" sideWeight="0.4919268" visible="true" weight="0.12362031" />
-      <window_info anchor="bottom" id="CheckStyle" order="4" weight="0.33480176" />
+      <window_info anchor="bottom" id="Messages" order="3" sideWeight="0.4919268" visible="true" weight="0.26048565" />
+      <window_info anchor="bottom" id="CheckStyle" order="4" weight="0.33443707" />
       <window_info anchor="bottom" id="Message" order="5" />
       <window_info anchor="bottom" id="Find" order="6" weight="0.14096916" />
       <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49892357" weight="0.36506024" />
@@ -597,91 +685,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/LastRaftMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="11" column="11" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="10" column="31" lean-forward="true" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftUnCommitMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftSnapHotMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="21" column="33" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="5" lean-forward="true" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="21" column="19" selection-start-line="21" selection-start-column="19" selection-end-line="21" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/local/jdk/src.zip!/java/io/InputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="103" column="7" selection-start-line="103" selection-start-column="4" selection-end-line="103" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/local/jdk/src.zip!/java/nio/channels/Selector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="502">
-          <caret line="349" column="24" selection-start-line="349" selection-start-column="24" selection-end-line="349" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/local/jdk/src.zip!/java/nio/channels/SocketChannel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="346">
-          <caret line="499" column="7" selection-start-line="499" selection-start-column="5" selection-end-line="499" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/LogTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/local/jdk/src.zip!/java/lang/String.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="900" column="46" selection-start-line="900" selection-start-column="46" selection-end-line="900" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheServerTest.java" />
-    <entry file="jar:///usr/local/jdk/src.zip!/java/lang/Comparable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1584">
-          <caret line="95" column="17" selection-start-line="95" selection-start-column="17" selection-end-line="95" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/local/jdk/src.zip!/java/lang/Integer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="383">
@@ -689,144 +692,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/common/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="607">
-          <caret line="96" column="50" selection-start-line="96" selection-start-column="50" selection-end-line="96" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/recycle/Gc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/Method.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="5" column="65" selection-start-line="5" selection-start-column="65" selection-end-line="5" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataInt.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="61" selection-start-line="4" selection-start-column="61" selection-end-line="4" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/log/LogParse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4598">
-          <caret line="223" column="8" selection-start-line="218" selection-start-column="4" selection-end-line="231" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="6" column="62" selection-start-line="6" selection-start-column="62" selection-end-line="6" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/log/RaftLog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/Client.java" />
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="42" selection-start-line="12" selection-start-column="42" selection-end-line="12" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/JsonMessageTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="12" column="5" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/local/jdk/src.zip!/java/util/Random.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2816">
           <caret line="1060" column="8" lean-forward="true" selection-start-line="1060" selection-start-column="8" selection-end-line="1060" selection-end-column="8" />
-          <folding>
-            <element signature="e#3504#3505#0" expanded="true" />
-            <element signature="e#3562#3563#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/NioTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="27" column="32" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" column="27" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="5" column="26" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="9" column="25" selection-start-line="9" selection-start-column="25" selection-end-line="9" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/GetTest.java" />
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.class">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/java/resource/log4j.properties">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
@@ -835,34 +709,17 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/README.md">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="793">
+          <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
+        </state>
+      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="1122">
             <caret line="51" selection-start-line="51" selection-end-line="51" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="793">
-          <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/PerformanceTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="20" column="58" selection-start-line="20" selection-start-column="58" selection-end-line="20" selection-end-column="58" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="9" column="45" selection-start-line="9" selection-start-column="45" selection-end-line="9" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -877,9 +734,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2992">
           <caret line="173" column="8" selection-start-line="173" selection-start-column="8" selection-end-line="173" selection-end-column="8" />
-          <folding>
-            <element signature="e#21977#21983#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -887,6 +741,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1320">
           <caret line="93" column="17" selection-start-line="93" selection-start-column="17" selection-end-line="93" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/local/jdk/src.zip!/java/nio/channels/SocketChannel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1892">
+          <caret line="115" column="22" selection-start-line="115" selection-start-column="22" selection-end-line="115" selection-end-column="22" />
         </state>
       </provider>
     </entry>
@@ -900,72 +761,348 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar:///usr/local/jdk/src.zip!/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2794">
+          <caret line="164" column="30" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
+          <folding>
+            <element signature="e#4677#4678#0" expanded="true" />
+            <element signature="e#4714#4715#0" expanded="true" />
+            <element signature="e#5687#5688#0" expanded="true" />
+            <element signature="e#5750#5751#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.class">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/META-INF/MANIFEST.MF">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/common/ConsistentHash.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2640">
-          <caret line="124" column="5" selection-start-line="124" selection-start-column="5" selection-end-line="124" selection-end-column="5" />
+        <state relative-caret-position="163">
+          <caret line="161" column="9" selection-start-line="161" selection-start-column="9" selection-end-line="161" selection-end-column="9" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3876#3877#0" expanded="true" />
-            <element signature="e#3921#3922#0" expanded="true" />
-            <element signature="e#4160#4161#0" expanded="true" />
-            <element signature="e#4208#4209#0" expanded="true" />
+            <element signature="e#565#566#0" expanded="true" />
+            <element signature="e#611#612#0" expanded="true" />
+            <element signature="e#3656#3657#0" expanded="true" />
+            <element signature="e#3685#3686#0" expanded="true" />
+            <element signature="e#3813#3814#0" expanded="true" />
+            <element signature="e#3849#3850#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/common/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="90" column="5" lean-forward="true" selection-start-line="90" selection-start-column="5" selection-end-line="90" selection-end-column="5" />
+          <folding>
+            <element signature="e#1976#1977#0" expanded="true" />
+            <element signature="e#2005#2006#0" expanded="true" />
+            <element signature="e#2043#2044#0" expanded="true" />
+            <element signature="e#2102#2103#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/common/Tools.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="16" column="36" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
+        <state relative-caret-position="176">
+          <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="377">
+          <caret line="41" column="62" selection-start-line="41" selection-start-column="62" selection-end-line="41" selection-end-column="62" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3573#3574#0" expanded="true" />
+            <element signature="e#3625#3626#0" expanded="true" />
+            <element signature="e#3700#3701#0" expanded="true" />
+            <element signature="e#3747#3748#0" expanded="true" />
+            <element signature="e#4040#4041#0" expanded="true" />
+            <element signature="e#4085#4086#0" expanded="true" />
+            <element signature="e#4188#4189#0" expanded="true" />
+            <element signature="e#4237#4238#0" expanded="true" />
+            <element signature="e#4340#4341#0" expanded="true" />
+            <element signature="e#4388#4389#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="31" column="29" selection-start-line="31" selection-start-column="29" selection-end-line="31" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="14" column="7" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/Method.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/recycle/Gc.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/LastRaftMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftAckMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftCommitMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="25" column="1" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="43" column="15" selection-start-line="43" selection-start-column="15" selection-end-line="43" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftSnapHotMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="22" column="19" selection-start-line="22" selection-start-column="19" selection-end-line="22" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftUnCommitMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/log/LogParse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="e#1229#1230#0" expanded="true" />
+            <element signature="e#1274#1275#0" expanded="true" />
+            <element signature="e#6381#6382#0" expanded="true" />
+            <element signature="e#6412#6413#0" expanded="true" />
+            <element signature="e#6506#6507#0" expanded="true" />
+            <element signature="e#6573#6574#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/log/RaftLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="22" column="10" selection-start-line="22" selection-start-column="10" selection-end-line="22" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/log/RaftLogUncommit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="25" selection-start-line="25" selection-end-line="25" />
+          <folding>
+            <element signature="e#280#281#0" expanded="true" />
+            <element signature="e#314#315#0" expanded="true" />
+            <element signature="e#342#343#0" expanded="true" />
+            <element signature="e#375#376#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="132" lean-forward="true" selection-start-line="132" selection-end-line="132" />
+        <state relative-caret-position="308">
+          <caret line="28" column="9" selection-start-line="28" selection-start-column="9" selection-end-line="28" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/test/JsonMessageTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#127#128#0" expanded="true" />
+            <element signature="e#189#190#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/common/ConsistentHash.java">
+    <entry file="file://$PROJECT_DIR$/src/java/test/LogTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2372">
-          <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
+        <state relative-caret-position="308">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
           <folding>
-            <element signature="e#1617#1618#0" expanded="true" />
-            <element signature="e#1672#1673#0" expanded="true" />
+            <element signature="e#533#534#0" expanded="true" />
+            <element signature="e#590#591#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/test/NioTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="21" column="39" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/test/PerformanceTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="20" column="24" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
+          <folding>
+            <element signature="e#149#150#0" expanded="true" />
+            <element signature="e#218#219#0" expanded="true" />
+            <element signature="e#263#264#0" expanded="true" />
+            <element signature="e#330#331#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="30" column="36" selection-start-line="30" selection-start-column="34" selection-end-line="30" selection-end-column="36" />
+        <state relative-caret-position="858">
+          <caret line="60" column="9" lean-forward="true" selection-start-line="60" selection-start-column="9" selection-end-line="60" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="26" column="24" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
+          <folding>
+            <element signature="e#3086#3087#0" expanded="true" />
+            <element signature="e#3146#3147#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="11" lean-forward="true" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataInt.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="14" column="35" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/core/RaftNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2244">
-          <caret line="134" column="10" selection-start-line="134" selection-start-column="10" selection-end-line="134" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="11" column="59" selection-start-line="11" selection-start-column="59" selection-end-line="11" selection-end-column="59" />
+        <state relative-caret-position="-657">
+          <caret line="976" column="34" selection-start-line="976" selection-start-column="34" selection-end-line="976" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#56117#56118#0" expanded="true" />
+            <element signature="e#56182#56183#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

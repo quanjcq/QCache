@@ -14,11 +14,11 @@ public class RaftOptions {
     /**
      * leader 会每隔（heartbeatPeriodMilliseconds）向所有follower 发送心跳包，即使没有数据
      * 心跳包里携带leader 已经提交的日志信息，保证编号在这之前的日志都是已经提交的
-      */
+     */
     public static final int heartbeatPeriodMilliseconds = 600;
 
     /**
-     *只有在log 文件大小到达指定大小(snapshotMaxnLogSize)才会出现snapshot
+     * 只有在log 文件大小到达指定大小(snapshotMaxnLogSize)才会出现snapshot
      */
     public static final int snapshotPeriodSeconds = 3600;
     /**
@@ -35,4 +35,8 @@ public class RaftOptions {
      * max thread
      */
     public static final int maxThreadNum = 30;
+
+    private RaftOptions() {
+
+    }
 }

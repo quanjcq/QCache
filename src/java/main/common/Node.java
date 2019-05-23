@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by quan on 2019/4/25
  * Node
  */
-public class Node implements Serializable,Comparable{
+public class Node implements Serializable, Comparable {
     /**
      * 所有节点都有个唯一id
      */
@@ -23,7 +23,7 @@ public class Node implements Serializable,Comparable{
     /**
      * 节点负责监听 client的端口
      */
-    private  int ListenClientPort;
+    private int ListenClientPort;
 
     public Node(int nodeId, String ip, int listenHeartbeatPort, int listenClientPort) {
         NodeId = nodeId;
@@ -78,12 +78,14 @@ public class Node implements Serializable,Comparable{
     //id 相等就好了
     @Override
     public boolean equals(Object obj) {
-        if(obj == this)
+        if (obj == this) {
             return true;
-        if(obj == null)
+        }
+        if (obj == null) {
             return false;
-        if(obj instanceof Node){
-            return NodeId == ((Node)obj).getNodeId();
+        }
+        if (obj instanceof Node) {
+            return NodeId == ((Node) obj).getNodeId();
         }
         return false;
     }
@@ -94,6 +96,6 @@ public class Node implements Serializable,Comparable{
     }
 
     public int compareTo(Object o) {
-        return this.NodeId - ((Node)o).getNodeId();
+        return this.NodeId - ((Node) o).getNodeId();
     }
 }

@@ -51,14 +51,14 @@ public class RaftLog implements Comparable, Serializable {
     }
 
     public int compareTo(Object o) {
-        RaftLog raftLog = (RaftLog)o;
-        if(raftLog.getIndex() == this.index && raftLog.getTerm() == this.term){
-            return  0;
-        }else if(this.term > raftLog.getTerm()
-                || (this.term == raftLog.term && this.index > raftLog.index)){
+        RaftLog raftLog = (RaftLog) o;
+        if (raftLog.getIndex() == this.index && raftLog.getTerm() == this.term) {
+            return 0;
+        } else if (this.term > raftLog.getTerm()
+                || (this.term == raftLog.term && this.index > raftLog.index)) {
             return 1;
-        }else{
-            return  -1;
+        } else {
+            return -1;
         }
     }
 }

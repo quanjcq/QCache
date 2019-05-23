@@ -1,7 +1,5 @@
-import constant.RaftOptions;
 import core.message.RaftHeartMessage;
 import core.message.RaftMessage;
-import core.message.RaftVoteMessage;
 import log.LogParse;
 import log.RaftLog;
 import org.junit.Test;
@@ -13,18 +11,19 @@ import java.net.Socket;
 
 public class LogTest {
     @Test
-    public void LogParseTest(){
+    public void LogParseTest() {
 
-        RaftLog raftLog  = LogParse.parseOneLog("Timestamp=112121212;index=12;term=12;command=set key value");
+        RaftLog raftLog = LogParse.parseOneLog("Timestamp=112121212;index=12;term=12;command=set key value");
         System.out.println(raftLog.toString());
     }
+
     @Test
-    public void getLastLogTest(){
+    public void getLastLogTest() {
         System.out.println(LogParse.getLastLog());
     }
 
     @Test
-    public void socketTest(){
+    public void socketTest() {
 
         try {
             RaftHeartMessage raftMessage = new RaftHeartMessage();
@@ -40,24 +39,22 @@ public class LogTest {
             RaftMessage message = (RaftMessage) in.readObject();
             System.out.println(message.getId());
             System.out.println(message);
-        }catch (IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }catch (ClassNotFoundException ex){
+        } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
-
-
 
 
     }
 
     @Test
-    public void finallyTest(){
+    public void finallyTest() {
         //测试下 线程被中断,finally 会不会执行
-        try{
+        try {
             Thread.currentThread().interrupt();
             //System.exit(0);
-        }finally {
+        } finally {
             System.out.println("12121");
         }
 
