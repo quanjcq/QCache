@@ -2,24 +2,31 @@ package common;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 
 /**
  * 一致性hash算法实现.
  */
 public class ConsistentHash {
+
     private final String salt = "quanjcq";
+
     /**
      * 复制的节点个数.
      */
     private final int numberOfReplicas;
+
+    /**
+     * 由于一致性hash 虚拟节点的个数比较多,所以Hash 环中不在存Node而是存索引节点
+     */
+    private Map<Short, Node> nodesMap = new HashMap<Short, Node>();
+
     /**
      * 一致性Hash环.
      */
-    private SortedMap<Long, Node> circle = new TreeMap<Long, Node>();
+    private SortedMap<Long, Short> circle = new TreeMap<Long, Short>();
+
 
     /**
      * @param number 复制的节点个数，增加每个节点的复制节点有利于负载均衡
@@ -34,15 +41,17 @@ public class ConsistentHash {
      */
     public ConsistentHash(final int numberOfReplicas, final Collection<Node> nodes) {
         this.numberOfReplicas = numberOfReplicas;
-
         //初始化节点
         for (Node node : nodes) {
             add(node);
+            if (nodesMap.get(node.getNodeId()) == null) {
+                nodesMap.put(node.getNodeId(), node);
+            }
         }
     }
 
     /**
-     * MD5加密算法.
+     * MD5
      *
      * @param key 关键字
      * @return 返回md5加密后的字符串
@@ -63,8 +72,7 @@ public class ConsistentHash {
             long digit2 = (bKey[2] & and) << offset2;
             long digit3 = (bKey[1] & and) << offset3;
             long digit4 = (bKey[0] & and);
-            long res = digit1 | digit2 | digit3 | digit4;
-            return res;
+            return digit1 | digit2 | digit3 | digit4;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -78,7 +86,6 @@ public class ConsistentHash {
      * @return 返回key的hash值
      */
     private Long hash(final Object key) {
-        //return (long)key.hashCode();
         return md5(key.toString());
     }
 
@@ -91,18 +98,21 @@ public class ConsistentHash {
      * @param node 节点对象
      */
     public synchronized void add(final Node node) {
-        for (int i = 0; i < numberOfReplicas; i++) {
-            circle.put(hash(node.toString() + salt + i), node);
+        if (nodesMap.get(node.getNodeId()) == null) {
+            nodesMap.put(node.getNodeId(), node);
+            for (int i = 0; i < numberOfReplicas; i++) {
+                circle.put(hash(node.toString() + salt + i), node.getNodeId());
+            }
         }
     }
 
     /**
      * 获取服务器个数.
      *
-     * @return 返回服务器的个数
+     * @return 返回服务器的个数.
      */
     public synchronized int getSize() {
-        return circle.size() / numberOfReplicas;
+        return nodesMap.size();
     }
 
     /**
@@ -111,8 +121,11 @@ public class ConsistentHash {
      * @param node 节点对象
      */
     public synchronized void remove(final Node node) {
-        for (int i = 0; i < numberOfReplicas; i++) {
-            circle.remove(hash(node.toString() + salt + i));
+        if (nodesMap.containsKey(node.getNodeId())) {
+            nodesMap.remove(node.getNodeId());
+            for (int i = 0; i < numberOfReplicas; i++) {
+                circle.remove(hash(node.toString() + salt + i));
+            }
         }
     }
 
@@ -129,7 +142,7 @@ public class ConsistentHash {
         long hashStr = hash(key);
         if (!circle.containsKey(hashStr)) {
             //返回此映射的部分视图，其键大于等于 hash
-            SortedMap<Long, Node> tailMap = circle.tailMap(hashStr);
+            SortedMap<Long, Short> tailMap = circle.tailMap(hashStr);
             if (tailMap.isEmpty()) {
                 hashStr = circle.firstKey();
             } else {
@@ -137,35 +150,66 @@ public class ConsistentHash {
             }
         }
         //正好命中
-        return circle.get(hashStr);
+        return nodesMap.get(circle.get(hashStr));
+    }
+
+    /**
+     * 随机获取一个节点.
+     *
+     * @return Node
+     */
+    public synchronized Node getRandomNode() {
+        Short[] keys = nodesMap.keySet().toArray(new Short[0]);
+        Random random = new Random();
+        short randomKey = keys[random.nextInt(keys.length)];
+        return nodesMap.get(randomKey);
     }
 
     /**
      * 获取circle,用于持久化到磁盘中
      *
-     * @return
+     * @return map
      */
-    public synchronized SortedMap<Long, Node> getCircle() {
-        return circle;
-    }
-
-    /**
-     * 获取数据
-     *
-     * @param circle
-     */
-    public synchronized void setCircle(SortedMap<Long, Node> circle) {
-        this.circle = circle;
+    public synchronized Map<Short, Node> getCircle() {
+        return nodesMap;
     }
 
     /**
      * 指定节点是否存在
-     * @param node
-     * @return
+     *
+     * @param node 节点
+     * @return 节点是否存在
      */
     public synchronized boolean hashNode(Node node) {
-        long hashStr = hash(node.toString() + salt + 0);
-        return circle.containsKey(hashStr);
+        return nodesMap.get(node.getNodeId()) != null;
+    }
+
+    public synchronized String getNodesStr() {
+        StringBuilder builder = new StringBuilder();
+        Set<Short> nodeIdSet = nodesMap.keySet();
+        int count = 0;
+        for (short nodeId : nodeIdSet) {
+            Node node = nodesMap.get(nodeId);
+            if (count == 0) {
+                builder.append(String.format(
+                        "%d:%s:%d:%d",
+                        node.getNodeId(),
+                        node.getIp(),
+                        node.getListenHeartbeatPort(),
+                        node.getListenClientPort())
+                );
+            } else {
+                builder.append(String.format(
+                        "#%d:%s:%d:%d",
+                        node.getNodeId(),
+                        node.getIp(),
+                        node.getListenHeartbeatPort(),
+                        node.getListenClientPort())
+                );
+            }
+            count++;
+        }
+        return builder.toString();
     }
 
 

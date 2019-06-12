@@ -4,13 +4,13 @@ import java.io.Serializable;
 
 /**
  * Created by quan on 2019/4/25
- * Node
+ * 服务器节点
  */
-public class Node implements Serializable, Comparable {
+public final class Node implements Comparable, Serializable {
     /**
-     * 所有节点都有个唯一id
+     * 所有节点都有个唯一id.
      */
-    private int NodeId;
+    private short nodeId;
     /**
      * 节点ip 地址
      */
@@ -23,56 +23,34 @@ public class Node implements Serializable, Comparable {
     /**
      * 节点负责监听 client的端口
      */
-    private int ListenClientPort;
+    private int listenClientPort;
 
-    public Node(int nodeId, String ip, int listenHeartbeatPort, int listenClientPort) {
-        NodeId = nodeId;
-        this.ip = ip;
-        this.listenHeartbeatPort = listenHeartbeatPort;
-        ListenClientPort = listenClientPort;
+    private Node(Builder builder) {
+        this.nodeId = builder.nodeId;
+        this.ip = builder.ip;
+        this.listenHeartbeatPort = builder.listenHeartbeatPort;
+        this.listenClientPort = builder.listenClientPort;
     }
 
-    public int getListenHeartbeatPort() {
-        return listenHeartbeatPort;
-    }
-
-    public void setListenHeartbeatPort(int listenHeartbeatPort) {
-        this.listenHeartbeatPort = listenHeartbeatPort;
-    }
-
-    public int getNodeId() {
-        return NodeId;
-    }
-
-    public void setNodeId(int nodeId) {
-        NodeId = nodeId;
+    public short getNodeId() {
+        return nodeId;
     }
 
     public String getIp() {
         return ip;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public int getListenHeartbeatPort() {
+        return listenHeartbeatPort;
     }
-
 
     public int getListenClientPort() {
-        return ListenClientPort;
-    }
-
-    public void setListenClientPort(int listenClientPort) {
-        ListenClientPort = listenClientPort;
+        return listenClientPort;
     }
 
     @Override
     public String toString() {
-        return "Node{" +
-                "NodeId=" + NodeId +
-                ", ip='" + ip + '\'' +
-                ", listenHeartbeatPort=" + listenHeartbeatPort +
-                ", ListenClientPort=" + ListenClientPort +
-                '}';
+        return String.format("%d:%s:%d:%d", nodeId, ip, listenHeartbeatPort, listenClientPort);
     }
 
     //id 相等就好了
@@ -85,17 +63,50 @@ public class Node implements Serializable, Comparable {
             return false;
         }
         if (obj instanceof Node) {
-            return NodeId == ((Node) obj).getNodeId();
+            return nodeId == ((Node) obj).getNodeId();
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return NodeId;
+        return nodeId;
     }
 
+    @Override
     public int compareTo(Object o) {
-        return this.NodeId - ((Node) o).getNodeId();
+        return this.nodeId - ((Node) o).getNodeId();
+    }
+
+    public static class Builder {
+        private short nodeId;
+        private String ip;
+        private int listenHeartbeatPort;
+        private int listenClientPort;
+
+        public Builder setNodeId(Short nodeId) {
+            this.nodeId = nodeId;
+            return this;
+        }
+
+        public Builder setIp(String ip) {
+            this.ip = ip;
+            return this;
+        }
+
+        public Builder setListenHeartbeatPort(int listenHeartbeatPort) {
+            this.listenHeartbeatPort = listenHeartbeatPort;
+            return this;
+        }
+
+        public Builder setListenClientPort(int listenClientPort) {
+            this.listenClientPort = listenClientPort;
+            return this;
+        }
+
+        public Node build() {
+            return new Node(this);
+        }
+
     }
 }

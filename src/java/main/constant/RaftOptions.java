@@ -5,6 +5,9 @@ package constant;
  * Raft 运行的的配置
  */
 public class RaftOptions {
+    private RaftOptions() {
+
+    }
     /**
      * follower 在一定时间内（electionTimeoutMilliseconds）没有接收到 来自leader 的心跳包，就会变成candidate,
      * 在随机时间（150~300 ms）内发起一轮选举
@@ -17,14 +20,11 @@ public class RaftOptions {
      */
     public static final int heartbeatPeriodMilliseconds = 600;
 
-    /**
-     * 只有在log 文件大小到达指定大小(snapshotMaxnLogSize)才会出现snapshot
-     */
-    public static final int snapshotPeriodSeconds = 3600;
+
     /**
      * 日志最大大小，这个为已经提交的日志，未提交的日志在内存中，达到这个大小会清空这个日志同时snapshot
      */
-    public static final int maxLogSize = 1 * 1024 * 1024; //1m
+    public static final int maxLogSize = 30 * 1024;
 
     /**
      * core thread 数量
@@ -36,7 +36,10 @@ public class RaftOptions {
      */
     public static final int maxThreadNum = 30;
 
-    private RaftOptions() {
+    /**
+     * 每次发送消息最多等待时间 (ms)
+     */
+    public static final int maxWaitTime = 200;
 
-    }
+
 }

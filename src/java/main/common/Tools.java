@@ -7,7 +7,8 @@ public class Tools {
     /**
      * 按照空格分割字符串，对于多个空格当做一个空格，“” 里面的字符不拆开，
      * 若格式不正确返回null;
-     * @return
+     *
+     * @return List<String> 分割后的字符串
      */
     public static List<String> split(String line) {
         StringBuilder builder = new StringBuilder();
@@ -32,16 +33,12 @@ public class Tools {
                     if (builder.length() > 0) {
                         res.add(builder.toString());
                         builder = new StringBuilder();
-                    } else {
-                        continue;
                     }
                 } else if (line.charAt(i) == '"') {
                     num++;
                     if (builder.length() > 0) {
                         res.add(builder.toString());
                         builder = new StringBuilder();
-                    } else {
-                        continue;
                     }
                 } else {
                     builder.append(line.charAt(i));

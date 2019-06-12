@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+if [ ! -d "./artifacts_$1" ];then
+    echo "只能开启,之前build后，自己关闭的节点"
+    exit;
+fi
+nohup java -jar ./artifacts_$1/QCache_jar/QCache.jar runServer >/dev/null 2>&1 &
+
+if (($? == 0));then
+	echo "start success"
+else 
+	echo "error"
+fi

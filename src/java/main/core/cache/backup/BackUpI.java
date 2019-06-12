@@ -1,5 +1,9 @@
 package core.cache.backup;
 
+import core.cache.CacheData;
+
+import java.util.HashMap;
+
 /**
  * 负责数据的备份工作
  * 结合RDB 和 AOF 两种形式
@@ -10,6 +14,9 @@ package core.cache.backup;
  * 系统重启的时候 加载RDB 和解析 AOF文件恢复到最新状态
  */
 public interface BackUpI {
-    int aofMaxSize = 1024 * 1024; //1m，这个数据小点不然不好测试
-
+    /**
+     * 加载缓存数据
+     * @param cache HashMap
+     */
+    void loadData(HashMap<String, CacheData> cache);
 }

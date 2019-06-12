@@ -1,33 +1,49 @@
 package core;
 
+import com.google.protobuf.MessageLite;
 import common.ConsistentHash;
 import common.Node;
+import common.QCacheConfiguration;
 import common.RaftSnaphot;
-import common.Tools;
-import configuration.QCacheConfiguration;
+import constant.CacheOptions;
 import constant.RaftOptions;
 import constant.RaftState;
-import core.cache.*;
+import core.cache.CacheData;
+import core.cache.CacheDataInt;
+import core.cache.CacheDataString;
 import core.cache.backup.BackUpAof;
-import core.message.*;
-import log.LogParse;
+import core.cache.backup.BackUpRdb;
+import core.message.LastRaftMessage;
+import core.message.RaftMessageProto;
+import core.message.UserMessageProto;
+import core.nio.NioInProtoBufHandler;
+import core.nio.NioOutProtoBufHandler;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import log.RaftLog;
-import log.RaftLogUncommit;
+import log.RaftLogParse;
+import log.RaftLogUnCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -41,33 +57,32 @@ import java.util.concurrent.locks.ReentrantLock;
  * 处理客户端请求
  */
 public class RaftNode {
-    private static final Logger log = LoggerFactory.getLogger(RaftNode.class);
+    private static Logger log = LoggerFactory.getLogger(RaftNode.class);
+    //该节点为candidate时候获取的选票信息
+    private final Set<Short> votes = new TreeSet<Short>();
+    //该节点为pre_candidate时候获取的选票信息
+    private final Set<Short> preVotes = new TreeSet<Short>();
     //状态，初始的时候为follower
     private volatile RaftState state = RaftState.FOLLOWER;
-
     // 服务器任期号(term)（初始化为 0，持续递增）
     private long currentTerm = 0;
-
     // 在当前获得选票的候选人的Id，若这个值为负数，说明他没有把票投给其他节点
     private int votedFor = -1;
-
-    //该节点为candidate 时候获取的选票信息
-    private Set<Integer> votes = new TreeSet<Integer>();
-
     //这里存放着所有，最新提交的日志信息
-    private Map<Integer, LastRaftMessage> lastRaftMessageMap = new HashMap<Integer, LastRaftMessage>();
+    private Map<Short, LastRaftMessage> lastRaftMessageMap = new HashMap<Short, LastRaftMessage>();
 
-    // 最后被应用到状态机的日志条目索引值（初始化为 -1）
-    private long lastAppliedIndex = -1;
+    // 最后被应用到状态机的日志条目索引值（初始化为 0）
+    private long lastAppliedIndex = 0;
 
-    // 最后被应用到状态机的日志条目term（初始化为 -1持续递增）
-    private long lastAppliedTerm = -1;
 
     //一致性hash
     private ConsistentHash consistentHash = null;
 
     //snaphot 文件路径
     private String raftSnaphotPath = QCacheConfiguration.getRaftSnaphotPath();
+
+    //raftlog 文件路径
+    private String raftLogPath = QCacheConfiguration.getRaftLogsPath();
 
     //记录上次leader 访问的时间，以此判断集群内是否有leader
     private volatile long leaderConnectTime = 0;
@@ -76,28 +91,42 @@ public class RaftNode {
     private Node myNode;
 
     //负责维护连接信息
-    private HashMap<Node, Socket> sockets = new HashMap<Node, Socket>();
+    private HashMap<Node, Channel> channels = new HashMap<Node, Channel>();
 
     //存储leader 所有未提交的日志（force ）
-    private List<RaftLogUncommit> unCommitLogs = new LinkedList<RaftLogUncommit>();
+    private List<RaftLogUnCommit> unCommitLogs = new LinkedList<RaftLogUnCommit>();
 
     //集群信息
     private List<Node> nodes;
+
+    private LinkedBlockingQueue<String> asyncAppendFileQueue = new LinkedBlockingQueue<String>();
+
     private Lock lock = new ReentrantLock();
-    private ConcurrentHashMap<String, CacheDataI> cache = new ConcurrentHashMap<String, CacheDataI>();
+    private HashMap<String, CacheData> cache = new HashMap<String, CacheData>();
     private ExecutorService executorService;
     private ScheduledExecutorService scheduledExecutorService;
     private ScheduledFuture electionScheduledFuture;
     private ScheduledFuture heartbeatScheduledFuture;
 
+    private EventLoopGroup clientEventLoopGroupBoss = new NioEventLoopGroup(1);
+
+    //缓存是否可写
+    private volatile boolean writeAble = true;
+    //缓存是否可读
+    private volatile boolean readAble = true;
+
+    //LeaderId
+    //private volatile Short leaderId = -1;
+
     public void init() {
-
-
         //load nodes
         log.info("load nodes");
         nodes = QCacheConfiguration.getNodeList();
         myNode = QCacheConfiguration.getMyNode();
-        consistentHash = new ConsistentHash(20);
+
+        //init ConsistentHash
+        consistentHash = new ConsistentHash(CacheOptions.numberOfReplicas);
+
 
         //load snapshot
         log.info("load sanpshot");
@@ -119,7 +148,8 @@ public class RaftNode {
                 new LinkedBlockingQueue<Runnable>());
         //启动监听其它节点的线程
         listenNode();
-        scheduledExecutorService = Executors.newScheduledThreadPool(3);
+
+        scheduledExecutorService = Executors.newScheduledThreadPool(1);
         scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
             public void run() {
 
@@ -133,9 +163,13 @@ public class RaftNode {
             }
         }, 0, RaftOptions.electionTimeoutMilliseconds, TimeUnit.MILLISECONDS);
 
-        //init listenClientThread
-        initListenClientThread();
+        //init listenClient
         log.info("listen client");
+        initListenClient();
+
+        log.info("initAsyncAppendLogThread");
+        initAsyncAppendLogThread();
+
     }
 
     private void resetElectionTimer() {
@@ -168,18 +202,20 @@ public class RaftNode {
      * leader,pre_candidate,candidate ,向其他节点发送消息的时候，收到回复消息
      * 根据这个回复消息节点状态自动降级为follower.
      *
-     * @param message
+     * @param message 收到的消息内容
      */
     //in lock
-    private void stepDown(RaftMessage message) {
+    private void stepDown(RaftMessageProto.RaftMessage message) {
         long newTerm = message.getCurrentTerm();
+        lastRaftMessageMap.put((short) message.getId(), new LastRaftMessage((short) message.getId(),
+                message.getLastAppliedIndex()));
         if (currentTerm > newTerm) {
             return;
         } else if (currentTerm < newTerm) {
             currentTerm = newTerm;
             votedFor = -1;
-            votes.clear();
             state = RaftState.FOLLOWER;
+
             // stop heartbeat
             if (heartbeatScheduledFuture != null && !heartbeatScheduledFuture.isDone()) {
                 heartbeatScheduledFuture.cancel(true);
@@ -189,19 +225,17 @@ public class RaftNode {
             if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
                 electionScheduledFuture.cancel(true);
             }
-            if (message.isLeader()) {
+            if (message.getLeader()) {
                 leaderConnectTime = new Date().getTime();
             }
         }
-        if (message.isLeader()) {
+        if (message.getLeader()) {
             leaderConnectTime = new Date().getTime();
             state = RaftState.FOLLOWER;
-            votes.clear();
             // stop heartbeat
             if (heartbeatScheduledFuture != null && !heartbeatScheduledFuture.isDone()) {
                 heartbeatScheduledFuture.cancel(true);
             }
-
             // stop election
             if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
                 electionScheduledFuture.cancel(true);
@@ -210,104 +244,94 @@ public class RaftNode {
     }
 
     /**
+     * 获取与对应node的连接
+     *
+     * @param node 要连接的节点
+     * @return channel
+     */
+    private Channel getChannel(Node node) {
+        Channel channel = channels.get(node);
+        if (channel != null && channel.isActive()) {
+            return channel;
+        }
+        ChannelFuture channelFuture = null;
+        try {
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(clientEventLoopGroupBoss)
+                    .channel(NioSocketChannel.class)
+                    .handler(new SocketClientInitializer());
+            channelFuture = bootstrap.connect(node.getIp(), node.getListenHeartbeatPort()).sync();
+        } catch (InterruptedException ex) {
+            log.debug(ex.toString());
+        } finally {
+            if (channelFuture != null && channelFuture.isSuccess()) {
+                log.info("server {} create channel with server {} ", myNode.getNodeId(), node.getNodeId());
+                channel = channelFuture.channel();
+                channels.put(node, channel);
+            } else {
+                log.info("server {} lost", node.getNodeId());
+                channel = null;
+            }
+            return channel;
+        }
+    }
+
+    /**
      * 预先投票防止该节点自身网络异常导致全局term变大.
      *
-     * @return
+     * @return pre vote 是否成功
      */
     private boolean preVote() {
         lock.lock();
         try {
             state = RaftState.PRE_CANDIDATE;
             log.info("server {} start preVote on term {}", myNode.getNodeId(), currentTerm);
-            votes.clear();
-            votes.add(myNode.getNodeId());
+            preVotes.clear();
         } finally {
             lock.unlock();
         }
-        final CountDownLatch countDownLatch = new CountDownLatch(nodes.size() - 1);
         for (final Node node : nodes) {
             if (!node.equals(myNode)) {
                 executorService.execute(new Runnable() {
                     public void run() {
+                        RaftMessageProto.RaftMessage raftMessage;
                         lock.lock();
                         try {
-                            if (state != RaftState.PRE_CANDIDATE) {
-                                countDownLatch.countDown();
+                            if (state != RaftState.PRE_CANDIDATE || preVotes.size() + 1 > nodes.size() / 2) {
                                 return;
                             }
+                            raftMessage = RaftMessageProto.RaftMessage.newBuilder()
+                                    .setMessageType(RaftMessageProto.MessageType.PRE_VOTE)
+                                    .setId((int) myNode.getNodeId())
+                                    .setLastAppliedIndex(lastAppliedIndex)
+                                    .setCurrentTerm(currentTerm)
+                                    .setLeader(state == RaftState.LEADER)
+                                    .build();
                         } finally {
                             lock.unlock();
                         }
-                        ObjectOutputStream objectOutputStream = null;
-                        ObjectInputStream objectInputStream = null;
-                        try {
-                            Socket socket = getSocket(node);
-                            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                            RaftPreVoteMessage message = new RaftPreVoteMessage();
-                            lock.lock();
-                            try {
-                                message.setCurrentTerm(currentTerm);
-                                message.setId(myNode.getNodeId());
-                                message.setLastAppendedIndex(lastAppliedIndex);
-                                message.setLastAppendedTerm(lastAppliedTerm);
-                                message.setLeader(false);
-                            } finally {
-                                lock.unlock();
-                            }
-                            log.info("server {} send pre vote to server {} message {}",
-                                    myNode.getNodeId(),
-                                    node.getNodeId(),
-                                    message);
-                            objectOutputStream.writeObject(message);
-                            objectInputStream = new ObjectInputStream(socket.getInputStream());
-                            RaftPreVoteMessage messageIn = (RaftPreVoteMessage) objectInputStream.readObject();
-                            log.info("server {} get pre voter message {}", myNode.getNodeId(), messageIn);
-                            lock.lock();
-                            try {
-                                stepDown(messageIn);
-                                if (messageIn.isVoteFor()) {
-                                    votes.add(messageIn.getId());
-                                    log.info("server {} get pre vote from {} total votes = {} on term {}",
-                                            myNode.getNodeId(), messageIn.getId(), votes.size(), currentTerm);
-                                } else {
-                                    log.info("server {} do not get pre vote from {}",
-                                            myNode.getNodeId(), messageIn.getId());
-                                }
-                            } finally {
-                                lock.unlock();
-                            }
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                            log.info(ex.toString());
-                        } catch (ClassNotFoundException ex) {
-                            ex.printStackTrace();
-                            log.info(ex.toString());
-                        } finally {
-                            try {
-                                objectOutputStream.close();
-                                objectInputStream.close();
-                            } catch (IOException ex) {
-                                log.debug(ex.toString());
-                            }
-                            countDownLatch.countDown();
+                        Channel channel = getChannel(node);
+                        if (channel != null && channel.isActive()) {
+                            channel.writeAndFlush(raftMessage);
                         }
+
                     }
                 });
             }
         }
-        try {
-            countDownLatch.await((nodes.size() - 1) * RaftOptions.heartbeatPeriodMilliseconds, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
+
+        if (preVotes.size() + 1 <= nodes.size() / 2) {
+            synchronized (preVotes) {
+                if (preVotes.size() + 1 <= nodes.size() / 2) {
+                    try {
+                        preVotes.wait((nodes.size() / 2 + 1) * RaftOptions.maxWaitTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        boolean res;
-        lock.lock();
-        try {
-            res = votes.size() > nodes.size() / 2;
-        } finally {
-            lock.unlock();
-        }
-        return res;
+        return preVotes.size() + 1 > nodes.size() / 2;
     }
 
     /**
@@ -318,103 +342,62 @@ public class RaftNode {
         lock.lock();
         try {
             state = RaftState.CANDIDATE;
+            votedFor = (int) myNode.getNodeId();
             currentTerm++;
-            votedFor = myNode.getNodeId();
-            log.info("server {} start Vote", myNode.getNodeId());
+            log.info("server {} start Vote on term {}", myNode.getNodeId(), currentTerm);
             votes.clear();
-            votes.add(myNode.getNodeId());
         } finally {
             lock.unlock();
         }
-        final CountDownLatch countDownLatch = new CountDownLatch(nodes.size() - 1);
         for (final Node node : nodes) {
             if (!node.equals(myNode)) {
                 executorService.execute(new Runnable() {
                     public void run() {
-                        ObjectOutputStream objectOutputStream = null;
-                        ObjectInputStream objectInputStream = null;
+                        RaftMessageProto.RaftMessage raftMessage;
+                        lock.lock();
                         try {
-                            lock.lock();
-                            try {
-                                if (state != RaftState.CANDIDATE) {
-                                    countDownLatch.countDown();
-                                    return;
-                                }
-                            } finally {
-                                lock.unlock();
+                            if (state != RaftState.CANDIDATE || votes.size() + 1 > nodes.size() / 2) {
+                                return;
                             }
-                            log.info("server {} start vote to {} on port{}",
-                                    myNode,
-                                    node.getNodeId(),
-                                    node.getListenHeartbeatPort());
-                            Socket socket = getSocket(node);
-                            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                            RaftVoteMessage message = new RaftVoteMessage();
-                            lock.lock();
-                            try {
-                                message.setCurrentTerm(currentTerm);
-                                message.setId(myNode.getNodeId());
-                                message.setLastAppendedIndex(lastAppliedIndex);
-                                message.setLastAppendedTerm(lastAppliedTerm);
-                                message.setLeader(false);
-                            } finally {
-                                lock.unlock();
-                            }
-                            objectOutputStream.writeObject(message);
-                            objectInputStream = new ObjectInputStream(socket.getInputStream());
-                            RaftVoteMessage messageIn = (RaftVoteMessage) objectInputStream.readObject();
-                            stepDown(messageIn);
-                            lock.lock();
-                            try {
-                                if (messageIn.isVoteFor()) {
-                                    votes.add(messageIn.getId());
-                                    log.info("server {} get vote from {} total votes = {} on term {}",
-                                            myNode.getNodeId(), messageIn.getId(), votes.size(), currentTerm);
-                                } else {
-                                    log.info("server {} do not get vote from {} total votes={} on term {}",
-                                            myNode.getNodeId(), messageIn.getId(), votes.size(), currentTerm);
-                                }
-                            } finally {
-                                lock.unlock();
-                            }
-                        } catch (IOException ex) {
-                            log.debug(ex.toString());
-                        } catch (ClassNotFoundException ex) {
-                            log.debug(ex.toString());
+                            raftMessage = RaftMessageProto.RaftMessage.newBuilder()
+                                    .setMessageType(RaftMessageProto.MessageType.VOTE)
+                                    .setId((int) myNode.getNodeId())
+                                    .setLastAppliedIndex(lastAppliedIndex)
+                                    .setCurrentTerm(currentTerm)
+                                    .setLeader(false)
+                                    .build();
                         } finally {
-                            try {
-                                objectOutputStream.close();
-                                objectInputStream.close();
-                            } catch (IOException ex) {
-                                log.debug(ex.toString());
-                            }
-                            countDownLatch.countDown();
+                            lock.unlock();
                         }
-
+                        if (raftMessage != null) {
+                            Channel channel = getChannel(node);
+                            channel.writeAndFlush(raftMessage);
+                        }
                     }
                 });
             }
         }
-        try {
-            countDownLatch.await((nodes.size() - 1) * RaftOptions.heartbeatPeriodMilliseconds, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
+
+        if (votes.size() + 1 <= nodes.size() / 2) {
+            synchronized (votes) {
+                if (votes.size() + 1 <= nodes.size() / 2) {
+                    //不足半数以上投票继续等待
+                    try {
+                        votes.wait((nodes.size() / 2 + 1) * RaftOptions.maxWaitTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        boolean tag = false;
-        lock.lock();
-        try {
-            tag = (votes.size() > nodes.size() / 2);
-        } finally {
-            lock.unlock();
-        }
-        if (tag) {
+
+        boolean flag = (votes.size() + 1 > nodes.size() / 2);
+        if (flag) {
             //become leader
             becomeLeader();
-
         } else {
             resetElectionTimer();
         }
-
     }
 
     /**
@@ -426,14 +409,13 @@ public class RaftNode {
             state = RaftState.LEADER;
             votedFor = myNode.getNodeId();
             unCommitLogs.clear();
-            votes.clear();
         } finally {
             lock.unlock();
         }
         //维护需要发送给其他节点的消息，只有leader需要
         for (Node node : nodes) {
             lastRaftMessageMap.put(node.getNodeId(),
-                    new LastRaftMessage(node.getNodeId(), -1, -1)
+                    new LastRaftMessage(node.getNodeId(), -1)
             );
         }
         // stop vote timer
@@ -444,7 +426,6 @@ public class RaftNode {
         log.info("server {} become leader on term {}", myNode.getNodeId(), currentTerm);
         startNewHeartbeat();
     }
-
 
     private void resetHeartbeatTimer() {
         log.info("server {} resetHeartbeatTimer", myNode.getNodeId());
@@ -469,152 +450,109 @@ public class RaftNode {
         }, RaftOptions.heartbeatPeriodMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-
     /**
      * 当选leader,向所有节点发送心跳包
+     * 优先发送同步消息
+     * 然后才是未提交
+     * 最后是普通心跳包
      */
     private void startNewHeartbeat() {
-        final CountDownLatch countDownLatch = new CountDownLatch(nodes.size() - 1);
         for (final Node node : nodes) {
             if (!node.equals(myNode)) {
                 executorService.execute(new Runnable() {
                     public void run() {
-                        ObjectOutputStream objectOutputStream = null;
+                        RaftMessageProto.RaftMessage raftMessage;
+                        lock.lock();
                         try {
-                            lock.lock();
-                            try {
-                                if (state != RaftState.LEADER) {
-                                    countDownLatch.countDown();
-                                    return;
-                                }
-                            } finally {
-                                lock.unlock();
+                            if (state != RaftState.LEADER) {
+                                return;
                             }
-                            log.info("server {} state={} send heart to server {}", myNode.getNodeId(), state, node.getNodeId());
-                            Socket socket = getSocket(node);
-                            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                            TreeMap<Long, Node> circle = getRaftSnaphot();
-                            long term = lastRaftMessageMap.get(node.getNodeId()).getCommitTerm();
-                            long index = lastRaftMessageMap.get(node.getNodeId()).getCommitIndex();
-                            List<RaftLog> logs = LogParse.getNewRaftLogs(term, index, lastAppliedTerm, lastAppliedIndex);
-                            boolean response = false;
-                            if (term == -1 && circle != null) {
-                                //1.对于刚启动的节点，直接发送snaphot
-                                log.info("server {} send snap {}", circle);
-                                RaftSnapHotMessage snapHotMessage = new RaftSnapHotMessage();
-                                snapHotMessage.setCircle(circle);
-                                snapHotMessage.setId(myNode.getNodeId());
-                                lock.lock();
-                                try {
-                                    snapHotMessage.setCurrentTerm(currentTerm);
-                                    snapHotMessage.setLastAppendedIndex(lastAppliedIndex);
-                                    snapHotMessage.setLastAppendedTerm(lastAppliedTerm);
-                                    snapHotMessage.setLeader(true);
-                                } finally {
-                                    lock.unlock();
-                                }
-                                objectOutputStream.writeObject(snapHotMessage);
-                                response = true;
-                            } else if (logs.size() > 0) {
-                                //同步最新的日志
-                                RaftCommitMessage raftCommitMessage = new RaftCommitMessage();
-                                raftCommitMessage.setId(myNode.getNodeId());
-                                lock.lock();
-                                try {
-                                    raftCommitMessage.setCurrentTerm(currentTerm);
-                                    raftCommitMessage.setLastAppendedIndex(lastAppliedIndex);
-                                    raftCommitMessage.setLastAppendedTerm(lastAppliedTerm);
-                                } finally {
-                                    lock.unlock();
-                                }
-                                raftCommitMessage.setRaftLogs(logs);
-                                raftCommitMessage.setLeader(true);
-                                objectOutputStream.writeObject(raftCommitMessage);
-                                log.info("server {} send commitLog log{}", raftCommitMessage);
-                                response = true;
-                            } else if (unCommitLogs.size() > 0) {
-                                //处理未提交日志
-                                //将未提交日志，收到半数以上确认的日志提交，不够半数，继续发送
-                                boolean tagLog = false;
-                                boolean tagUnLog = false;
-                                RaftLogUncommit uncommitLog = null;
-                                RaftUnCommitMessage raftUnCommitMessage = null;
-                                lock.lock();
-                                try {
-                                    if (unCommitLogs.size() > 0) {
-                                        uncommitLog = unCommitLogs.get(0);
-                                        Set<Integer> ack = uncommitLog.getAck();
-                                        if (ack.size() + 1 > nodes.size() / 2) {
-                                            unCommitLogs.remove(0);
-                                            //写入到提交日志，同时将该日志应用于state machine
-                                            lastAppliedTerm = uncommitLog.getTerm();
-                                            lastAppliedIndex = uncommitLog.getIndex();
-                                            tagLog = true;
-                                        } else {
-                                            if (!ack.contains(node.getNodeId())) {
-                                                raftUnCommitMessage = new RaftUnCommitMessage();
-                                                raftUnCommitMessage.setId(myNode.getNodeId());
-                                                raftUnCommitMessage.setRaftLog(uncommitLog);
-                                                raftUnCommitMessage.setLeader(true);
-                                                raftUnCommitMessage.setLastAppendedIndex(lastAppliedIndex);
-                                                raftUnCommitMessage.setLastAppendedTerm(lastAppliedTerm);
-                                                raftUnCommitMessage.setCurrentTerm(currentTerm);
-                                                tagUnLog = true;
-                                                response = true;
-                                                log.info("server {} send ack to server {} message {}",
-                                                        myNode.getNodeId(), node.getNodeId(), raftUnCommitMessage);
-                                            }
-                                        }
-                                    }
-                                } finally {
-                                    lock.unlock();
-                                }
-                                if (tagLog) {
-                                    LogParse.insertLog(uncommitLog);
-                                    appendEntry(uncommitLog.getCommand());
-                                }
-                                if (tagUnLog) {
-                                    objectOutputStream.writeObject(raftUnCommitMessage);
+                            long tempIndex = lastRaftMessageMap.get(node.getNodeId()).getCommitIndex();
+                            if ((tempIndex == 0 && consistentHash.getSize() > 0)
+                                    || lastAppliedIndex < tempIndex) {
+                                //同步所有节点消息
 
-                                }
-                            }
-                            if (response) {
-                                //接收回复的消息
-                                resetLastAppendIndex(socket);//内部加锁
+                                String data = consistentHash.getNodesStr();
+                                log.info("server {} send NodeMessage to server {} data {}", myNode.getNodeId(), node.getNodeId(), data);
+                                raftMessage = RaftMessageProto.RaftMessage
+                                        .newBuilder()
+                                        .setMessageType(RaftMessageProto.MessageType.NODE)
+                                        .setId((int) myNode.getNodeId())
+                                        .setCurrentTerm(currentTerm)
+                                        .setLastAppliedIndex(lastAppliedIndex)
+                                        .setLeader(true)
+                                        .setNodeMessage(
+                                                RaftMessageProto.NodeMessage.newBuilder()
+                                                        .setNodeMessage(data)
+                                                        .build()
+                                        )
+                                        .build();
+                            } else if (tempIndex > 0 && tempIndex < lastAppliedIndex) {
+                                //同步日志
+                                RaftLogParse logParse = new RaftLogParse(raftLogPath);
+                                String logsStr = logParse.getLogsStr(logParse.getNewRaftLogs(tempIndex));
+                                log.info("server {} send CommitMessage to server {} data {}",
+                                        myNode.getNodeId(), node.getNodeId(), logsStr);
+                                raftMessage = RaftMessageProto.RaftMessage
+                                        .newBuilder()
+                                        .setMessageType(RaftMessageProto.MessageType.COMMIT)
+                                        .setId((int) myNode.getNodeId())
+                                        .setCurrentTerm(currentTerm)
+                                        .setLastAppliedIndex(lastAppliedIndex)
+                                        .setLeader(true)
+                                        .setCommitMessage(
+                                                RaftMessageProto.CommitMessage.newBuilder()
+                                                        .setCommitMessage(logsStr)
+                                                        .build()
+                                        )
+                                        .build();
+
+                            } else if (unCommitLogs.size() > 0
+                                    && !unCommitLogs.get(0).getAck().contains(node.getNodeId())) {
+                                log.info("server {} send AckMessage to server {}", myNode.getNodeId(), node.getNodeId());
+                                raftMessage = RaftMessageProto.RaftMessage
+                                        .newBuilder()
+                                        .setMessageType(RaftMessageProto.MessageType.ACK)
+                                        .setId((int) myNode.getNodeId())
+                                        .setCurrentTerm(currentTerm)
+                                        .setLastAppliedIndex(lastAppliedIndex)
+                                        .setLeader(true)
+                                        .setAckMessage(
+                                                RaftMessageProto.AckMessage
+                                                        .newBuilder()
+                                                        .setAckIndex(unCommitLogs.get(0).getIndex())
+                                                        .build()
+                                        )
+                                        .build();
+                                //
                             } else {
-                                //没有其他消息,发送普通的心跳消息
-                                RaftHeartMessage heartMessage = new RaftHeartMessage();
-                                heartMessage.setId(myNode.getNodeId());
-                                lock.lock();
-                                try {
-                                    heartMessage.setCurrentTerm(currentTerm);
-                                    heartMessage.setLastAppendedIndex(lastAppliedIndex);
-                                    heartMessage.setLastAppendedTerm(lastAppliedTerm);
-                                } finally {
-                                    lock.unlock();
-                                }
-                                heartMessage.setLeader(true);
-                                objectOutputStream.writeObject(heartMessage);
-                                resetLastAppendIndex(socket); //内部会加锁
-                            }
-                            //更新节点日志状态
-                            if (!consistentHash.hashNode(node)) {
-                                log.info("server {} 检测到 server {} 接入", myNode.getNodeId(), node.getNodeId());
-                                generate(node, true);//内部会加锁
-                            }
-                        } catch (IOException ex) {
-                            log.debug("Server: {} Exception {}", ex);
-                            if (consistentHash.hashNode(node)) {
-                                generate(node, false);
-                                log.info("server {} lost on term {}", node.getNodeId(), currentTerm);
+                                //发送普通的心跳包
+                                log.info("server {} send HeartMessage to server {}", myNode.getNodeId(), node.getNodeId());
+                                raftMessage = RaftMessageProto.RaftMessage
+                                        .newBuilder()
+                                        .setMessageType(RaftMessageProto.MessageType.HEART)
+                                        .setId((int) myNode.getNodeId())
+                                        .setCurrentTerm(currentTerm)
+                                        .setLastAppliedIndex(lastAppliedIndex)
+                                        .setLeader(true)
+                                        .setHeartMessage(RaftMessageProto.HeartMessage.newBuilder().build())
+                                        .build();
                             }
                         } finally {
-                            try {
-                                objectOutputStream.close();
-                            } catch (IOException ex) {
-                                log.debug(ex.toString());
+                            lock.unlock();
+                        }
+                        Channel channel = getChannel(node);
+                        if (channel == null || !channel.isActive()) {
+                            if (consistentHash.hashNode(node)) {
+                                generate(node, false);
                             }
-                            countDownLatch.countDown();
+                        } else {
+                            if (!consistentHash.hashNode(node)) {
+                                generate(node, true);
+                            }
+                        }
+                        if (raftMessage != null && channel != null) {
+                            channel.writeAndFlush(raftMessage);
                         }
                     }
                 });
@@ -624,45 +562,46 @@ public class RaftNode {
                 }
             }
         }
-        try {
-            countDownLatch.await((nodes.size() - 1) * RaftOptions.heartbeatPeriodMilliseconds, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            log.info(ex.toString());
-        }
         resetHeartbeatTimer();
     }
 
     /**
      * 产生新提交日志信息。
      *
-     * @param node
-     * @param tags
+     * @param node 节点
+     * @param tags 日志类型
      */
     private void generate(Node node, boolean tags) {
         lock.lock();
         try {
-            RaftLogUncommit unCommitLog = new RaftLogUncommit();
+            RaftLogUnCommit unCommitLog = new RaftLogUnCommit();
             long index = unCommitLogs.size() > 0 ? unCommitLogs.get(unCommitLogs.size() - 1).getIndex() + 1 : lastAppliedIndex + 1;
             unCommitLog.setIndex(index);
-            unCommitLog.setTerm(currentTerm);
             unCommitLog.setTimestamp(new Date().getTime() / 1000);
+            String nodeStr = String.format(
+                    "%d:%s:%d:%d",
+                    node.getNodeId(),
+                    node.getIp(),
+                    node.getListenHeartbeatPort(),
+                    node.getListenClientPort()
+            );
             if (tags) {
-                unCommitLog.setCommand("add " + node.getNodeId());
+                unCommitLog.setCommand("add " + nodeStr);
             } else {
-                unCommitLog.setCommand("remove " + node.getNodeId());
+                unCommitLog.setCommand("remove " + nodeStr);
             }
             if (unCommitLogs.size() > 0) {
                 boolean tag = true;
-                for (RaftLogUncommit unLog : unCommitLogs) {
+                for (RaftLogUnCommit unLog : unCommitLogs) {
                     if (unLog.getCommand().equals(unCommitLog.getCommand())) {
                         tag = false;
+                        break;
                     }
                 }
                 if (tag) {
                     unCommitLogs.add(unCommitLog);
                 }
-
-                log.info("server {} uncommit log {}", myNode.getNodeId(), unCommitLogs);
+                log.info("server {} generate uncommit log {}", myNode.getNodeId(), unCommitLogs);
             } else {
                 unCommitLogs.add(unCommitLog);
             }
@@ -671,152 +610,56 @@ public class RaftNode {
         }
     }
 
-    /**
-     * 更新 append_index and term
-     */
-    private void resetLastAppendIndex(Socket socket) throws IOException {
-        ObjectInputStream in = null;
-        try {
-            in = new ObjectInputStream(socket.getInputStream());
-            RaftMessage message = (RaftMessage) in.readObject();
-            lock.lock();
-            try {
-
-                if (message instanceof RaftSnapHotMessage) {
-                    int id = message.getId();
-                    lastRaftMessageMap.put(id,
-                            new LastRaftMessage(id, 0, 0)
-                    );
-                } else if (message instanceof RaftCommitMessage) {
-                    int id = message.getId();
-                    lastRaftMessageMap.put(id,
-                            new LastRaftMessage(id,
-                                    message.getLastAppendedIndex(),
-                                    message.getLastAppendedTerm())
-                    );
-                } else if (message instanceof RaftAckMessage) {
-                    RaftAckMessage ackMessage = (RaftAckMessage) message;
-                    int id = ackMessage.getId();
-                    long index = ackMessage.getAckIndex();
-                    long term = ackMessage.getAckTerm();
-                    if (unCommitLogs.size() > 0) {
-                        RaftLogUncommit raftLogUncommit = unCommitLogs.get(0);
-                        if (index == raftLogUncommit.getIndex() && term == raftLogUncommit.getTerm()) {
-                            Set<Integer> ack = raftLogUncommit.getAck();
-                            ack.add(id);
-                            raftLogUncommit.setAck(ack);
-                            unCommitLogs.remove(0);
-                            unCommitLogs.add(0, raftLogUncommit);
-                        }
-
-                    }
-                }
-                stepDown(message);
-            } finally {
-                lock.unlock();
-            }
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        } finally {
-            in.close();
-        }
-    }
 
     /**
      * 监听其他节点的消息
      */
     private void listenNode() {
-        Thread thread = new Thread() {
-            public void run() {
-                ServerSocket server = null;
-                try {
-                    server = new ServerSocket(myNode.getListenHeartbeatPort(), 50, InetAddress.getByName(myNode.getIp() + ""));
-                    log.info("Server {} listen port on {}", myNode.getNodeId(), myNode.getListenHeartbeatPort());
-                    while (true) {
-                        Socket socket = server.accept();
-                        executorService.execute(new ListenNodeThread(socket));
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-
-            }
-        };
-        thread.start();
-    }
-
-    /**
-     * 处理,监听到的消息
-     *
-     * @param message
-     * @param socket
-     */
-    //in lock
-    private void doMessage(final RaftMessage message, Socket socket) throws IOException {
-        //一共有7 种消息类型，ACK 只可能出现nodes->leader 不可能出现在这里
-        //这里的消息只有candidate->nodes,pre_candidate->nodes,leader->nodes
-        if (message instanceof RaftHeartMessage) {
-            //leader->nodes
-            doHeartMessage((RaftHeartMessage) message, socket);
-            return;
-        }
-        //同步已提交日志
-        if (message instanceof RaftCommitMessage) {
-            //leader->nodes
-            doCommitMessage((RaftCommitMessage) message, socket);
-            return;
-        }
-        //同步snaphot
-        if (message instanceof RaftSnapHotMessage) {
-            //leader->nodes
-            doSnapHotMessage((RaftSnapHotMessage) message, socket);
-            return;
-        }
-        //未提交日志等待确认消息
-        if (message instanceof RaftUnCommitMessage) {
-            //leader->nodes
-            doUnCommitMessage((RaftUnCommitMessage) message, socket);
-            return;
-        }
-        //为了防止自身网络异常，不断发起新的投票
-        if (message instanceof RaftPreVoteMessage) {
-            //pre_candidate->nodes
-            doPreVoteMessage((RaftPreVoteMessage) message, socket);
-            return;
-        }
-        //处理投票消息
-        if (message instanceof RaftVoteMessage) {
-            //candidate->nodes
-            doVoteMessage((RaftVoteMessage) message, socket);
-            return;
+        //创建一个线程组,接收连接
+        EventLoopGroup boss = new NioEventLoopGroup(1);
+        //创建一个线程组,处理连接
+        EventLoopGroup worker = new NioEventLoopGroup(1);
+        try {
+            //启动一个服务端
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(boss, worker)
+                    .channel(NioServerSocketChannel.class)  //通过反射的机制
+                    .childHandler(new ListenNodeInitializer());
+            //端口绑定
+            ChannelFuture channelFuture = serverBootstrap.bind(myNode.getListenHeartbeatPort()).sync();
+            channelFuture.channel().closeFuture();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
     }
 
     /**
-     * 处理投票选举消息
+     * 处理投票信息
      *
-     * @param message
-     * @param socket
+     * @param ctx ChannelHandlerContext
+     * @param msg 收到的消息
      */
-    private void doVoteMessage(RaftVoteMessage message, Socket socket) throws IOException {
+    private void doVoteMessage(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) {
         //candidate->nodes
-        RaftVoteMessage voteMessage = new RaftVoteMessage();
-        long term = message.getCurrentTerm();
-        voteMessage.setId(myNode.getNodeId());
+        Long term = msg.getCurrentTerm();
+        RaftMessageProto.VoteMessage voteMessage = null;
+        RaftMessageProto.RaftMessage raftMessage;
         lock.lock();
         try {
             if (state == RaftState.LEADER) {
-                if (currentTerm >= term) {//拒绝
-                    voteMessage.setVoteFor(false);
-                    voteMessage.setLeader(true);
+                if (currentTerm >= term) { //拒绝
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(false)
+                            .build();
                 } else { //接收,同时降为follower
-                    voteMessage.setVoteFor(true);
-                    votedFor = message.getId();
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(true)
+                            .build();
+                    votedFor = msg.getId();
                     state = RaftState.FOLLOWER;
                     currentTerm = term;
                     //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
                     leaderConnectTime = new Date().getTime();
-
                     // stop heartbeat
                     if (heartbeatScheduledFuture != null && !heartbeatScheduledFuture.isDone()) {
                         heartbeatScheduledFuture.cancel(true);
@@ -824,64 +667,80 @@ public class RaftNode {
                 }
             } else if (state == RaftState.FOLLOWER) {
                 if (currentTerm > term) { //拒绝
-                    voteMessage.setVoteFor(false);
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(false)
+                            .build();
+
                 } else if (currentTerm == term) {
-                    if (canVoteFor(message)) {
-                        voteMessage.setVoteFor(true);
-                        votedFor = message.getId();
+                    if (canVoteFor(msg)) {
+                        voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                                .setVoteFor(true)
+                                .build();
+                        votedFor = msg.getId();
                         //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
                         leaderConnectTime = new Date().getTime();
                     } else {
-                        voteMessage.setVoteFor(false);
+                        voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                                .setVoteFor(false)
+                                .build();
                     }
-                } else if (currentTerm < term) {
-                    voteMessage.setVoteFor(true);
+                } else {
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(true)
+                            .build();
                     //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
                     leaderConnectTime = new Date().getTime();
-                    votedFor = message.getId();
+                    votedFor = msg.getId();
                     currentTerm = term;
                 }
             } else if (state == RaftState.PRE_CANDIDATE) {
                 if (currentTerm > term) { //拒绝
-                    voteMessage.setVoteFor(false);
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(false)
+                            .build();
                 } else if (currentTerm < term) {  //接收并降级为follower
-                    voteMessage.setVoteFor(true);
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(true)
+                            .build();
                     //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
                     leaderConnectTime = new Date().getTime();
                     currentTerm = term;
                     state = RaftState.FOLLOWER;
-                    votedFor = message.getId();
+                    votedFor = msg.getId();
                     if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
                         electionScheduledFuture.cancel(true);
                     }
-                    votedFor = message.getId();
-                    currentTerm = term;
-                    state = RaftState.FOLLOWER;
                 } else {
-                    if (canVoteFor(message)) { //接收并降级为follower
-
-                        votedFor = message.getId();
+                    if (canVoteFor(msg)) { //接收并降级为follower
+                        votedFor = msg.getId();
                         currentTerm = term;
                         state = RaftState.FOLLOWER;
-                        voteMessage.setVoteFor(true);
+                        voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                                .setVoteFor(true)
+                                .build();
                         //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
                         leaderConnectTime = new Date().getTime();
                         if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
                             electionScheduledFuture.cancel(true);
                         }
                     } else {
-                        voteMessage.setVoteFor(false);
+                        voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                                .setVoteFor(false)
+                                .build();
                     }
                 }
             } else if (state == RaftState.CANDIDATE) {
-                if (currentTerm >= term) {//拒绝
-                    voteMessage.setVoteFor(false);
+                if (currentTerm >= term) { //拒绝
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(false)
+                            .build();
                 } else {
-                    voteMessage.setVoteFor(true);
+                    voteMessage = RaftMessageProto.VoteMessage.newBuilder()
+                            .setVoteFor(true)
+                            .build();
                     //既然把票投了别人就当做收到leader 消息，使得自己不会发起新的投票
                     leaderConnectTime = new Date().getTime();
-
-                    votedFor = message.getId();
+                    votedFor = msg.getId();
                     currentTerm = term;
                     state = RaftState.FOLLOWER;
                     if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
@@ -889,102 +748,88 @@ public class RaftNode {
                     }
                 }
             }
-            voteMessage.setCurrentTerm(currentTerm);
-            voteMessage.setLastAppendedIndex(lastAppliedIndex);
-            voteMessage.setLastAppendedTerm(lastAppliedTerm);
+            raftMessage = RaftMessageProto.RaftMessage.newBuilder()
+                    .setMessageType(RaftMessageProto.MessageType.VOTE)
+                    .setId((int) myNode.getNodeId())
+                    .setCurrentTerm(currentTerm)
+                    .setLastAppliedIndex(lastAppliedIndex)
+                    .setLeader(state == RaftState.LEADER)
+                    .setVoteMessage(voteMessage)
+                    .build();
         } finally {
             lock.unlock();
         }
-        new ObjectOutputStream(socket.getOutputStream()).writeObject(voteMessage);
+        ctx.writeAndFlush(raftMessage);
     }
 
     /**
-     * 是否把投票给他
+     * 处理预投票信息.
      *
-     * @param message
-     * @return
+     * @param ctx ChannelHandlerContext
+     * @param msg 收到的消息
+     * @throws IOException 网络io 异常
      */
-    //in lock
-    private boolean canVoteFor(RaftMessage message) {
-        //1.term > currentTerm
-        //2.term == currentTerm && 日志不比当前节点旧 && 该节点没有票投其他节点
-        if (currentTerm < message.getCurrentTerm()) {
-            return true;
-        }
-        if (currentTerm == message.getCurrentTerm()
-                && LogParse.compare(message.getLastAppendedTerm(), message.getLastAppendedIndex(), lastAppliedTerm, lastAppliedIndex) >= 0
-                && votedFor == -1) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 对于这个预投票，是否把票投给它
-     *
-     * @param message
-     * @return
-     */
-    //in lock
-    private boolean canPreVoteFor(RaftMessage message) {
-        //当前节点没有term 小于那个节点 || (或者等于&&该节点也没有leader)
-        if (currentTerm < message.getCurrentTerm()
-                || (currentTerm == message.getCurrentTerm() && !haveLeader())) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 处理预先投票选举消息
-     *
-     * @param message
-     * @param socket
-     */
-    private void doPreVoteMessage(RaftPreVoteMessage message, Socket socket) throws IOException {
-        RaftPreVoteMessage raftPreVoteMessage = new RaftPreVoteMessage();
+    private void doPreVoteMessage(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) throws IOException {
+        RaftMessageProto.PreVoteMessage preVoteMessage;
+        RaftMessageProto.RaftMessage message;
         lock.lock();
         try {
-            raftPreVoteMessage.setId(myNode.getNodeId());
-            raftPreVoteMessage.setCurrentTerm(currentTerm);
-            raftPreVoteMessage.setLastAppendedTerm(lastAppliedTerm);
-            raftPreVoteMessage.setLastAppendedIndex(lastAppliedIndex);
-            if (canPreVoteFor(message)) {
-                raftPreVoteMessage.setVoteFor(true);
-                log.info("server {} pre vote for server{}", myNode.getNodeId(), message.getId());
+            if (canPreVoteFor(msg)) {
+                preVoteMessage = RaftMessageProto.PreVoteMessage.newBuilder()
+                        .setVoteFor(true)
+                        .build();
+                log.info("server {} pre vote for server{}", myNode.getNodeId(), msg.getId());
             } else {
-                raftPreVoteMessage.setVoteFor(false);
-                log.info("server {} do not pre vote for server{}", myNode.getNodeId(), message.getId());
+                preVoteMessage = RaftMessageProto.PreVoteMessage.newBuilder()
+                        .setVoteFor(false)
+                        .build();
+                log.info("server {} do not pre vote for server{}", myNode.getNodeId(), msg.getId());
             }
+            message = RaftMessageProto.RaftMessage.newBuilder()
+                    .setMessageType(RaftMessageProto.MessageType.PRE_VOTE)
+                    .setId((int) myNode.getNodeId())
+                    .setLastAppliedIndex(lastAppliedIndex)
+                    .setCurrentTerm(currentTerm)
+                    .setLeader(state == RaftState.LEADER)
+                    .setPreVoteMessage(preVoteMessage)
+                    .buildPartial();
+
         } finally {
             lock.unlock();
         }
-        new ObjectOutputStream(socket.getOutputStream()).writeObject(raftPreVoteMessage);
+        //发送消息
+        if (!ctx.channel().isActive()) {
+            throw new IOException("网络连接异常");
+        }
+        ctx.writeAndFlush(message);
     }
 
     /**
-     * 未提交日志等待其他server确认
+     * 未提交日志等待其他节点确认.
      *
-     * @param message
+     * @param ctx ChannelHandlerContext
+     * @param msg 消息
      */
-    private void doUnCommitMessage(RaftUnCommitMessage message, Socket socket) throws IOException {
-        long term = message.getCurrentTerm();
-        RaftAckMessage ack = new RaftAckMessage();
+    private void doAckMessage(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) {
+        long term = msg.getCurrentTerm();
+        RaftMessageProto.AckMessage ackMessage = null;
+        RaftMessageProto.RaftMessage raftMessage;
         lock.lock();
         try {
             if (state == RaftState.LEADER) {
                 if (currentTerm > term) { //不接受
-                    ack.setAckTerm(-1);
-                    ack.setAckIndex(-1);
-                    ack.setLeader(true);
+                    ackMessage = RaftMessageProto.AckMessage.newBuilder()
+                            .setAckIndex(-1)
+                            .build();
                 } else if (currentTerm == term) {
                     //这种情况不存在
                     log.debug("servers have two leaders on same term {}", currentTerm);
                 } else {  //接收,同时降级为follower
                     currentTerm = term;
                     votedFor = -1;
-                    ack.setAckTerm(message.getRaftLog().getTerm());
-                    ack.setAckIndex(message.getRaftLog().getIndex());
+                    ackMessage = RaftMessageProto.AckMessage.newBuilder()
+                            .setAckIndex(msg.getAckMessage().getAckIndex())
+                            .build();
                     leaderConnectTime = new Date().getTime();
                     state = RaftState.FOLLOWER;
                     // stop heartbeat
@@ -994,27 +839,28 @@ public class RaftNode {
                 }
             } else if (state == RaftState.FOLLOWER) {
                 if (currentTerm > term) { //不接受
-                    ack.setAckTerm(-1);
-                    ack.setAckIndex(-1);
-                    ack.setLeader(false);
+                    ackMessage = RaftMessageProto.AckMessage.newBuilder()
+                            .setAckIndex(-1)
+                            .build();
                 } else if (currentTerm == term) { //接收
-                    currentTerm = term;
-                    ack.setAckTerm(message.getRaftLog().getTerm());
-                    ack.setAckIndex(message.getRaftLog().getIndex());
+                    ackMessage = RaftMessageProto.AckMessage.newBuilder()
+                            .setAckIndex(msg.getAckMessage().getAckIndex())
+                            .build();
                     leaderConnectTime = new Date().getTime();
                 } else {  //接收
                     currentTerm = term;
                     votedFor = -1;
-                    ack.setAckTerm(message.getRaftLog().getTerm());
-                    ack.setAckIndex(message.getRaftLog().getIndex());
+                    ackMessage = RaftMessageProto.AckMessage.newBuilder()
+                            .setAckIndex(msg.getAckMessage().getAckIndex())
+                            .build();
                     leaderConnectTime = new Date().getTime();
                 }
             } else if (state == RaftState.PRE_CANDIDATE || state == RaftState.CANDIDATE) {
                 if (currentTerm > term) { //不接受
-                    ack.setAckTerm(-1);
-                    ack.setAckIndex(-1);
-                    ack.setLeader(false);
-                } else if (currentTerm == term || currentTerm < term) { //接收,降级为follower
+                    ackMessage = RaftMessageProto.AckMessage.newBuilder()
+                            .setAckIndex(-1)
+                            .build();
+                } else { //接收,降级为follower
 
                     if (currentTerm < term) {
                         votedFor = -1;
@@ -1022,38 +868,40 @@ public class RaftNode {
                     currentTerm = term;
                     state = RaftState.FOLLOWER;
                     leaderConnectTime = new Date().getTime();
-                    ack.setAckTerm(message.getRaftLog().getTerm());
-                    ack.setAckIndex(message.getRaftLog().getIndex());
+                    ackMessage = RaftMessageProto.AckMessage.newBuilder()
+                            .setAckIndex(msg.getAckMessage().getAckIndex())
+                            .build();
                     // stop election
                     if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
                         electionScheduledFuture.cancel(true);
                     }
                 }
             }
-            ack.setLastAppendedIndex(lastAppliedIndex);
-            ack.setLastAppendedTerm(lastAppliedTerm);
-            ack.setId(myNode.getNodeId());
-            ack.setCurrentTerm(currentTerm);
+            raftMessage = RaftMessageProto.RaftMessage.newBuilder()
+                    .setMessageType(RaftMessageProto.MessageType.ACK)
+                    .setId((int) myNode.getNodeId())
+                    .setLastAppliedIndex(lastAppliedIndex)
+                    .setCurrentTerm(currentTerm)
+                    .setLeader(state == RaftState.LEADER)
+                    .setAckMessage(ackMessage)
+                    .build();
         } finally {
             lock.unlock();
         }
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        out.writeObject(ack);
+        ctx.writeAndFlush(raftMessage);
     }
 
     /**
-     * 普通的心跳消息
+     * 心跳包处理的 .
      *
-     * @param message
-     * @param socket
-     * @throws IOException
+     * @param ctx ChannelHandlerContext
+     * @param msg RaftMessageProto.RaftMessage
      */
-    //in lock
-    private void doHeartMessage(RaftHeartMessage message, Socket socket) throws IOException {
+    private void doHeartMessage(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) {
         //leader-> nodes
-        long term = message.getCurrentTerm();
-        RaftHeartMessage raftHeartMessage = new RaftHeartMessage();
-        raftHeartMessage.setId(myNode.getNodeId());
+        long term = msg.getCurrentTerm();
+        RaftMessageProto.HeartMessage heartMessage = RaftMessageProto.HeartMessage.newBuilder().build();
+        RaftMessageProto.RaftMessage raftMessage;
         lock.lock();
         try {
             if (state == RaftState.LEADER) {
@@ -1066,8 +914,6 @@ public class RaftNode {
                     if (heartbeatScheduledFuture != null && !heartbeatScheduledFuture.isDone()) {
                         heartbeatScheduledFuture.cancel(true);
                     }
-                } else if (currentTerm > term) {
-                    raftHeartMessage.setLeader(true);
                 }
             } else if (state == RaftState.FOLLOWER) {
                 if (term > currentTerm) {
@@ -1089,29 +935,31 @@ public class RaftNode {
                     }
                 }
             }
-            raftHeartMessage.setCurrentTerm(currentTerm);
-            raftHeartMessage.setLastAppendedTerm(lastAppliedTerm);
-            raftHeartMessage.setLastAppendedIndex(lastAppliedIndex);
+            raftMessage = RaftMessageProto.RaftMessage.newBuilder()
+                    .setMessageType(RaftMessageProto.MessageType.HEART)
+                    .setId((int) myNode.getNodeId())
+                    .setLastAppliedIndex(lastAppliedIndex)
+                    .setCurrentTerm(currentTerm)
+                    .setLeader(state == RaftState.LEADER)
+                    .setHeartMessage(heartMessage)
+                    .build();
         } finally {
             lock.unlock();
         }
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        out.writeObject(raftHeartMessage);
-        out.close();
+        ctx.channel().writeAndFlush(raftMessage);
+
     }
 
     /**
-     * 同步以提交的日志
+     * 同步已经提交的日志
      *
-     * @param message
-     * @param socket
+     * @param ctx ChannelHandlerContext
+     * @param msg RaftMessageProto.RaftMessage
      */
-    //in lock
-    private void doCommitMessage(RaftCommitMessage message, Socket socket) throws IOException {
+    private void doCommitMessage(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) {
         //leader->nodes
-        long term = message.getCurrentTerm();
-        RaftCommitMessage raftCommitMessage = new RaftCommitMessage();
-        raftCommitMessage.setId(myNode.getNodeId());
+        long term = msg.getCurrentTerm();
+        RaftMessageProto.RaftMessage raftMessage;
         //是否将接受这个同步日志
         boolean tags = false;
         lock.lock();
@@ -1126,8 +974,6 @@ public class RaftNode {
                         heartbeatScheduledFuture.cancel(true);
                     }
                     tags = true;
-                } else {
-                    raftCommitMessage.setLeader(true);
                 }
             } else if (state == RaftState.FOLLOWER) {
                 if (term > currentTerm) {
@@ -1157,57 +1003,56 @@ public class RaftNode {
                     tags = true;
                 }
             }
-        } finally {
             if (tags) {
                 leaderConnectTime = new Date().getTime();
+                lastAppliedIndex = msg.getLastAppliedIndex();
+
             }
+        } finally {
+
             lock.unlock();
         }
         if (tags) {
             //将同步日志写入本地日志，同时将日志应用于本地state machine
-            List<RaftLog> logs = message.getRaftLogs();
+            RaftLogParse logParse = new RaftLogParse(raftLogPath);
+            List<RaftLog> logs = logParse.getLogsFromStr(msg.getCommitMessage().getCommitMessage());
+            log.info("server {} get logs {}", myNode.getNodeId(), logs);
             appendEntries(logs, true);
         }
         lock.lock();
         try {
-            raftCommitMessage.setCurrentTerm(currentTerm);
-            raftCommitMessage.setLastAppendedTerm(lastAppliedTerm);
-            raftCommitMessage.setLastAppendedIndex(lastAppliedIndex);
+            raftMessage = RaftMessageProto.RaftMessage.newBuilder()
+                    .setMessageType(RaftMessageProto.MessageType.COMMIT)
+                    .setId((int) myNode.getNodeId())
+                    .setCurrentTerm(currentTerm)
+                    .setLastAppliedIndex(lastAppliedIndex)
+                    .setLeader(state == RaftState.LEADER)
+                    .setCommitMessage(RaftMessageProto.CommitMessage.newBuilder().build())
+                    .build();
         } finally {
             lock.unlock();
         }
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        out.writeObject(raftCommitMessage);
-        out.close();
+        ctx.channel().writeAndFlush(raftMessage);
     }
 
     /**
-     * leader->nodes
+     * 对于刚启动节点直接同步集群状态.
      *
-     * @param message
-     * @param socket
-     * @throws IOException
+     * @param ctx ChannelHandlerContext
+     * @param msg RaftMessageProto.RaftMessage
+     * @throws IOException 网路io 异常
      */
-    //in lock
-    private void doSnapHotMessage(RaftSnapHotMessage message, Socket socket) throws IOException {
+    private void doSnapHotMessage(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) throws IOException {
         //leader->nodes
-        long term = message.getCurrentTerm();
-        RaftSnapHotMessage raftSnapHotMessage = new RaftSnapHotMessage();
-        raftSnapHotMessage.setId(myNode.getNodeId());
-        //是否清空已经无效的日志信息
+        long term = msg.getCurrentTerm();
         boolean tag = false;
+        RaftMessageProto.RaftMessage raftMessage;
         lock.lock();
         try {
             if (state == RaftState.LEADER) {
-                if (currentTerm > term) { //不接受这个snaphot
-                    raftSnapHotMessage.setLeader(true);
-                } else if (currentTerm == term) {
-                    //正常情况下不会出现这种情况
-                    log.debug("servers have two leader on same term", currentTerm);
-                } else {        //接收并降级为follower
+                if (currentTerm < term) {        //接收并降级为follower
                     currentTerm = term;
                     votedFor = -1;
-                    consistentHash.setCircle(message.getCircle());
                     log.info("清空已经无效的日志信息");
                     tag = true;
                     state = RaftState.FOLLOWER;
@@ -1217,24 +1062,17 @@ public class RaftNode {
                     }
                 }
             } else if (state == RaftState.FOLLOWER) {
-                if (currentTerm > term) { //不接受
-
-                } else if (currentTerm == term) {
-                    consistentHash.setCircle(message.getCircle());
+                if (currentTerm == term) {
                     log.info("清空已经无效的日志信息");
                     tag = true;
-                } else {
+                } else if (currentTerm < term) {
                     currentTerm = term;
                     votedFor = -1;
-                    consistentHash.setCircle(message.getCircle());
                     log.info("清空已经无效的日志信息");
                     tag = true;
                 }
             } else if (state == RaftState.PRE_CANDIDATE || state == RaftState.CANDIDATE) {
-                if (currentTerm > term) { //不接受
-
-                } else if (currentTerm == term) { //降级为follower
-                    consistentHash.setCircle(message.getCircle());
+                if (currentTerm == term) { //降级为follower
                     state = RaftState.FOLLOWER;
                     log.info("清空已经无效的日志信息");
                     tag = true;
@@ -1242,11 +1080,10 @@ public class RaftNode {
                     if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
                         electionScheduledFuture.cancel(true);
                     }
-                } else {                        //降级为follower
+                } else if (currentTerm < term) {                        //降级为follower
                     state = RaftState.FOLLOWER;
                     currentTerm = term;
                     votedFor = -1;
-                    consistentHash.setCircle(message.getCircle());
                     log.info("清空已经无效的日志信息");
                     tag = true;
                     // stop election
@@ -1257,22 +1094,97 @@ public class RaftNode {
             }
             if (tag) {
                 leaderConnectTime = new Date().getTime();
-                lastAppliedTerm = message.getLastAppendedTerm();
-                lastAppliedIndex = message.getLastAppendedIndex();
+                lastAppliedIndex = msg.getLastAppliedIndex();
             }
-            raftSnapHotMessage.setCurrentTerm(currentTerm);
-            raftSnapHotMessage.setLastAppendedTerm(lastAppliedTerm);
-            raftSnapHotMessage.setLastAppendedIndex(lastAppliedIndex);
+            raftMessage = RaftMessageProto.RaftMessage.newBuilder()
+                    .setMessageType(RaftMessageProto.MessageType.NODE)
+                    .setId((int) myNode.getNodeId())
+                    .setLastAppliedIndex(lastAppliedIndex)
+                    .setLeader(state == RaftState.LEADER)
+                    .setCurrentTerm(currentTerm)
+                    .setNodeMessage(RaftMessageProto.NodeMessage.newBuilder().build())
+                    .build();
         } finally {
             lock.unlock();
         }
+
         if (tag) {
+            syncStateMachine(msg.getNodeMessage().getNodeMessage());
             log.info("清空已经无效的文件");
-            LogParse.clearLogs();
-            LogParse.clearSnaphotFile();
+            RaftSnaphot raftSnaphot = new RaftSnaphot(raftSnaphotPath);
+            raftSnaphot.raftSnaphotStore(consistentHash.getCircle());
+
+            RaftLogParse logParse = new RaftLogParse(raftLogPath);
+            logParse.clearFile();
         }
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        out.writeObject(raftSnapHotMessage);
+        if (!ctx.channel().isActive()) {
+            throw new IOException("网络io异常");
+        } else {
+            ctx.writeAndFlush(raftMessage);
+        }
+
+    }
+
+    /**
+     * 是否把投票给他
+     *
+     * @param message 收到的消息
+     * @return 是否投票给他
+     */
+    //in lock
+    private boolean canVoteFor(RaftMessageProto.RaftMessage message) {
+        //1.term > currentTerm
+        //2.term == currentTerm && 日志不比当前节点旧 && 该节点没有把票投其他节点
+        if (currentTerm < message.getCurrentTerm()) {
+            return true;
+        }
+        if (currentTerm == message.getCurrentTerm() && votedFor == -1) {
+            return message.getLastAppliedIndex() >= lastAppliedIndex && !haveLeader();
+        }
+        return false;
+    }
+
+    /**
+     * 对于这个预投票，是否把票投给它
+     *
+     * @param message 收到的消息
+     * @return 是否投票给他
+     */
+    //in lock
+    private boolean canPreVoteFor(RaftMessageProto.RaftMessage message) {
+        //当前节点没有term 小于那个节点 || (或者等于&&该节点也没有leader)
+        if (currentTerm < message.getCurrentTerm()) {
+            return true;
+        } else if (currentTerm == message.getCurrentTerm()) {
+            return !haveLeader();
+        }
+        return false;
+    }
+
+    /**
+     * 处理同步过来的节点数据.
+     *
+     * @param nodesStr id:ip:port1:port2#id:ip:port1:port2
+     */
+    private void syncStateMachine(String nodesStr) {
+        if (nodesStr == null || nodesStr.length() < 4) {
+            return;
+        }
+        String[] temp = nodesStr.split("#");
+        for (String nodeStr : temp) {
+            String[] nodeStrTemp = nodeStr.split(":");
+            int id = Integer.valueOf(nodeStrTemp[0]);
+            String ip = nodeStrTemp[1];
+            int listenHeartPort = Integer.valueOf(nodeStrTemp[2]);
+            int listenClientPort = Integer.valueOf(nodeStrTemp[3]);
+            Node node = new Node.Builder()
+                    .setNodeId((short) id)
+                    .setIp(ip)
+                    .setListenHeartbeatPort(listenHeartPort)
+                    .setListenClientPort(listenClientPort)
+                    .build();
+            consistentHash.add(node);
+        }
     }
 
     /**
@@ -1280,84 +1192,88 @@ public class RaftNode {
      */
     private void installRaftSnaphot() {
         RaftSnaphot raftSnaphot = new RaftSnaphot(raftSnaphotPath);
-        //这个文件不存在是返回null
-        TreeMap<Long, Node> circle = raftSnaphot.getRaftSnaphot();
-        if (circle != null) {
-            consistentHash.setCircle(circle);
+        //这个文件不存在是size
+        Map<Short, Node> map = raftSnaphot.getRaftSnaphot();
+        Set<Map.Entry<Short, Node>> sets = map.entrySet();
+        for (Map.Entry<Short, Node> data : sets) {
+            consistentHash.add(data.getValue());
         }
     }
 
-    private TreeMap<Long, Node> getRaftSnaphot() {
+    private HashMap<Short, Node> getRaftSnaphot() {
         RaftSnaphot raftSnaphot = new RaftSnaphot(raftSnaphotPath);
-        TreeMap<Long, Node> circle = raftSnaphot.getRaftSnaphot();
-        return circle;
+        return raftSnaphot.getRaftSnaphot();
     }
 
     /**
-     * 节点启动的时候将已经提交的日志应用于state machine
+     * 节点启动的时候将已经提交的日志应用于state machine.
      */
     private void appendEntries() {
-        List<RaftLog> logs = LogParse.getRaftLogs();
+        List<RaftLog> logs = new RaftLogParse(QCacheConfiguration.getRaftLogsPath()).getRaftLogs();
         appendEntries(logs, false);
     }
 
     /**
-     * 同步日志应用于state machine，并将该日志写入log文件
+     * 解析日志同步到state Machine
      *
-     * @param logs
+     * @param logs     日志
+     * @param writeLog 是否写入到日志文件中
      */
     private void appendEntries(List<RaftLog> logs, boolean writeLog) {
-        lock.lock();
-        try {
-            if (logs.size() == 0) {
-                lastAppliedIndex = 0;
-                lastAppliedTerm = 0;
-            } else {
+        if (logs != null && logs.size() > 0) {
+            lock.lock();
+            try {
                 lastAppliedIndex = logs.get(logs.size() - 1).getIndex();
-                lastAppliedTerm = logs.get(logs.size() - 1).getTerm();
-                currentTerm = Math.max(lastAppliedTerm, currentTerm);
+            } finally {
+                lock.unlock();
             }
-        } finally {
-            lock.unlock();
+        } else {
+            return;
         }
         for (RaftLog raftLog : logs) {
             String command = raftLog.getCommand();
             appendEntry(command);
             //追加日志到文件
             if (writeLog) {
-                LogParse.insertLog(raftLog);
+                RaftLogParse logParse = new RaftLogParse(raftLogPath);
+                File file = new File(raftLogPath);
+                if (file.exists() && file.isFile() && file.length() > RaftOptions.maxLogSize) {
+                    logParse.clearFile();
+                    RaftSnaphot raftSnaphot = new RaftSnaphot(raftSnaphotPath);
+                    raftSnaphot.raftSnaphotStore(getRaftSnaphot());
+                }
+                logParse.insertLog(raftLog);
             }
         }
-    }
-
-    /**
-     * 根据nodeId 查询节点信息，Nodes 这个数不会太大，直接遍历
-     *
-     * @param id
-     * @return
-     */
-    private Node findNode(int id) {
-        for (Node node : nodes) {
-            if (node.getNodeId() == id) {
-                return node;
-            }
-        }
-        return null;
     }
 
     /**
      * 解析命令，并将他应用于state machine
      *
-     * @param command
+     * @param command command
      */
     private void appendEntry(String command) {
-        String methodStr = command.split(" ")[0];
-        int id = Integer.valueOf(command.split(" ")[1]);
-        Node node = findNode(id);
-        Class consistentHashClass = ConsistentHash.class;
+        log.info("server {} parse command {}", myNode.getNodeId(), command);
+        String[] temp = command.split("\\s+");
+        String methodStr = temp[0];
+        String nodeStr = temp[1];
+        String[] temp2 = nodeStr.split(":");
+        short id = Short.valueOf(temp2[0]);
+        String ip = temp2[1];
+        int heartPort = Integer.valueOf(temp2[2]);
+        int clientPort = Integer.valueOf(temp2[3]);
+        Node node = new Node.Builder()
+                .setNodeId(id)
+                .setIp(ip)
+                .setListenHeartbeatPort(heartPort)
+                .setListenClientPort(clientPort)
+                .build();
+        Class<?> consistentHashClass = ConsistentHash.class;
         try {
             Method method = consistentHashClass.getMethod(methodStr, Node.class);
-            method.invoke(consistentHash, node);
+            if (method != null) {
+                method.invoke(consistentHash, node);
+            }
         } catch (NoSuchMethodException ex) {
             ex.printStackTrace();
         } catch (IllegalAccessException ex) {
@@ -1372,7 +1288,7 @@ public class RaftNode {
      * 在150-300ms 这个随机时间内，发起新一轮选举
      * (Raft 论文上说150-300ms这个随机时间，不过好像把时差弄大点，效果更好)
      *
-     * @return
+     * @return 一个随机的时间(ms)
      */
     private int getRandomElection() {
         int randTime = new Random().nextInt(500) + 150;
@@ -1381,510 +1297,640 @@ public class RaftNode {
     }
 
     /**
-     * 根据node 信息获取socket连接
-     *
-     * @param node
-     * @return
-     */
-    private Socket getSocket(Node node) throws IOException {
-        Socket socket;
-        if (sockets.get(node) == null
-                || sockets.get(node).isClosed()
-                || !sockets.get(node).isConnected()) {
-            socket = new Socket(node.getIp(),
-                    node.getListenHeartbeatPort());
-            sockets.put(node, socket);
-        }
-        return sockets.get(node);
-    }
-
-    /**
-     * socket 是否可用
-     *
-     * @param socket
-     * @return
-     */
-    private boolean socketAlive(Socket socket) {
-        return socket.isConnected() && !socket.isClosed();
-    }
-
-    /**
      * 集群内是否有leader
      *
-     * @return
+     * @return 集群内受有leader
      */
     private boolean haveLeader() {
 
         if (state == RaftState.LEADER
-                || new Date().getTime() - leaderConnectTime <= RaftOptions.electionTimeoutMilliseconds) {
+                || new Date().getTime() - leaderConnectTime <= 2 * RaftOptions.electionTimeoutMilliseconds) {
             log.info("server {} have leader on term {}", myNode.getNodeId(), currentTerm);
             return true;
         }
-
         log.info("server {} do not have leader on term {}", myNode.getNodeId(), currentTerm);
         return false;
     }
 
     /**
-     * 打印server状态
+     * 打印server状态.
      */
     private void printStatus() {
-        log.info("server {} currentTerm = {} state =  {},lastindex = {},lastTerm = {},circle = {}",
-                myNode.getNodeId(), currentTerm, state, lastAppliedIndex, lastAppliedTerm, consistentHash.getCircle());
+        log.info("server {} currentTerm = {} state =  {},lastAppliedIndex = {},circle = {}",
+                myNode.getNodeId(), currentTerm, state, lastAppliedIndex, consistentHash.getCircle());
     }
 
     /**
-     * 启动初始化监听客户端线程
-     */
-    private void initListenClientThread() {
-        Thread listenClientThread = new Thread(new Runnable() {
-            public void run() {
-                CacheServer server = new CacheServer(myNode.getListenClientPort());
-                server.init();
-            }
-        });
-        listenClientThread.start();
-    }
-
-    /**
-     * 加载磁盘中的缓存数据到内存中
+     * 从本地加载缓存
      */
     private void loadCache() {
         //load RDB
-        File rdbFile = new File(QCacheConfiguration.getCacheRdbPath());
-        if (rdbFile.exists() && rdbFile.length() > 0) {
-            try {
-                ObjectInputStream obj = new ObjectInputStream(new FileInputStream(rdbFile));
-                cache = (ConcurrentHashMap<String, CacheDataI>) obj.readObject();
-            } catch (IOException e) {
-                log.debug(e.toString());
-            } catch (ClassNotFoundException e) {
-                log.debug(e.toString());
-            }
-        }
+        BackUpRdb backUpRdb = BackUpRdb.getInstance();
+        backUpRdb.loadData(cache);
         //load AOF file
-        File aofFile = new File(QCacheConfiguration.getCacheAofPath());
-        if (aofFile.exists() && aofFile.length() > 0) {
-            List<String> list = BackUpAof.getCommands();
-            for (String line : list) {
-                String temp[] = line.split("\\s+");
-                String command = temp[0];
-                if (command.equalsIgnoreCase(core.cache.Method.del)) {
-                    doDel(line);
-                } else if (command.equalsIgnoreCase(core.cache.Method.set)) {
-                    doSet(line);
+        BackUpAof backUpAof = BackUpAof.getInstance();
+        backUpAof.loadData(cache);
 
+    }
+
+    /**
+     * 客户端发送HeartMessage后对收到的消息处理.
+     *
+     * @param message 收到的消息
+     */
+    private void doClientHeartMessage(RaftMessageProto.RaftMessage message) {
+        doClientCommitMessage(message);
+    }
+
+    /**
+     * 客户端发送NodeMessage后对收到的消息处理.
+     *
+     * @param message message
+     */
+    private void doClientNodeMessage(RaftMessageProto.RaftMessage message) {
+        doClientCommitMessage(message);
+    }
+
+    /**
+     * 客户端发送CommitMessage后对收到的消息处理.
+     *
+     * @param message 收到的消息
+     */
+    private void doClientCommitMessage(RaftMessageProto.RaftMessage message) {
+        lock.lock();
+        try {
+            stepDown(message);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 处理客户端发送UN_COMMIT_MESSAGE 后收到的回复消息.
+     *
+     * @param message 收到的消息
+     */
+    private void doClientAckMessage(RaftMessageProto.RaftMessage message) {
+        lock.lock();
+        try {
+            stepDown(message);
+            if (message.getAckMessage().getAckIndex() > 0
+                    && unCommitLogs.size() > 0) {
+                RaftLogUnCommit uncommit = unCommitLogs.get(0);
+
+                Set<Short> temp = uncommit.getAck();
+                temp.add((short) message.getId());
+                unCommitLogs.remove(0);
+                if (temp.size() + 1 <= nodes.size() / 2) {
+                    uncommit.setAck(temp);
+                    unCommitLogs.add(0, uncommit);
+                }
+
+                if (uncommit.getAck().size() + 1 > nodes.size() / 2) {
+                    //
+                    RaftLogParse raftLogParse = new RaftLogParse(raftLogPath);
+                    raftLogParse.insertLog(uncommit);
+                    appendEntry(uncommit.getCommand());
+                    lastAppliedIndex = uncommit.getIndex();
                 }
             }
+        } finally {
+            lock.unlock();
         }
     }
 
-    //处理删除数据
-    private void doDel(String line) {
-        String temp[] = line.split("\\s+");
-        String key = temp[0];
-        cache.remove(key);
-    }
 
-    //处理添加数据
-    private void doSet(String line) {
-        List<String> setStrs = Tools.split(line);
-        String key = setStrs.get(1);
-        String val = setStrs.get(2);
-        if (setStrs.size() == 4) {
-            //含有过期时间
-            int last = Integer.valueOf(setStrs.get(3));
-            doSet(key, val, last);
-        } else {
-            //没有过期时间,表示永久有效
-            doSet(key, val, -1);
+
+
+
+    /**
+     * Initializer
+     */
+    private class ListenNodeInitializer extends ChannelInitializer<io.netty.channel.socket.SocketChannel> {
+        @Override
+        protected void initChannel(io.netty.channel.socket.SocketChannel ch) {
+            ChannelPipeline pipeline = ch.pipeline();
+            pipeline.addLast(new ProtobufVarint32FrameDecoder());
+            pipeline.addLast(new ProtobufDecoder(RaftMessageProto.RaftMessage.getDefaultInstance()));
+            pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
+            pipeline.addLast(new ProtobufEncoder());
+            pipeline.addLast(new ListenNodeHandler());
         }
     }
 
-    //处理添加数据
-    private void doSet(String key, String val, int last) {
-        try {
-            int intVal = Integer.valueOf(val);
-            CacheDataInt cacheDataInt = new CacheDataInt(intVal, new Date().getTime(), last);
-            cache.put(key, cacheDataInt);
-        } catch (Exception ex) {
-            CacheDataString cacheDataStr = new CacheDataString(val, new Date().getTime(), last);
-            cache.put(key, cacheDataStr);
+    /**
+     * ListenNodeHandler
+     */
+    private class ListenNodeHandler extends SimpleChannelInboundHandler<RaftMessageProto.RaftMessage> {
+
+        @Override
+        protected void channelRead0(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) throws Exception {
+            if (msg.getMessageType() == RaftMessageProto.MessageType.PRE_VOTE) {
+                //预先投票信息
+                doPreVoteMessage(ctx, msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.VOTE) {
+                //投票信息
+                doVoteMessage(ctx, msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.HEART) {
+                //心跳包
+                doHeartMessage(ctx, msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.ACK) {
+                //未提交日志确认
+                doAckMessage(ctx, msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.COMMIT) {
+                //同步已提交日志
+                doCommitMessage(ctx, msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.NODE) {
+                //同步数据
+                doSnapHotMessage(ctx, msg);
+            }
         }
     }
 
-    private class ListenNodeThread extends Thread {
-        private Socket socket;
+    //Initializer
+    private class SocketClientInitializer extends ChannelInitializer<SocketChannel> {
+        @Override
+        protected void initChannel(SocketChannel ch) {
+            ChannelPipeline pipeline = ch.pipeline();
+            pipeline.addLast(new ProtobufVarint32FrameDecoder());
+            pipeline.addLast(new ProtobufDecoder(RaftMessageProto.RaftMessage.getDefaultInstance()));
+            pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
+            pipeline.addLast(new ProtobufEncoder());
+            pipeline.addLast("SocketServerHandler", new SocketClientHandler());
+            //自己别的处理器
+        }
+    }
 
-        public ListenNodeThread(Socket socket) {
-            this.socket = socket;
+    //Handler
+    private class SocketClientHandler extends SimpleChannelInboundHandler<RaftMessageProto.RaftMessage> {
+
+        @Override
+        protected void channelRead0(ChannelHandlerContext ctx, RaftMessageProto.RaftMessage msg) {
+            if (msg.getMessageType() == RaftMessageProto.MessageType.PRE_VOTE) {
+                //预先投票信息
+                lock.lock();
+                try {
+                    stepDown(msg);
+                } finally {
+                    lock.unlock();
+                }
+                if (msg.getPreVoteMessage().getVoteFor()) {
+                    synchronized (preVotes) {
+                        if (!preVotes.contains((short) msg.getId())) {
+                            preVotes.add((short) msg.getId());
+                            if (preVotes.size() + 1 > nodes.size() / 2) {
+                                preVotes.notifyAll();
+                            }
+                        }
+                    }
+                }
+
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.VOTE) {
+                //投票信息
+                lock.lock();
+                try {
+                    stepDown(msg);
+                } finally {
+                    lock.unlock();
+                }
+                if (msg.getVoteMessage().getVoteFor()) {
+                    synchronized (votes) {
+                        if (!votes.contains((short) msg.getId())) {
+                            votes.add((short) msg.getId());
+                            if (votes.size() + 1 > nodes.size() / 2) {
+                                votes.notifyAll();
+                            }
+                        }
+                    }
+                }
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.HEART) {
+                //心跳包
+                doClientHeartMessage(msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.ACK) {
+                doClientAckMessage(msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.COMMIT) {
+                doClientCommitMessage(msg);
+            } else if (msg.getMessageType() == RaftMessageProto.MessageType.NODE) {
+                doClientNodeMessage(msg);
+            }
         }
 
         @Override
-        public void run() {
-            ObjectInputStream objectInputStream = null;
-            try {
-                while (socketAlive(socket)) {
-                    objectInputStream = new ObjectInputStream(
-                            socket.getInputStream());
-                    RaftMessage message = (RaftMessage) objectInputStream.readObject();
-                    log.info("server {} get message {},", myNode.getNodeId(), message.toString());
-                    doMessage(message, socket);
-                }
-            } catch (IOException ex) {
-                log.debug(ex.toString());
-            } catch (ClassNotFoundException ex) {
-                log.debug(ex.toString());
-            } finally {
-                try {
-                    socket.close();
-                    objectInputStream.close();
-                } catch (IOException ex) {
-                    log.debug(ex.toString());
-                }
-            }
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+            cause.printStackTrace();
+            log.debug(cause.toString());
+            ctx.close();
         }
     }
+    //启动监听客户端请求的线程
+    private void initListenClient() {
+        final NioServer nioServer = new NioServer();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                nioServer.init();
+            }
+        });
+        thread.setName("listen-client-thread");
+        thread.start();
+    }
 
-    /*******************************上面的基本是Raft算法实现下面部分是缓存相关的功能*******************************/
-    private class CacheServer {
-        private final int port;
+    private void initAsyncAppendLogThread() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BackUpAof backUpAof = BackUpAof.getInstance();
+                while (true) {
+                    String log;
+                    try {
+                        log = asyncAppendFileQueue.take();
+                        backUpAof.appendAofLog(log, cache);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+        });
+        thread.setName("Async-AppendLog-Thread");
+        thread.start();
+    }
+
+    private class NioServer {
         private ServerSocketChannel serverChannel;
         private ServerSocket serverSocket;
         private Selector selector;
-        private int bufferSize = 1024;
-        ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 
-        public CacheServer(final int port) {
-            this.port = port;
-        }
-
-        /**
-         * 启动NIO ServerSocket 监听客户端的连接
-         */
         private void init() {
             try {
                 serverChannel = ServerSocketChannel.open();
                 serverSocket = serverChannel.socket();
-                serverSocket.bind(new InetSocketAddress(port));
+                serverSocket.bind(new InetSocketAddress(myNode.getListenClientPort()));
                 serverChannel.configureBlocking(false);
                 selector = Selector.open();
                 serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-                go();
-            } catch (IOException ex) {
-                log.info(ex.toString());
-            }
-        }
-
-        private void go() throws IOException {
-            while (true) {
-                int num = selector.select();
-                if (num <= 0) {
-                    continue;
-                }
-                Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
-                while (keyIter.hasNext()) {
-                    final SelectionKey key = keyIter.next();
-                    if (key.isAcceptable()) {
-                        SocketChannel clientChannel = serverChannel.accept();
-                        if (clientChannel != null) {
-                            clientChannel.configureBlocking(false);
-                            clientChannel.register(selector, SelectionKey.OP_READ);
+                core.nio.Channel channel = new core.nio.Channel.newBuilder()
+                        .setNioInHandler(new NioInMessageHandler(UserMessageProto.UserMessage.getDefaultInstance()))
+                        .setNioOutHandler(new NioOutMessageHandler())
+                        .build();
+                boolean flag = true;
+                while (flag) {
+                    selector.select();
+                    Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
+                    while (keyIter.hasNext()) {
+                        final SelectionKey key = keyIter.next();
+                        if (key.isAcceptable()) {
+                            java.nio.channels.SocketChannel clientChannel = serverChannel.accept();
+                            if (clientChannel != null) {
+                                clientChannel.configureBlocking(false);
+                                clientChannel.register(selector, SelectionKey.OP_READ);
+                            }
+                        } else if (key.isReadable()) {
+                            channel.setSelectionKey(key);
+                            Object obj = channel.read();
+                            if (obj instanceof UserMessageProto.UserMessage) {
+                                UserMessageProto.UserMessage msg = (UserMessageProto.UserMessage) obj;
+                                if (msg.getMessageType() == UserMessageProto.MessageType.GET) {
+                                    log.info("server {} get GET message {}", myNode.getNodeId(), msg.getGetMessage());
+                                    doGet(channel, msg);
+                                } else if (msg.getMessageType() == UserMessageProto.MessageType.SET) {
+                                    log.info("server {} get SET message {}", myNode.getNodeId(), msg.getSetMessage());
+                                    doSet(channel, msg);
+                                } else if (msg.getMessageType() == UserMessageProto.MessageType.DEL) {
+                                    log.info("server {} get DEL message {}", myNode.getNodeId(), msg.getDelMessage());
+                                    doDel(channel, msg);
+                                } else if (msg.getMessageType() == UserMessageProto.MessageType.STATUS) {
+                                    doStatus(channel);
+                                }
+                            }
                         }
-                    } else if (key.isReadable()) {
-                        String requestContent = read(key);
-                        String responseContent = doCommand(requestContent);
-                        key.selector().wakeup();
-                        write(key, responseContent);
+                        keyIter.remove();
                     }
-                    keyIter.remove();
-                }
-            }
-        }
-
-        /**
-         * 读客户端数据
-         *
-         * @param key
-         * @return
-         */
-        private String read(SelectionKey key) {
-            SocketChannel socketChannel = (SocketChannel) key.channel();
-            buffer.clear();
-            int len;
-            StringBuffer str = new StringBuffer();
-            try {
-                while ((len = socketChannel.read(buffer)) > 0) {
-                    byte[] bs = buffer.array();
-                    buffer.flip();
-                    str.append(new String(bs, 0, len));
-                    buffer.clear();
-                }
-                if (len == -1) {
-                    key.cancel();
                 }
             } catch (IOException ex) {
-                log.error(ex.toString());
-                key.cancel();
-                try {
-                    socketChannel.close();
-                } catch (IOException e) {
-                    log.error(e.toString());
-                }
-
+               log.info(ex.toString());
             }
-            return str.toString();
+
         }
 
-        /**
-         * 向客户端写入数据
-         *
-         * @param key
-         * @param str
-         */
-        private void write(SelectionKey key, String str) {
-            SocketChannel socketChannel = (SocketChannel) key.channel();
-            byte[] buf = str.getBytes();
-            int len = buf.length;
-            int index = 0;
-            int num = len - index;
+        private class NioInMessageHandler extends NioInProtoBufHandler<UserMessageProto.UserMessage> {
+            private NioInMessageHandler(MessageLite messageLite) {
+                super(messageLite);
+            }
+
+            @Override
+            public Object read(java.nio.channels.SocketChannel socketChannel) {
+                return super.read(socketChannel);
+            }
+        }
+
+        private class NioOutMessageHandler extends NioOutProtoBufHandler<UserMessageProto.UserMessage> {
+            @Override
+            public void write(java.nio.channels.SocketChannel socketChannel, UserMessageProto.UserMessage msg) {
+                super.write(socketChannel, msg);
+            }
+        }
+    }
+
+    /**
+     * 处理set请求.
+     * 对于写操作是需要写日志的.
+     *
+     * @param ctx ctx
+     * @param msg msg
+     */
+    private void doSet(core.nio.Channel ctx, UserMessageProto.UserMessage msg) {
+        log.info("do Set");
+        String key = msg.getSetMessage().getKey();
+        if (switchNode(key)) {
+            doSwitchNode(ctx, key);
+            return;
+        }
+        String val = msg.getSetMessage().getVal();
+        long last = msg.getSetMessage().getLastTime();
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        if (!writeAble) {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NOT_WRITE)
+                    .setVal("不可写")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
+            return;
+        }
+
+        //不要用异常做流程控制
+        try {
+            int data = Integer.valueOf(val);
+            CacheData cacheData = new CacheDataInt(data, new Date().getTime(), last);
+            cache.put(key, cacheData);
+        } catch (Exception ex) {
+            CacheData cacheData = new CacheDataString(val, new Date().getTime(), last);
+            cache.put(key, cacheData);
+        }
+
+        //set 操作数据写日志
+        //由于val 里面可能会有空格 解析的时候可以找两边的空格,再拆分
+        String logLine = "set " + key + " " + val + " " + last;
+        try {
+            asyncAppendFileQueue.put(logLine);
+        } catch (InterruptedException e) {
+            log.info(e.toString());
+        }
+        /*BackUpAof backUpAof = BackUpAof.getInstance();
+        backUpAof.appendAofLog(logLine, cache);*/
+
+        responseMessage = UserMessageProto.ResponseMessage
+                .newBuilder()
+                .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                .setVal(val)
+                .build();
+        userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(responseMessage)
+                .build();
+        ctx.write(userMessage);
+        log.info("complete doSet");
+    }
+
+    /**
+     * 处理del请求.
+     * 对于写操作是需要写日志的.
+     *
+     * @param ctx ctx
+     * @param msg msg
+     */
+    private void doDel(core.nio.Channel ctx, UserMessageProto.UserMessage msg) {
+        String key = msg.getDelMessage().getKey();
+        if (switchNode(key)) {
+            doSwitchNode(ctx, key);
+            return;
+        }
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        if (!writeAble) {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NOT_WRITE)
+                    .setVal("不可写")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
+            return;
+        }
+
+        if (cache.containsKey(key)) {
+            cache.remove(key);
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                    .setVal("del success")
+                    .build();
+            //del 操作数据写日志
+            String logLine = "del " + key;
+            /*BackUpAof backUpAof = BackUpAof.getInstance();
+            backUpAof.appendAofLog(logLine, cache);*/
             try {
-                while (num > 0 && index < len) {
-                    if (num >= bufferSize) {
-                        buffer.clear();
-                        buffer.put(buf, index, bufferSize);
-                        buffer.flip();
-                        socketChannel.write(buffer);
-                        index = index + bufferSize;
-                        num -= bufferSize;
-                    } else {
-                        buffer.clear();
-                        buffer.put(buf, index, num);
-                        buffer.flip();
-                        index = index + num;
-                        socketChannel.write(buffer);
-                        num = 0;
-                    }
-                }
-                socketChannel.close();
-            } catch (IOException ex) {
-                key.cancel();
-                if (socketChannel != null) {
-                    try {
-                        socketChannel.close();
-                    } catch (IOException e) {
-                        log.error(e.toString());
-                    }
-                }
+                asyncAppendFileQueue.put(logLine);
+            } catch (InterruptedException e) {
+                log.info(e.toString());
             }
+        } else {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NIL)
+                    .setVal("key not exist")
+                    .build();
         }
+        userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(responseMessage)
+                .build();
+        ctx.write(userMessage);
 
-        /**
-         * @param line
-         * @return
-         */
-        private String doCommand(String line) {
-            String temp[] = line.split("\\s+");
-            String command = temp[0];
-            if (command.equalsIgnoreCase(core.cache.Method.status)) {
-                return doStatus();
-            } else if (command.equalsIgnoreCase(core.cache.Method.get)) {
-                return doGet(line);
-            } else if (command.equalsIgnoreCase(core.cache.Method.del)) {
+    }
 
-                return doDel(line);
-            } else if (command.equalsIgnoreCase(core.cache.Method.set)) {
+    /**
+     * 当前key 是否在本机.
+     *
+     * @param key key
+     * @return bool
+     */
+    private boolean switchNode(String key) {
 
-                return doSet(line);
+        return !myNode.equals(consistentHash.get(key));
+    }
 
-            }
-            return new JsonMessage(CodeNum.COMMAND_NOT_EXIST, "Unknown Command").toString();
+    private void doSwitchNode(core.nio.Channel ctx, String key) {
+        Node node = consistentHash.get(key);
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        responseMessage = UserMessageProto.ResponseMessage
+                .newBuilder()
+                .setResponseType(UserMessageProto.ResponseType.SWITCH)
+                .setVal(node.toString())
+                .build();
+        userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(responseMessage)
+                .build();
+        ctx.write(userMessage);
+
+    }
+
+
+    /**
+     * 处理查看集群状态请求.
+     *
+     * @param ctx ctx
+     */
+    private void doStatus(core.nio.Channel ctx) {
+        String resData = getStatus();
+        UserMessageProto.UserMessage userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                        .setVal(resData)
+                        .build()
+                )
+                .build();
+        ctx.write(userMessage);
+
+    }
+
+    /**
+     * 返回服务器集群状态
+     *
+     * @return string
+     */
+    private String getStatus() {
+        String res = "------------------------------------------" + "\n" +
+                "State:" + state + "\n" +
+                "Term:" + currentTerm + "\n" +
+                "Id:" + myNode.getNodeId() + "\n" +
+                "Ip:" + myNode.getIp() + "\n" +
+                "Port:" + myNode.getListenClientPort() + "\n" +
+                "Alive Servers:" + "\n";
+        StringBuilder builder = new StringBuilder();
+        for (Node node : getAliveNodes()) {
+            String temp = "server." +
+                    node.getNodeId() +
+                    "=" + node.getIp() +
+                    ":" + node.getListenClientPort() + "\n";
+            builder.append(temp);
         }
+        builder.append("------------------------------------------" + "\n");
+        return res + builder.toString();
+    }
 
-        /**
-         * 删除数据
-         *
-         * @param line
-         * @return
-         */
-        private String doDel(String line) {
-            String[] temp = line.split("\\s+");
-            String key = temp[1];
-            Node node = consistentHash.get(key);
-            if (node.equals(myNode)) {
-                if (cache.get(key) != null) {
-                    cache.remove(key);
-                    BackUpAof.appendAofLog(line, cache);
-                    return new JsonMessage(CodeNum.SUCCESS, "delete success").toString();
-                } else {
-                    return new JsonMessage(CodeNum.NIL, "key not exist").toString();
-                }
+    /**
+     * 获取集群中所有活跃节点
+     *
+     * @return 活跃节点集合
+     */
+    private Set<Node> getAliveNodes() {
+        Map<Short, Node> circle = consistentHash.getCircle();
+        Set<Node> resNodes = new TreeSet<Node>();
+        for (short key : circle.keySet()) {
+            resNodes.add(circle.get(key));
+        }
+        return resNodes;
+    }
+
+    /**
+     * 处理get请求
+     */
+    private void doGet(core.nio.Channel ctx, UserMessageProto.UserMessage msg) {
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        String key = msg.getGetMessage().getKey();
+        //切换节点
+        if (switchNode(key)) {
+            doSwitchNode(ctx, key);
+            return;
+        }
+        if (!readAble) {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NOT_READ)
+                    .setVal("不可读")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
+            return;
+        }
+        CacheData cacheData = cache.get(key);
+        if (cacheData != null && !cacheData.isOutDate()) {
+            if (cacheData instanceof CacheDataInt) {
+                responseMessage = UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                        .setVal(((CacheDataInt) cacheData).val + "")
+                        .build();
+                userMessage = UserMessageProto.UserMessage
+                        .newBuilder()
+                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                        .setResponseMessage(responseMessage)
+                        .build();
+                ctx.write(userMessage);
+            } else if (cacheData instanceof CacheDataString) {
+                responseMessage = UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                        .setVal(((CacheDataString) cacheData).val)
+                        .build();
+                userMessage = UserMessageProto.UserMessage
+                        .newBuilder()
+                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                        .setResponseMessage(responseMessage)
+                        .build();
+                ctx.write(userMessage);
             } else {
-                return dealAnotherServer(node, line);
+                responseMessage = UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.ERROR)
+                        .setVal("Error")
+                        .build();
+                userMessage = UserMessageProto.UserMessage
+                        .newBuilder()
+                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                        .setResponseMessage(responseMessage)
+                        .build();
+                ctx.write(userMessage);
             }
-        }
-
-        /**
-         * 处理get 请求
-         *
-         * @param line
-         * @return
-         */
-        private String doGet(String line) {
-            String[] temp = line.split("\\s+");
-            String key = temp[1];
-            Node node = consistentHash.get(key);
-            if (node.equals(myNode)) {
-                if (cache.get(key) != null) {
-                    CacheDataI cacheDataI = cache.get(key);
-                    if (cacheDataI instanceof CacheDataInt) {
-                        CacheDataInt cacheDataInt = (CacheDataInt) cacheDataI;
-                        if (cacheDataInt.last == -1
-                                || new Date().getTime() <= cacheDataInt.last + cacheDataInt.lastVisit) {
-                            cacheDataInt.lastVisit = new Date().getTime();
-                            cache.put(key, cacheDataInt);
-                            return new JsonMessage(CodeNum.SUCCESS, cacheDataInt.val + "").toString();
-                        } else {
-                            return new JsonMessage(CodeNum.NIL, "key not exist").toString();
-                        }
-                    } else if (cacheDataI instanceof CacheDataString) {
-                        CacheDataString cacheDataString = (CacheDataString) cacheDataI;
-                        if (cacheDataString.last == -1
-                                || new Date().getTime() <= cacheDataString.lastVisit + cacheDataString.last) {
-                            cacheDataString.lastVisit = new Date().getTime();
-                            cache.put(key, cacheDataString);
-                            return new JsonMessage(CodeNum.SUCCESS, cacheDataString.val).toString();
-                        } else {
-                            return new JsonMessage(CodeNum.NIL, "key not exist").toString();
-                        }
-                    }
-                } else {
-                    return new JsonMessage(CodeNum.NIL, "key not exist").toString();
-                }
-            } else {
-                return dealAnotherServer(node, line);
-            }
-            return new JsonMessage(CodeNum.NIL, "key not exist").toString();
-        }
-
-        /**
-         * 处理set
-         *
-         * @param line
-         * @return
-         */
-        private String doSet(String line) {
-            List<String> setStrs = Tools.split(line);
-            String key = setStrs.get(1);
-            String val = setStrs.get(2);
-            Node node = consistentHash.get(key);
-            if (node.equals(myNode)) {
-                if (setStrs.size() == 4) {
-                    //含有过期时间
-                    int last = Integer.valueOf(setStrs.get(3));
-                    BackUpAof.appendAofLog(line, cache);
-                    return doSet(key, val, last);
-                } else {
-                    //没有过期时间,表示永久有效
-                    BackUpAof.appendAofLog(line, cache);
-                    return doSet(key, val, -1);
-                }
-            } else {
-                return dealAnotherServer(node, line);
-            }
-        }
-
-        /**
-         * set key val [time]
-         *
-         * @param key
-         * @param val
-         * @param last
-         * @return 这个字符串是个json格式的
-         */
-        private String doSet(String key, String val, int last) {
-            try {
-                int intVal = Integer.valueOf(val);
-                CacheDataInt cacheDataInt = new CacheDataInt(intVal, new Date().getTime(), last);
-                cache.put(key, cacheDataInt);
-            } catch (Exception ex) {
-                CacheDataString cacheDataStr = new CacheDataString(val, new Date().getTime(), last);
-                cache.put(key, cacheDataStr);
-            }
-            log.info("server {} set {} {}", myNode.getNodeId(), key, val);
-            return new JsonMessage(CodeNum.SUCCESS, "OK").toString();
-        }
-
-        /**
-         * 该数据不归本节点处理交给第三方节点处理
-         *
-         * @return
-         */
-        private String dealAnotherServer(Node node, String line) {
-            Socket socket = null;
-            OutputStream outputStream = null;
-            InputStream inputStream = null;
-            try {
-                socket = new Socket(node.getIp(), node.getListenClientPort());
-                outputStream = socket.getOutputStream();
-                inputStream = socket.getInputStream();
-                outputStream.write(line.getBytes());
-                byte[] buffer = new byte[1024];
-                int n = 0;
-                StringBuilder stringBuilder = new StringBuilder();
-                while ((n = inputStream.read(buffer)) > 0) {
-                    stringBuilder.append(new String(buffer, 0, n));
-                }
-                return stringBuilder.toString();
-            } catch (IOException ex) {
-                log.debug(ex.toString());
-            } finally {
-                try {
-                    socket.close();
-                    outputStream.close();
-                    inputStream.close();
-                } catch (IOException ex) {
-                    log.debug(ex.toString());
-                }
-            }
-            return new JsonMessage(CodeNum.ERROR, "ERROR").toString();
-        }
-
-        /**
-         * 返回服务器状态
-         *
-         * @return
-         */
-        private String doStatus() {
-            String res = "------------------------------------------" + "\n" +
-                    "State:" + state + "\n" +
-                    "Term:" + currentTerm + "\n" +
-                    "Id:" + myNode.getNodeId() + "\n" +
-                    "Ip:" + myNode.getIp() + "\n" +
-                    "Port:" + myNode.getListenClientPort() + "\n" +
-                    "Alive Servers:" + "\n";
-            StringBuilder builder = new StringBuilder();
-            for (Node node : getAliveNodes()) {
-                String temp = "server." + node.getNodeId() + "=" + node.getIp() + ":" + node.getListenClientPort() + "\n";
-                builder.append(temp);
-            }
-            builder.append("------------------------------------------" + "\n");
-            log.info(builder.toString());
-            return new JsonMessage(CodeNum.SUCCESS, res + builder.toString()).toString();
-        }
-
-        /**
-         * 获取集群中所有活跃节点
-         *
-         * @return 活跃节点集合
-         */
-        private Set<Node> getAliveNodes() {
-            TreeMap<Long, Node> circle = (TreeMap) consistentHash.getCircle();
-            Set<Node> nodes = new TreeSet<Node>();
-            for (long key : circle.keySet()) {
-                nodes.add(circle.get(key));
-            }
-            return nodes;
+        } else {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NIL)
+                    .setVal("key not exist")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
         }
     }
 }
+

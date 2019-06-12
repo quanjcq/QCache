@@ -1,72 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5ec4c8de-1b03-4dc9-a98b-f1f0d2f45a57" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/QCache_jar/QCache.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/QCache_jar/QCache.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cache-example/artifacts/QCache_jar/QCache.jar" beforeDir="false" afterPath="$PROJECT_DIR$/src/cache-example/artifacts/QCache_jar/QCache.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/common/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/Node.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/common/Tools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/Tools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/configuration/QCacheConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/constant/RaftCommandMethod.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/RaftNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/RaftNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CodeNum.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/JsonMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/Method.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/Method.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftAckMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftAckMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftCommitMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftCommitMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftHeartMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftPreVoteMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftVoteMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/log/LogParse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/LogParse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/RaftLog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLogUncommit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/RaftLogUncommit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/JsonMessageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/JsonMessageTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/LogTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/LogTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/NioTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/NioTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/PerformanceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/PerformanceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/common/ConsistentHash.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/ConsistentHash.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/common/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/Node.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/common/RaftSnaphot.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/RaftSnaphot.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/common/Tools.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/Tools.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/configuration/QCacheConfiguration.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/configuration/QCacheConfiguration.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/constant/RaftCommandMethod.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/constant/RaftCommandMethod.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/constant/RaftOptions.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/constant/RaftOptions.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$5.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$7.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$7.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$8.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$8.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$CacheServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$CacheServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/CacheDataList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/CacheDataList.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/JsonMessage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/JsonMessage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpAof.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpAof.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftCommitMessage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/RaftCommitMessage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessage$RaftMessageType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/RaftMessage$RaftMessageType.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/RaftMessage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/log/LogParse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log/LogParse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/log/RaftLogUncommit.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log/RaftLogUncommit.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/LogTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/LogTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/NioTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/NioTest.class" afterDir="false" />
-    </list>
+    <list default="true" id="5ec4c8de-1b03-4dc9-a98b-f1f0d2f45a57" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -160,93 +95,65 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/main/core/RaftNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-657">
-              <caret line="976" column="34" selection-start-line="976" selection-start-column="34" selection-end-line="976" selection-end-column="34" />
+            <state relative-caret-position="155">
+              <caret line="1588" column="18" selection-start-line="1588" selection-start-column="18" selection-end-line="1588" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#56117#56118#0" expanded="true" />
-                <element signature="e#56182#56183#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="66">
+                <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/test/LogTest.java">
+        <entry file="file://$PROJECT_DIR$/src/java/main/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="26" selection-start-line="26" selection-end-line="26" />
+            <state relative-caret-position="210">
+              <caret line="28" column="9" selection-start-line="28" selection-start-column="9" selection-end-line="28" selection-end-column="9" />
               <folding>
-                <element signature="e#533#534#0" expanded="true" />
-                <element signature="e#590#591#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java">
+        <entry file="jar:///usr/local/jdk/src.zip!/java/io/InputStream.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="858">
-              <caret line="60" column="9" lean-forward="true" selection-start-line="60" selection-start-column="9" selection-end-line="60" selection-end-column="9" />
+            <state relative-caret-position="809">
+              <caret line="167" column="9" lean-forward="true" selection-start-line="167" selection-start-column="9" selection-end-line="167" selection-end-column="9" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java">
+        <entry file="jar:///usr/local/jdk/src.zip!/java/io/OutputStream.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="8" column="11" lean-forward="true" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
+            <state relative-caret-position="1100">
+              <caret line="73" column="16" selection-start-line="73" selection-start-column="16" selection-end-line="73" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java">
+        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="26" column="24" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
-              <folding>
-                <element signature="e#3086#3087#0" expanded="true" />
-                <element signature="e#3146#3147#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/test/NioTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="21" column="39" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/test/PerformanceTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="20" column="24" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/test/QCacheConfigurationTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
-              <folding>
-                <element signature="e#149#150#0" expanded="true" />
-                <element signature="e#218#219#0" expanded="true" />
-                <element signature="e#263#264#0" expanded="true" />
-                <element signature="e#330#331#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="110">
+              <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -261,10 +168,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="88">
+              <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="242">
               <caret line="11" selection-start-line="11" selection-end-line="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftState.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="308">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
             </state>
           </provider>
         </entry>
@@ -342,6 +267,12 @@
       </list>
     </option>
   </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
   <component name="MavenProjectNavigator">
     <treeState>
       <expand>
@@ -365,6 +296,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
       <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
@@ -374,88 +306,10 @@
               <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
               <item name="QCache" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="common" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="cache" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="backup" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="message" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="log" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -614,7 +468,7 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-6" width="1920" height="1086" extended-state="6" />
+    <frame x="0" y="33" width="1920" height="1047" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Designer" order="0" />
@@ -622,7 +476,7 @@
       <window_info id="Capture Tool" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" weight="0.32992464" />
       <window_info id="Image Layers" order="4" />
-      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.22012918" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.12809473" />
       <window_info id="Structure" order="6" side_tool="true" weight="0.2497309" />
       <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="1" weight="0.32929516" />
@@ -708,21 +562,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/README.md">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="793">
-          <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="1122">
-            <caret line="51" selection-start-line="51" selection-end-line="51" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/README.md" />
     <entry file="jar:///usr/local/jdk/src.zip!/java/util/concurrent/Executors.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5346">
@@ -754,8 +594,8 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="352">
-            <caret line="16" column="5" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
+          <first_editor relative-caret-position="66">
+            <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
           </first_editor>
           <second_editor />
         </state>
@@ -765,18 +605,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2794">
           <caret line="164" column="30" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
-          <folding>
-            <element signature="e#4677#4678#0" expanded="true" />
-            <element signature="e#4714#4715#0" expanded="true" />
-            <element signature="e#5687#5688#0" expanded="true" />
-            <element signature="e#5750#5751#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.class">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.class" />
     <entry file="file://$PROJECT_DIR$/src/java/main/META-INF/MANIFEST.MF">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -784,14 +616,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="163">
           <caret line="161" column="9" selection-start-line="161" selection-start-column="9" selection-end-line="161" selection-end-column="9" />
-          <folding>
-            <element signature="e#565#566#0" expanded="true" />
-            <element signature="e#611#612#0" expanded="true" />
-            <element signature="e#3656#3657#0" expanded="true" />
-            <element signature="e#3685#3686#0" expanded="true" />
-            <element signature="e#3813#3814#0" expanded="true" />
-            <element signature="e#3849#3850#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -799,12 +623,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="399">
           <caret line="90" column="5" lean-forward="true" selection-start-line="90" selection-start-column="5" selection-end-line="90" selection-end-column="5" />
-          <folding>
-            <element signature="e#1976#1977#0" expanded="true" />
-            <element signature="e#2005#2006#0" expanded="true" />
-            <element signature="e#2043#2044#0" expanded="true" />
-            <element signature="e#2102#2103#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -812,9 +630,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="176">
           <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -822,19 +637,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="377">
           <caret line="41" column="62" selection-start-line="41" selection-start-column="62" selection-end-line="41" selection-end-column="62" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3573#3574#0" expanded="true" />
-            <element signature="e#3625#3626#0" expanded="true" />
-            <element signature="e#3700#3701#0" expanded="true" />
-            <element signature="e#3747#3748#0" expanded="true" />
-            <element signature="e#4040#4041#0" expanded="true" />
-            <element signature="e#4085#4086#0" expanded="true" />
-            <element signature="e#4188#4189#0" expanded="true" />
-            <element signature="e#4237#4238#0" expanded="true" />
-            <element signature="e#4340#4341#0" expanded="true" />
-            <element signature="e#4388#4389#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -861,15 +663,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="110">
+          <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="88">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -968,14 +770,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
-          <folding>
-            <element signature="e#1229#1230#0" expanded="true" />
-            <element signature="e#1274#1275#0" expanded="true" />
-            <element signature="e#6381#6382#0" expanded="true" />
-            <element signature="e#6412#6413#0" expanded="true" />
-            <element signature="e#6506#6507#0" expanded="true" />
-            <element signature="e#6573#6574#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -990,19 +784,16 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="25" selection-start-line="25" selection-end-line="25" />
-          <folding>
-            <element signature="e#280#281#0" expanded="true" />
-            <element signature="e#314#315#0" expanded="true" />
-            <element signature="e#342#343#0" expanded="true" />
-            <element signature="e#375#376#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
+        <state relative-caret-position="210">
           <caret line="28" column="9" selection-start-line="28" selection-start-column="9" selection-end-line="28" selection-end-column="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1010,10 +801,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
           <caret line="14" selection-start-line="14" selection-end-line="14" />
-          <folding>
-            <element signature="e#127#128#0" expanded="true" />
-            <element signature="e#189#190#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1021,10 +808,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
           <caret line="26" selection-start-line="26" selection-end-line="26" />
-          <folding>
-            <element signature="e#533#534#0" expanded="true" />
-            <element signature="e#590#591#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1046,12 +829,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
           <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
-          <folding>
-            <element signature="e#149#150#0" expanded="true" />
-            <element signature="e#218#219#0" expanded="true" />
-            <element signature="e#263#264#0" expanded="true" />
-            <element signature="e#330#331#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1096,12 +873,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/main/core/RaftNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-657">
-          <caret line="976" column="34" selection-start-line="976" selection-start-column="34" selection-end-line="976" selection-end-column="34" />
+        <state relative-caret-position="155">
+          <caret line="1588" column="18" selection-start-line="1588" selection-start-column="18" selection-end-line="1588" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#56117#56118#0" expanded="true" />
-            <element signature="e#56182#56183#0" expanded="true" />
           </folding>
         </state>
       </provider>

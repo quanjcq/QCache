@@ -1,37 +1,74 @@
 package core.cache.backup;
 
-import configuration.QCacheConfiguration;
-import core.cache.CacheDataI;
+import common.QCacheConfiguration;
+import constant.CacheOptions;
+import core.cache.CacheData;
+import core.cache.CacheDataInt;
+import core.cache.CacheDataString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+
 
 public class BackUpAof implements BackUpI {
-    private static String path = QCacheConfiguration.getCacheAofPath();
+    private static Logger log = LoggerFactory.getLogger(BackUpAof.class);
+    private static volatile BackUpAof backUpAof;
+    private String path = QCacheConfiguration.getCacheAofPath();
 
-    public synchronized static void appendAofLog(String command, ConcurrentHashMap<String, CacheDataI> cache) {
+    private BackUpAof() {
+
+    }
+
+    /**
+     * 获取实例.
+     *
+     * @return backUpAof
+     */
+    public static BackUpAof getInstance() {
+        if (backUpAof == null) {
+            synchronized (BackUpAof.class) {
+                if (backUpAof == null) {
+                    backUpAof = new BackUpAof();
+                }
+            }
+        }
+        return backUpAof;
+    }
+
+    /**
+     * 向aof 文件中添加一条日志.
+     *
+     * @param command 日志内容
+     * @param cache   数据
+     */
+    public synchronized void appendAofLog(String command, HashMap<String, CacheData> cache) {
         long time = new Date().getTime();
         String line = time + ";" + command;
         File file = new File(path);
 
         if (!file.exists() || file.isDirectory()) {
             try {
-                file.createNewFile();
+                boolean flag = file.createNewFile();
+                if (!flag) {
+                    throw new RuntimeException("没有写文件权限");
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.toString());
             }
         }
-        Long len = file.length();
-        if (len >= aofMaxSize) {
-            clearAofFile();
+        long len = file.length();
+        if (len >= CacheOptions.maxAofLogSize) {
             File rdbFile = new File(QCacheConfiguration.getCacheRdbPath());
 
             if (!rdbFile.exists() || rdbFile.isDirectory()) {
                 try {
-                    rdbFile.createNewFile();
+                    boolean flag = rdbFile.createNewFile();
+                    if (!flag) {
+                        throw new RuntimeException("没有创建文件权限");
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -44,11 +81,15 @@ public class BackUpAof implements BackUpI {
                 e.printStackTrace();
             } finally {
                 try {
-                    out.close();
+                    if (out != null) {
+                        out.close();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+            //清空日志文件
+            clearAofFile();
 
         }
         len = file.length();
@@ -58,22 +99,23 @@ public class BackUpAof implements BackUpI {
             randomAccessFile.writeBytes(line + "\n");
             randomAccessFile.close();
         } catch (IOException ex) {
-            ex.printStackTrace();
+            log.debug(ex.toString());
         }
 
     }
 
     /**
-     * 解析出日志文件的所有操作数据
-     *
-     * @return
+     * 系统启动的时候,解析出日志文件,并应用于cache.
      */
-    public synchronized static List<String> getCommands() {
-        List<String> res = new LinkedList<String>();
+    @Override
+    public synchronized void loadData(HashMap<String, CacheData> cache) {
         File aofFile = new File(path);
         if (!aofFile.exists() || aofFile.isDirectory()) {
             try {
-                aofFile.createNewFile();
+                boolean flag = aofFile.createNewFile();
+                if (!flag) {
+                    throw new RuntimeException("没有写权限");
+                }
             } catch (IOException ex) {
                 System.exit(1);
             }
@@ -84,27 +126,55 @@ public class BackUpAof implements BackUpI {
                 String logLine;
                 while ((logLine = bufferedReader.readLine()) != null) {
                     String command = getCommand(logLine);
-                    res.add(command);
+                    int index1 = command.indexOf(' ');
+                    int index2 = command.lastIndexOf(' ');
+                    if (index1 == index2) {
+                        //del
+                        String key = command.substring(index1 + 1);
+                        cache.remove(key);
+                    } else {
+                        //set
+                        String temp = command.substring(index1 + 1, index2);
+                        int index3 = temp.indexOf(' ');
+                        String key = temp.substring(0, index3);
+                        String val = temp.substring(index3 + 1);
+                        long last = Long.valueOf(command.substring(index2 + 1));
+                        //不要用异常控制程序流程
+                        try {
+                            int data = Integer.valueOf(val);
+                            CacheData cacheData = new CacheDataInt(data, new Date().getTime(), last);
+
+                            cache.put(key, cacheData);
+                        } catch (Exception ex) {
+                            CacheData cacheData = new CacheDataString(val, new Date().getTime(), last);
+                            cache.put(key, cacheData);
+                        }
+                    }
                 }
                 fileReader.close();
                 bufferedReader.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
+                System.exit(1);
             }
         }
-        return res;
     }
 
-    private static String getCommand(String line) {
+    private String getCommand(String line) {
         return line.substring(line.indexOf(";") + 1);
     }
 
-    //清空文件
-    private static synchronized void clearAofFile() {
+    /**
+     * 清空日志文件
+     */
+    private synchronized void clearAofFile() {
         File file = new File(path);
         try {
             if (!file.exists()) {
-                file.createNewFile();
+                boolean flag = file.createNewFile();
+                if (!flag) {
+                    throw new RuntimeException("没有写文件权限");
+                }
             }
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write("");

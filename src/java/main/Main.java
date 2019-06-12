@@ -1,17 +1,18 @@
 import common.Node;
+import common.QCacheConfiguration;
 import common.Tools;
-import configuration.QCacheConfiguration;
+import constant.CacheOptions;
 import core.RaftNode;
-import core.cache.CodeNum;
-import core.cache.JsonMessage;
 import core.cache.Method;
+import core.client.CacheClient;
+import core.message.UserMessageProto;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.net.Socket;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -21,23 +22,18 @@ public class Main {
             return;
         }
         if (args[0].equals("runClient")) {
-            if (args.length < 2)
-                runClient("978788");
-            else
-                runClient(args[1]);
-            return;
+            runClient();
         }
     }
 
     /**
-     * 获取进程id
+     * 获取进程id.
      *
-     * @return
+     * @return pid
      */
     private static int getProcessID() {
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-        return Integer.valueOf(runtimeMXBean.getName().split("@")[0])
-                .intValue();
+        return Integer.valueOf(runtimeMXBean.getName().split("@")[0]);
     }
 
     private static void runServer() {
@@ -47,7 +43,11 @@ public class Main {
         File file = new File(path);
         if (!file.isFile() || !file.exists()) {
             try {
-                file.createNewFile();
+                boolean flag = file.createNewFile();
+                if (!flag) {
+                    System.out.println("创建文件失败");
+                    System.exit(1);
+                }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -62,7 +62,9 @@ public class Main {
             ex.printStackTrace();
         } finally {
             try {
-                out.close();
+                if (out != null) {
+                    out.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -71,8 +73,15 @@ public class Main {
         raftNode.init();
     }
 
-    private static void runClient(String args) {
+    private static void runClient() {
         Scanner scanner = new Scanner(System.in);
+        CacheClient.newBuilder cacheBuilder = new CacheClient.newBuilder();
+        cacheBuilder = cacheBuilder.setNumberOfReplicas(CacheOptions.numberOfReplicas);
+        List<Node> nodes = QCacheConfiguration.getNodeList();
+        for (Node node : nodes) {
+            cacheBuilder = cacheBuilder.setNewNode(node.toString());
+        }
+        CacheClient cacheClient = cacheBuilder.build();
         while (true) {
             System.out.print("QCache>");
             String temp = scanner.nextLine();
@@ -81,64 +90,54 @@ public class Main {
                 continue;
             if (line.equals("exit") || line.equals("q")) {
                 System.out.println("bye");
+                cacheClient.close();
                 System.exit(0);
             }
             if (checkCommand(line)) {
-                doClient(line, args);
+                doClient(cacheClient, line);
             } else {
                 printUsage();
             }
         }
     }
 
-    private static void doClient(String command, String args) {
-        String ip;
-        int port;
-        try {
-            ip = args.split(":")[0];
-            port = Integer.valueOf(args.split(":")[1]);
-        } catch (Exception ex) {
-            List<Node> nodes = QCacheConfiguration.getNodeList();
-            int index = new Random().nextInt(nodes.size());
-            ip = nodes.get(index).getIp();
-            port = nodes.get(index).getListenClientPort();
+    private static void doClient(CacheClient client, String line) {
+        List<String> list = Tools.split(line);
+        if (list == null || list.size() == 0) {
+            System.out.println("SYNTAX_ERROR");
+            return;
         }
-        try {
-            Socket socket = new Socket(ip, port);
-            OutputStream outputStream = socket.getOutputStream();
-            InputStream inputStream = socket.getInputStream();
-            outputStream.write(command.getBytes());
-            byte[] buffer = new byte[1024 * 2];
-            int n = 0;
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((n = inputStream.read(buffer)) > 0) {
-                stringBuilder.append(new String(buffer, 0, n));
+        String command = list.get(0);
+        if (command.equalsIgnoreCase(Method.status)) {
+            if (list.size() >= 2) {
+                System.out.println(client.status(list.get(1)));
+            } else {
+                System.out.println(client.status(null));
             }
-            //System.out.println(stringBuilder.toString());
-            JsonMessage jsonMessage = JsonMessage.getJsonMessage(stringBuilder.toString());
-            int code = jsonMessage.getCode();
-            String message = jsonMessage.getData();
-            if (code == CodeNum.SUCCESS) {
-                System.out.println(message);
-            } else if (code == CodeNum.ERROR) {
-                System.out.println("(error)" + message);
-            } else if (code == CodeNum.NIL) {
-                System.out.println("(nil)" + message);
+        } else if (command.equalsIgnoreCase(Method.get)) {
+            UserMessageProto.ResponseMessage responseMessage = client.doGet(list.get(1));
+            System.out.println("(" + responseMessage.getResponseType() + ") " + responseMessage.getVal());
+        } else if (command.equalsIgnoreCase(Method.set)) {
+            UserMessageProto.ResponseMessage responseMessage;
+            if (list.size() == 3) {
+                responseMessage = client.doSet(list.get(1), list.get(2), -1);
+            } else {
+                responseMessage = client.doSet(list.get(1), list.get(2), Integer.valueOf(list.get(3)));
             }
-            socket.close();
-            outputStream.close();
-            inputStream.close();
-        } catch (IOException ex) {
-            System.out.println("节点:" + ip + ":" + port + "丢失");
-        } finally {
-
+            System.out.println("(" + responseMessage.getResponseType() + ") " + responseMessage.getVal());
+        } else if (command.equalsIgnoreCase(Method.del)) {
+            UserMessageProto.ResponseMessage responseMessage;
+            responseMessage = client.doDel(list.get(1));
+            System.out.println("(" + responseMessage.getResponseType() + ") " + responseMessage.getVal());
+        } else {
+            System.out.println("SYNTAX_ERROR");
         }
     }
 
     /**
      * 验证命令的合法性
      *
-     * @return
+     * @return bool
      */
     private static boolean checkCommand(String line) {
         String temp[] = line.split("\\s+");
@@ -146,10 +145,7 @@ public class Main {
         if (command.equalsIgnoreCase(Method.status)) {
             return true;
         } else if (command.equalsIgnoreCase(Method.get) || command.equalsIgnoreCase(Method.del)) {
-            if (temp.length != 2) {
-                return false;
-            } else
-                return true;
+            return temp.length == 2;
         } else if (command.equalsIgnoreCase(Method.set)) {
             List<String> setStr = Tools.split(line);
             if (setStr == null)
@@ -158,34 +154,31 @@ public class Main {
                 return false;
             } else if (setStr.size() == 4) {
                 //最后一个是数字，表示过期时间
+                //不要用异常做流程控制
                 try {
-                    int num = Integer.valueOf(setStr.get(setStr.size() - 1));
+                    Integer.valueOf(setStr.get(setStr.size() - 1));
                 } catch (Exception ex) {
                     return false;
                 }
                 return true;
 
-            } else if (setStr.size() == 3) {
-                return true;
             } else {
-                return false;
+                return setStr.size() == 3;
             }
         } else {
             return false;
         }
     }
 
-
-    public static void printUsage() {
+    //usage info
+    private static void printUsage() {
         String info = "------------------Usage-------------------" + "\n" +
-                "status---查看连接的服务器信息" + "\n" +
+                "status [id:ip:port1:port2]-查看服务器信息" + "\n" +
                 "set key val [time]添加缓存" + "\n" +
                 "get key---获取缓存数据" + "\n" +
                 "del key---删除缓存数据" + "\n" +
                 "exit or q---退出！" + "\n" +
                 "------------------------------------------";
         System.out.println(info);
-
-
     }
 }

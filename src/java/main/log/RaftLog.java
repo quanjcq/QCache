@@ -1,19 +1,25 @@
 package log;
 
-import java.io.Serializable;
 
-public class RaftLog implements Comparable, Serializable {
-    private long Timestamp;
+public class RaftLog {
+    private long timestamp;
     private long index;
-    private long term;
     private String command;
+    public RaftLog(){
+
+    }
+    public RaftLog(long timestamp, long index, String command) {
+        this.timestamp = timestamp;
+        this.index = index;
+        this.command = command;
+    }
 
     public long getTimestamp() {
-        return Timestamp;
+        return timestamp;
     }
 
     public void setTimestamp(long timestamp) {
-        Timestamp = timestamp;
+        this.timestamp = timestamp;
     }
 
     public long getIndex() {
@@ -22,14 +28,6 @@ public class RaftLog implements Comparable, Serializable {
 
     public void setIndex(long index) {
         this.index = index;
-    }
-
-    public long getTerm() {
-        return term;
-    }
-
-    public void setTerm(long term) {
-        this.term = term;
     }
 
     public String getCommand() {
@@ -43,22 +41,9 @@ public class RaftLog implements Comparable, Serializable {
     @Override
     public String toString() {
         return "RaftLog{" +
-                "Timestamp=" + Timestamp +
+                "timestamp=" + timestamp +
                 ", index=" + index +
-                ", term=" + term +
                 ", command='" + command + '\'' +
                 '}';
-    }
-
-    public int compareTo(Object o) {
-        RaftLog raftLog = (RaftLog) o;
-        if (raftLog.getIndex() == this.index && raftLog.getTerm() == this.term) {
-            return 0;
-        } else if (this.term > raftLog.getTerm()
-                || (this.term == raftLog.term && this.index > raftLog.index)) {
-            return 1;
-        } else {
-            return -1;
-        }
     }
 }
