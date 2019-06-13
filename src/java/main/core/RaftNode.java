@@ -789,7 +789,7 @@ public class RaftNode {
                     .setCurrentTerm(currentTerm)
                     .setLeader(state == RaftState.LEADER)
                     .setPreVoteMessage(preVoteMessage)
-                    .buildPartial();
+                    .build();
 
         } finally {
             lock.unlock();
