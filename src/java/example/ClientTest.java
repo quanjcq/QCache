@@ -14,7 +14,7 @@ public class ClientTest {
 
         /**
          * 测试结果说明(只是跟redis 对比测试):
-         * 0. 该程序是在本机上跑的三个实例的集群,redis 单机的.
+         * 0. 该程序是在本机上跑的五个实例的集群,redis 单机的.
          * 1. 对于100w 次的请求没有任何请求异常
          * 2. 每秒能处理读请求   7.5w   redis 9.5w
          * 3. 每秒能处理写请求   6.2w   redis 8.5w
@@ -55,7 +55,7 @@ public class ClientTest {
                         }*/
                         //del 13381 ms
                         //get 13283 ms
-                        //set 17862 ms
+                        //set 15862 ms
                         //System.out.println(cacheClient.status(""));
                     }
                     //System.out.println(success);
