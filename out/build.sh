@@ -21,7 +21,7 @@ do
         done
 	nohup java -jar ./artifacts_$i/QCache_jar/QCache.jar runServer >/dev/null 2>&1 &
 done
-#
+# 
 #删除原文件的内容
 #rm -rf artifacts
 if (($? == 0));then

@@ -17,7 +17,7 @@ public class ClientTest {
          * 0. 该程序是在本机上跑的三个实例的集群,redis 单机的.
          * 1. 对于100w 次的请求没有任何请求异常
          * 2. 每秒能处理读请求   7.5w   redis 9.5w
-         * 3. 每秒能处理写请求   5.6w   redis 8.5w
+         * 3. 每秒能处理写请求   6.2w   redis 8.5w
          * 4. 每秒能处理删除请求 7.3w   redis 9.3w
          * 5. 一致性hash的数据倾斜问题,在虚拟节点开到200个的时候,即hash环上有1000个节点的时候
          *     对于100w 次的请求 每个节点处理的数据都是 20w +/- 50 基本没有数据倾斜问题
@@ -58,7 +58,7 @@ public class ClientTest {
                         //set 17862 ms
                         //System.out.println(cacheClient.status(""));
                     }
-                    System.out.println(success);
+                    //System.out.println(success);
                     cacheClient.close();
                     countDownLatch.countDown();
                 }

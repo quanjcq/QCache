@@ -37,7 +37,7 @@ public class NioTest {
         System.out.println(System.currentTimeMillis()-start);
         poolExecutor.shutdown();
         /**
-         * 再对数据不做任何处理的是java依然没有redis块,100w请求耗时12934ms
+         * 在对数据不做任何处理的是java依然没有redis块,100w请求耗时12934ms
          */
     }
     /**

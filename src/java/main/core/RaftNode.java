@@ -1,10 +1,7 @@
 package core;
 
 import com.google.protobuf.MessageLite;
-import common.ConsistentHash;
-import common.Node;
-import common.QCacheConfiguration;
-import common.RaftSnaphot;
+import common.*;
 import constant.CacheOptions;
 import constant.RaftOptions;
 import constant.RaftState;
@@ -99,7 +96,7 @@ public class RaftNode {
     //集群信息
     private List<Node> nodes;
 
-    private LinkedBlockingQueue<String> asyncAppendFileQueue = new LinkedBlockingQueue<String>();
+    private QLinkedBlockingQueue<String> asyncAppendFileQueue = new QLinkedBlockingQueue<String>();
 
     private Lock lock = new ReentrantLock();
     private HashMap<String, CacheData> cache = new HashMap<String, CacheData>();
@@ -1542,13 +1539,10 @@ public class RaftNode {
                 BackUpAof backUpAof = BackUpAof.getInstance();
                 while (true) {
                     String log;
-                    try {
-                        log = asyncAppendFileQueue.take();
+                    log = asyncAppendFileQueue.poll();
+                    if (log != null && log.length() > 0) {
                         backUpAof.appendAofLog(log, cache);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
-
                 }
 
             }
@@ -1679,11 +1673,11 @@ public class RaftNode {
         //set 操作数据写日志
         //由于val 里面可能会有空格 解析的时候可以找两边的空格,再拆分
         String logLine = "set " + key + " " + val + " " + last;
-        try {
-            asyncAppendFileQueue.put(logLine);
-        } catch (InterruptedException e) {
-            log.info(e.toString());
-        }
+
+
+        asyncAppendFileQueue.put(logLine);
+
+
         /*BackUpAof backUpAof = BackUpAof.getInstance();
         backUpAof.appendAofLog(logLine, cache);*/
 
@@ -1742,11 +1736,7 @@ public class RaftNode {
             String logLine = "del " + key;
             /*BackUpAof backUpAof = BackUpAof.getInstance();
             backUpAof.appendAofLog(logLine, cache);*/
-            try {
-                asyncAppendFileQueue.put(logLine);
-            } catch (InterruptedException e) {
-                log.info(e.toString());
-            }
+            asyncAppendFileQueue.put(logLine);
         } else {
             responseMessage = UserMessageProto.ResponseMessage
                     .newBuilder()

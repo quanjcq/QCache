@@ -20,9 +20,9 @@ public class RedisTest {
                     Jedis jedis = new Jedis("127.0.0.1");
                     //int count = 0;
                     for (int j = 0; j < 100000; j++) {
-                        //jedis.set(getRandomString(), getRandomString());
+                        jedis.set(getRandomString(), getRandomString());
                         //String val = jedis.get(getRandomString());
-                        jedis.del(getRandomString());
+                        //jedis.del(getRandomString());
                         //set 11698 ms
                         //get 10510 ms
                         //del 10662 ms
