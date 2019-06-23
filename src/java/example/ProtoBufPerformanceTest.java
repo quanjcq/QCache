@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
  * 如果改写ProtoBuf 代码,使得创建对象的时候可以通过,已有对象里面set值,而不用反复创建对象应该能有很大性能提升
  */
 
+
 public class ProtoBufPerformanceTest {
     public static void main(String[] args) {
         ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(8,10,0,
