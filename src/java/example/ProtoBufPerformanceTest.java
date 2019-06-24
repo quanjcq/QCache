@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 对于 100w次的请求最少会有400w次的序列化反序列化操作,测试这个需要多久时间
+ * 对于 100w次的请求最少会有200w次的序列化反序列化操作,测试这个需要多久时间
  * 测试结果为:2100ms左右,对象根据反射生成(还创建过多)的比较耗时,如果能省掉这2000ms 就能达到redis的读写性能
  *
  * 如果改写ProtoBuf 代码,使得创建对象的时候可以通过,已有对象里面set值,而不用反复创建对象应该能有很大性能提升
@@ -26,7 +26,7 @@ public class ProtoBufPerformanceTest {
             poolExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    for (int j = 0;j<400000;j++) {
+                    for (int j = 0;j<200000;j++) {
                         UserMessageProto.UserMessage userMessage = UserMessageProto.UserMessage
                                 .newBuilder()
                                 .setMessageType(UserMessageProto.MessageType.GET)
