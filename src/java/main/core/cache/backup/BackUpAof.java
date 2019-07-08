@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class BackUpAof implements BackUpI {
@@ -36,6 +38,73 @@ public class BackUpAof implements BackUpI {
             }
         }
         return backUpAof;
+    }
+
+    /**
+     * 向aof文件中追加多条日志.
+     * @param logs 多条日志
+     * @param cache 数据
+     */
+    public synchronized void appendAofLogs(List<String> logs, HashMap<String,CacheData> cache) {
+        long time = new Date().getTime();
+        //String line = time + ";" + command;
+        File file = new File(path);
+
+        if (!file.exists() || file.isDirectory()) {
+            try {
+                boolean flag = file.createNewFile();
+                if (!flag) {
+                    throw new RuntimeException("没有写文件权限");
+                }
+            } catch (IOException e) {
+                log.error(e.toString());
+            }
+        }
+        long len = file.length();
+        if (len >= CacheOptions.maxAofLogSize) {
+            File rdbFile = new File(QCacheConfiguration.getCacheRdbPath());
+
+            if (!rdbFile.exists() || rdbFile.isDirectory()) {
+                try {
+                    boolean flag = rdbFile.createNewFile();
+                    if (!flag) {
+                        throw new RuntimeException("没有创建文件权限");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            ObjectOutputStream out = null;
+            try {
+                out = new ObjectOutputStream(new FileOutputStream(rdbFile));
+                out.writeObject(cache);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            //清空日志文件
+            clearAofFile();
+
+        }
+        len = file.length();
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
+            randomAccessFile.seek(len);
+            for(String line:logs) {
+                randomAccessFile.writeBytes(line + "\n");
+            }
+
+            randomAccessFile.close();
+        } catch (IOException ex) {
+            log.debug(ex.toString());
+        }
     }
 
     /**

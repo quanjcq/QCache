@@ -1,27 +1,28 @@
 package common;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.LockSupport;
 
 /**
- * 写操作的时候,需要写日志,虽然采用了异步写日志,最后导致了写操作比读操作每秒处理数量少了2w
- * 之前异步处理缓冲区是用{@code LinkedBlockingQueue}由于这个需要同步控制导致性能差了很多
- * 现在的场景是往队列放数据/取数的都是单线程的,写的速度远大于取数据的速度.
- * 注: 在多写多读会出现线程安全问题,只适合该场景.
- * 注: 适合单线程读,单线程写的情况
- *
- * 写操作每秒处理量提升 1w
- *
+ * 阻塞队列,入队出队都是无锁状态,值实现线程的等待通知模型,相比{@link java.util.concurrent.LinkedBlockingQueue} 快很多.
+ * 注: 适合单线程读,单线程写的情况,在多写多读会出现线程安全问题,只适合该场景.
  * @param <E>
  */
 public class QLinkedBlockingQueue<E> {
-    private final ReentrantLock lock = new ReentrantLock();
-    private final Condition condition = lock.newCondition();
-    private Node<E> head;
-    private Node<E> last;
+
+    /**
+     * 等待读的线程
+     */
+    private volatile Thread waitReadThread = null;
+    /**
+     * 等待写的线程
+     */
+    private volatile Thread waitWriteThread = null;
+    private volatile transient Node<E> head;
+    private volatile transient Node<E> last;
     private int capacity;
-    private AtomicInteger count = new AtomicInteger(0);
+    private volatile AtomicInteger count = new AtomicInteger(0);
+
     public QLinkedBlockingQueue() {
         this(Integer.MAX_VALUE - 5);
     }
@@ -35,30 +36,38 @@ public class QLinkedBlockingQueue<E> {
     }
 
     /**
-     * wait
+     * read lock，当读线程发现没有可读的内容的时候调用他自锁（只有读线程会调用该方法）
      */
-    private void selfLock() {
-        lock.lock();
-        try {
-            try {
-                condition.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } finally {
-            lock.unlock();
+    private void readLock() {
+        waitReadThread = Thread.currentThread();
+        LockSupport.park();
+    }
+
+    /**
+     * signal ReadWait,在写线程发现之前队列为空，会尝试唤醒等待的读线程.（只有写线程会调用）
+     */
+    private void signalReadWait() {
+        if (waitReadThread != null) {
+            LockSupport.unpark(waitReadThread);
+            waitReadThread = null;
         }
     }
 
     /**
-     * signal
+     * write lock,在写线程发现容器满了，会调用这个方法自锁(只有写线程才会调用这个方法)
      */
-    private void signal() {
-        lock.lock();
-        try {
-            condition.signal();
-        } finally {
-            lock.unlock();
+    private void writeLock() {
+        waitWriteThread = Thread.currentThread();
+        LockSupport.park();
+    }
+
+    /**
+     * signal write wait, 读线程，发现容器是满的，会尝试唤醒等待读的线程，（只有读线程才会调用这个方法）
+     */
+    private void signalWriteWait() {
+        if (waitWriteThread != null) {
+            LockSupport.unpark(waitReadThread);
+            waitReadThread = null;
         }
     }
 
@@ -68,7 +77,8 @@ public class QLinkedBlockingQueue<E> {
      * @param node 节点
      */
     private void enqueue(Node<E> node) {
-        last = last.next = node;
+        last.next = node;
+        last = node;
     }
 
     /**
@@ -92,21 +102,20 @@ public class QLinkedBlockingQueue<E> {
      * 入队.
      *
      * @param e 元素
-     * @return bool
      */
     public void put(E e) {
         while (count.get() == capacity) {
             //队列满了
-            selfLock();
+            writeLock();
         }
-        int c;
-        c = count.get();
+
         Node<E> node = new Node<E>(e);
         enqueue(node);
-        count.getAndIncrement();
 
+        int c = count.getAndIncrement();
+        //c == 1
         if (c == 0) {
-            signal();
+            signalReadWait();
         }
 
     }
@@ -119,23 +128,20 @@ public class QLinkedBlockingQueue<E> {
     public E poll() {
         while (count.get() == 0) {
             //为空
-            selfLock();
+            readLock();
         }
-        int c;
-        c = count.get();
-        count.getAndDecrement();
         E res = dequeue();
-
+        int c = count.getAndDecrement();
         if (c == capacity) {
-            signal();
+            signalWriteWait();
         }
-
         return res;
     }
 
-    public int size () {
+    public int size() {
         return count.get();
     }
+
     static class Node<E> {
         E item;
         Node<E> next;

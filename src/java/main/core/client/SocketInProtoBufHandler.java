@@ -7,6 +7,8 @@ import java.net.Socket;
 public abstract class SocketInProtoBufHandler<T extends MessageLite> implements SocketInHandler<T> {
     private MessageLite messageLite;
 
+    private int cacheSize = 1024;
+    private byte[] buffer = new byte[cacheSize];
     protected SocketInProtoBufHandler(MessageLite messageLite) {
         this.messageLite = messageLite;
     }
@@ -30,17 +32,19 @@ public abstract class SocketInProtoBufHandler<T extends MessageLite> implements 
             if (len == 0) {
                 return null;
             }
-
-            byte[] body = new byte[len];
+            if (len > cacheSize) {
+                cacheSize = len;
+                buffer = new byte[cacheSize];
+            }
             int needRead = len;
             int temp  = 0;
             int start = 0;
-            while (needRead > 0 && (temp = inputStream.read(body,start,needRead)) > 0) {
+            while (needRead > 0 && (temp = inputStream.read(buffer,start,needRead)) > 0) {
                 //数据读完
                 if (temp == needRead ) {
                     result = messageLite.getDefaultInstanceForType()
                             .newBuilderForType()
-                            .mergeFrom(body,0,len)
+                            .mergeFrom(buffer,0,len)
                             .build();
                     break;
                 } else if (temp < needRead) {

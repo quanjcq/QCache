@@ -16,9 +16,9 @@ public class ClientTest {
          * 测试结果说明(只是跟redis 对比测试):
          * 0. 该程序是在本机上跑的五个实例的集群,redis 单机的.
          * 1. 对于100w 次的请求没有任何请求异常
-         * 2. 每秒能处理读请求   7.5w   redis 9.5w
-         * 3. 每秒能处理写请求   6.2w   redis 8.5w
-         * 4. 每秒能处理删除请求 7.3w   redis 9.3w
+         * 2. 每秒能处理读请求    9.0w   redis 9.5w
+         * 3. 每秒能处理写请求    7.1w   redis 9.3w
+         * 4. 每秒能处理删除请求  8.3w   redis 8.5w
          * 5. 一致性hash的数据倾斜问题,在虚拟节点开到200个的时候,即hash环上有1000个节点的时候
          *     对于100w 次的请求 每个节点处理的数据都是 20w +/- 50 基本没有数据倾斜问题
          * 6. cpu利用率峰值100% ,redis 100%.
@@ -38,25 +38,19 @@ public class ClientTest {
                             .setNewNode("1:127.0.0.1:8081:9091")
                             .setNewNode("2:127.0.0.1:8082:9092")
                             .setNewNode("3:127.0.0.1:8083:9093")
-                            /*.setNewNode("4:127.0.0.1:8084:9094")
-                            .setNewNode("5:127.0.0.1:8085:9095")*/
                             .build();
                     int success = 0;
                     for (int j = 0; j < 100000; j++) {
                         //UserMessageProto.ResponseMessage responseMessage = cacheClient.doSet(getRandomString(),getRandomString(),-1);
                         UserMessageProto.ResponseMessage responseMessage = cacheClient.doGet(getRandomString());
                         //UserMessageProto.ResponseMessage responseMessage = cacheClient.doDel(getRandomString());
-                        //System.out.println(responseMessage.getResponseType());
-                        //System.out.println(responseMessage.getVal());
                         //System.out.println(responseMessage);
-                        //UserMessageProto.ResponseMessage responseMessage = cacheClient.doDel(getRandomString());
                         /*if (responseMessage.getResponseType() == UserMessageProto.ResponseType.SUCCESS) {
                             success++;
                         }*/
-                        //del 13381 ms
-                        //get 13283 ms
-                        //set 15862 ms
-                        //System.out.println(cacheClient.status(""));
+                        //del 12174 ms
+                        //get 11002 ms
+                        //set 13862 ms
                     }
                     //System.out.println(success);
                     cacheClient.close();

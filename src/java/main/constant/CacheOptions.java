@@ -9,7 +9,7 @@ public class CacheOptions {
     /**
      * 缓存AOF日志
      */
-    public static final int maxAofLogSize = 1 * 1024 * 1024;
+    public static final int maxAofLogSize = 10 * 1024 * 1024;//10m
 
     /**
      * 虚拟节点个数

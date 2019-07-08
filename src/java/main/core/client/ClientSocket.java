@@ -65,7 +65,7 @@ public class ClientSocket {
 
         public ClientSocket build() {
             if (socket == null || socketInHandler == null || socketOutHandler == null) {
-                throw new IllegalArgumentException("参数未设定");
+                throw new IllegalArgumentException("arguments not set");
             }
             return new ClientSocket(this);
         }

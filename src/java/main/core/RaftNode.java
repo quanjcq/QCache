@@ -13,8 +13,8 @@ import core.cache.backup.BackUpRdb;
 import core.message.LastRaftMessage;
 import core.message.RaftMessageProto;
 import core.message.UserMessageProto;
-import core.nio.NioInProtoBufHandler;
-import core.nio.NioOutProtoBufHandler;
+import core.nio.NioChannel;
+import core.nio.NioServer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -36,11 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -1396,9 +1392,355 @@ public class RaftNode {
         }
     }
 
+    //启动监听客户端请求的线程
+    private void initListenClient() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ListenClientServer clientServer = new ListenClientServer(UserMessageProto.UserMessage.getDefaultInstance(),
+                        myNode.getListenClientPort()
+                );
+                clientServer.init();
+            }
+        });
+        thread.setName("Listen-Client-Thread");
+        thread.start();
+
+    }
+
+    private void initAsyncAppendLogThread() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BackUpAof backUpAof = BackUpAof.getInstance();
+                LinkedList<String> buffer = new LinkedList<String>();
+                while (true) {
+                    String log;
+                    int size = asyncAppendFileQueue.size();
+                    if (size == 0) {
+                        log = asyncAppendFileQueue.poll();
+                        if (log != null && log.length() > 0) {
+                            backUpAof.appendAofLog(log, cache);
+                        }
+                    } else {
+                        buffer.clear();
+                        for (int i = 0;i<size;i++) {
+                            log = asyncAppendFileQueue.poll();
+                            if (log != null && log.length() > 0) {
+                                buffer.add(log);
+                            }
+
+                        }
+
+                        backUpAof.appendAofLogs(buffer,cache);
+
+                    }
 
 
 
+                }
+
+            }
+        });
+        thread.setName("Async-AppendLog-Thread");
+        thread.start();
+    }
+
+    /**
+     * 处理set请求.
+     * 对于写操作是需要写日志的.
+     *
+     * @param ctx ctx
+     * @param msg msg
+     */
+    private void doSet(NioChannel ctx, UserMessageProto.UserMessage msg) {
+        String key = msg.getSetMessage().getKey();
+        if (switchNode(key)) {
+            doSwitchNode(ctx, key);
+            return;
+        }
+        String val = msg.getSetMessage().getVal();
+        long last = msg.getSetMessage().getLastTime();
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        if (!writeAble) {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NOT_WRITE)
+                    .setVal("不可写")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
+            return;
+        }
+
+        //不要用异常做流程控制
+        try {
+            int data = Integer.valueOf(val);
+            CacheData cacheData = new CacheDataInt(data, new Date().getTime(), last);
+            cache.put(key, cacheData);
+        } catch (Exception ex) {
+            CacheData cacheData = new CacheDataString(val, new Date().getTime(), last);
+            cache.put(key, cacheData);
+        }
+
+        //set 操作数据写日志
+        //由于val 里面可能会有空格 解析的时候可以找两边的空格,再拆分
+        String logLine = "set " + key + " " + val + " " + last;
+
+
+
+        asyncAppendFileQueue.put(logLine);
+
+
+
+        /*BackUpAof backUpAof = BackUpAof.getInstance();
+        backUpAof.appendAofLog(logLine, cache);*/
+
+        responseMessage = UserMessageProto.ResponseMessage
+                .newBuilder()
+                .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                .setVal(val)
+                .build();
+        userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(responseMessage)
+                .build();
+        ctx.write(userMessage);
+    }
+
+    /**
+     * 处理del请求.
+     * 对于写操作是需要写日志的.
+     *
+     * @param ctx ctx
+     * @param msg msg
+     */
+    private void doDel(NioChannel ctx, UserMessageProto.UserMessage msg) {
+        String key = msg.getDelMessage().getKey();
+        if (switchNode(key)) {
+            doSwitchNode(ctx, key);
+            return;
+        }
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        if (!writeAble) {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NOT_WRITE)
+                    .setVal("不可写")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
+            return;
+        }
+
+        if (cache.containsKey(key)) {
+            cache.remove(key);
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                    .setVal("del success")
+                    .build();
+            //del 操作数据写日志
+            String logLine = "del " + key;
+            /*BackUpAof backUpAof = BackUpAof.getInstance();
+            backUpAof.appendAofLog(logLine, cache);*/
+            asyncAppendFileQueue.put(logLine);
+
+        } else {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NIL)
+                    .setVal("key not exist")
+                    .build();
+        }
+        userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(responseMessage)
+                .build();
+        ctx.write(userMessage);
+
+    }
+
+    /**
+     * 当前key 是否在本机.
+     *
+     * @param key key
+     * @return bool
+     */
+    private boolean switchNode(String key) {
+
+        return !myNode.equals(consistentHash.get(key));
+    }
+
+    private void doSwitchNode(NioChannel ctx, String key) {
+        Node node = consistentHash.get(key);
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        responseMessage = UserMessageProto.ResponseMessage
+                .newBuilder()
+                .setResponseType(UserMessageProto.ResponseType.SWITCH)
+                .setVal(node.toString())
+                .build();
+        userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(responseMessage)
+                .build();
+        ctx.write(userMessage);
+
+    }
+
+    /**
+     * 处理查看集群状态请求.
+     *
+     * @param ctx ctx
+     */
+    private void doStatus(NioChannel ctx) {
+        String resData = getStatus();
+        UserMessageProto.UserMessage userMessage = UserMessageProto.UserMessage
+                .newBuilder()
+                .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                .setResponseMessage(UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                        .setVal(resData)
+                        .build()
+                )
+                .build();
+        ctx.write(userMessage);
+
+    }
+
+    /**
+     * 返回服务器集群状态
+     *
+     * @return string
+     */
+    private String getStatus() {
+        String res = "------------------------------------------" + "\n" +
+                "State:" + state + "\n" +
+                "Term:" + currentTerm + "\n" +
+                "Id:" + myNode.getNodeId() + "\n" +
+                "Ip:" + myNode.getIp() + "\n" +
+                "Port:" + myNode.getListenClientPort() + "\n" +
+                "Alive Servers:" + "\n";
+        StringBuilder builder = new StringBuilder();
+        for (Node node : getAliveNodes()) {
+            String temp = "server." +
+                    node.getNodeId() +
+                    "=" + node.getIp() +
+                    ":" + node.getListenClientPort() + "\n";
+            builder.append(temp);
+        }
+        builder.append("------------------------------------------" + "\n");
+        return res + builder.toString();
+    }
+
+    /**
+     * 获取集群中所有活跃节点
+     *
+     * @return 活跃节点集合
+     */
+    private Set<Node> getAliveNodes() {
+        Map<Short, Node> circle = consistentHash.getCircle();
+        Set<Node> resNodes = new TreeSet<Node>();
+        for (short key : circle.keySet()) {
+            resNodes.add(circle.get(key));
+        }
+        return resNodes;
+    }
+
+    /**
+     * 处理get请求
+     */
+    private void doGet(NioChannel ctx, UserMessageProto.UserMessage msg) {
+        UserMessageProto.UserMessage userMessage;
+        UserMessageProto.ResponseMessage responseMessage;
+        String key = msg.getGetMessage().getKey();
+        //切换节点
+        if (switchNode(key)) {
+            doSwitchNode(ctx, key);
+            return;
+        }
+        if (!readAble) {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NOT_READ)
+                    .setVal("不可读")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
+            return;
+        }
+        CacheData cacheData = cache.get(key);
+        if (cacheData != null && !cacheData.isOutDate()) {
+            if (cacheData instanceof CacheDataInt) {
+                responseMessage = UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                        .setVal(((CacheDataInt) cacheData).val + "")
+                        .build();
+                userMessage = UserMessageProto.UserMessage
+                        .newBuilder()
+                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                        .setResponseMessage(responseMessage)
+                        .build();
+                ctx.write(userMessage);
+            } else if (cacheData instanceof CacheDataString) {
+                responseMessage = UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
+                        .setVal(((CacheDataString) cacheData).val)
+                        .build();
+                userMessage = UserMessageProto.UserMessage
+                        .newBuilder()
+                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                        .setResponseMessage(responseMessage)
+                        .build();
+                ctx.write(userMessage);
+            } else {
+                responseMessage = UserMessageProto.ResponseMessage
+                        .newBuilder()
+                        .setResponseType(UserMessageProto.ResponseType.ERROR)
+                        .setVal("Error")
+                        .build();
+                userMessage = UserMessageProto.UserMessage
+                        .newBuilder()
+                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                        .setResponseMessage(responseMessage)
+                        .build();
+                ctx.write(userMessage);
+            }
+        } else {
+            responseMessage = UserMessageProto.ResponseMessage
+                    .newBuilder()
+                    .setResponseType(UserMessageProto.ResponseType.NIL)
+                    .setVal("key not exist")
+                    .build();
+            userMessage = UserMessageProto.UserMessage
+                    .newBuilder()
+                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
+                    .setResponseMessage(responseMessage)
+                    .build();
+            ctx.write(userMessage);
+        }
+    }
 
     /**
      * Initializer
@@ -1519,407 +1861,39 @@ public class RaftNode {
             ctx.close();
         }
     }
-    //启动监听客户端请求的线程
-    private void initListenClient() {
-        final NioServer nioServer = new NioServer();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                nioServer.init();
-            }
-        });
-        thread.setName("listen-client-thread");
-        thread.start();
-    }
-
-    private void initAsyncAppendLogThread() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BackUpAof backUpAof = BackUpAof.getInstance();
-                while (true) {
-                    String log;
-                    log = asyncAppendFileQueue.poll();
-                    if (log != null && log.length() > 0) {
-                        backUpAof.appendAofLog(log, cache);
-                    }
-                }
-
-            }
-        });
-        thread.setName("Async-AppendLog-Thread");
-        thread.start();
-    }
-
-    private class NioServer {
-        private ServerSocketChannel serverChannel;
-        private ServerSocket serverSocket;
-        private Selector selector;
-
-        private void init() {
-            try {
-                serverChannel = ServerSocketChannel.open();
-                serverSocket = serverChannel.socket();
-                serverSocket.bind(new InetSocketAddress(myNode.getListenClientPort()));
-                serverChannel.configureBlocking(false);
-                selector = Selector.open();
-                serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-                core.nio.Channel channel = new core.nio.Channel.newBuilder()
-                        .setNioInHandler(new NioInMessageHandler(UserMessageProto.UserMessage.getDefaultInstance()))
-                        .setNioOutHandler(new NioOutMessageHandler())
-                        .build();
-                boolean flag = true;
-                while (flag) {
-                    selector.select();
-                    Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
-                    while (keyIter.hasNext()) {
-                        final SelectionKey key = keyIter.next();
-                        if (key.isAcceptable()) {
-                            java.nio.channels.SocketChannel clientChannel = serverChannel.accept();
-                            if (clientChannel != null) {
-                                clientChannel.configureBlocking(false);
-                                clientChannel.register(selector, SelectionKey.OP_READ);
-                            }
-                        } else if (key.isReadable()) {
-                            channel.setSelectionKey(key);
-                            Object obj = channel.read();
-                            if (obj instanceof UserMessageProto.UserMessage) {
-                                UserMessageProto.UserMessage msg = (UserMessageProto.UserMessage) obj;
-                                if (msg.getMessageType() == UserMessageProto.MessageType.GET) {
-                                    log.info("server {} get GET message {}", myNode.getNodeId(), msg.getGetMessage());
-                                    doGet(channel, msg);
-                                } else if (msg.getMessageType() == UserMessageProto.MessageType.SET) {
-                                    log.info("server {} get SET message {}", myNode.getNodeId(), msg.getSetMessage());
-                                    doSet(channel, msg);
-                                } else if (msg.getMessageType() == UserMessageProto.MessageType.DEL) {
-                                    log.info("server {} get DEL message {}", myNode.getNodeId(), msg.getDelMessage());
-                                    doDel(channel, msg);
-                                } else if (msg.getMessageType() == UserMessageProto.MessageType.STATUS) {
-                                    doStatus(channel);
-                                }
-                            }
-                        }
-                        keyIter.remove();
-                    }
-                }
-            } catch (IOException ex) {
-               log.info(ex.toString());
-            }
-
-        }
-
-        private class NioInMessageHandler extends NioInProtoBufHandler<UserMessageProto.UserMessage> {
-            private NioInMessageHandler(MessageLite messageLite) {
-                super(messageLite);
-            }
-
-            @Override
-            public Object read(java.nio.channels.SocketChannel socketChannel) {
-                return super.read(socketChannel);
-            }
-        }
-
-        private class NioOutMessageHandler extends NioOutProtoBufHandler<UserMessageProto.UserMessage> {
-            @Override
-            public void write(java.nio.channels.SocketChannel socketChannel, UserMessageProto.UserMessage msg) {
-                super.write(socketChannel, msg);
-            }
-        }
-    }
 
     /**
-     * 处理set请求.
-     * 对于写操作是需要写日志的.
-     *
-     * @param ctx ctx
-     * @param msg msg
+     * 处理客户端请求
      */
-    private void doSet(core.nio.Channel ctx, UserMessageProto.UserMessage msg) {
-        log.info("do Set");
-        String key = msg.getSetMessage().getKey();
-        if (switchNode(key)) {
-            doSwitchNode(ctx, key);
-            return;
-        }
-        String val = msg.getSetMessage().getVal();
-        long last = msg.getSetMessage().getLastTime();
-        UserMessageProto.UserMessage userMessage;
-        UserMessageProto.ResponseMessage responseMessage;
-        if (!writeAble) {
-            responseMessage = UserMessageProto.ResponseMessage
-                    .newBuilder()
-                    .setResponseType(UserMessageProto.ResponseType.NOT_WRITE)
-                    .setVal("不可写")
-                    .build();
-            userMessage = UserMessageProto.UserMessage
-                    .newBuilder()
-                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                    .setResponseMessage(responseMessage)
-                    .build();
-            ctx.write(userMessage);
-            return;
+    private class ListenClientServer extends NioServer {
+        public ListenClientServer(MessageLite messageLite, int port) {
+            super(messageLite, port);
         }
 
-        //不要用异常做流程控制
-        try {
-            int data = Integer.valueOf(val);
-            CacheData cacheData = new CacheDataInt(data, new Date().getTime(), last);
-            cache.put(key, cacheData);
-        } catch (Exception ex) {
-            CacheData cacheData = new CacheDataString(val, new Date().getTime(), last);
-            cache.put(key, cacheData);
-        }
-
-        //set 操作数据写日志
-        //由于val 里面可能会有空格 解析的时候可以找两边的空格,再拆分
-        String logLine = "set " + key + " " + val + " " + last;
-
-
-        asyncAppendFileQueue.put(logLine);
-
-
-        /*BackUpAof backUpAof = BackUpAof.getInstance();
-        backUpAof.appendAofLog(logLine, cache);*/
-
-        responseMessage = UserMessageProto.ResponseMessage
-                .newBuilder()
-                .setResponseType(UserMessageProto.ResponseType.SUCCESS)
-                .setVal(val)
-                .build();
-        userMessage = UserMessageProto.UserMessage
-                .newBuilder()
-                .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                .setResponseMessage(responseMessage)
-                .build();
-        ctx.write(userMessage);
-        log.info("complete doSet");
-    }
-
-    /**
-     * 处理del请求.
-     * 对于写操作是需要写日志的.
-     *
-     * @param ctx ctx
-     * @param msg msg
-     */
-    private void doDel(core.nio.Channel ctx, UserMessageProto.UserMessage msg) {
-        String key = msg.getDelMessage().getKey();
-        if (switchNode(key)) {
-            doSwitchNode(ctx, key);
-            return;
-        }
-        UserMessageProto.UserMessage userMessage;
-        UserMessageProto.ResponseMessage responseMessage;
-        if (!writeAble) {
-            responseMessage = UserMessageProto.ResponseMessage
-                    .newBuilder()
-                    .setResponseType(UserMessageProto.ResponseType.NOT_WRITE)
-                    .setVal("不可写")
-                    .build();
-            userMessage = UserMessageProto.UserMessage
-                    .newBuilder()
-                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                    .setResponseMessage(responseMessage)
-                    .build();
-            ctx.write(userMessage);
-            return;
-        }
-
-        if (cache.containsKey(key)) {
-            cache.remove(key);
-            responseMessage = UserMessageProto.ResponseMessage
-                    .newBuilder()
-                    .setResponseType(UserMessageProto.ResponseType.SUCCESS)
-                    .setVal("del success")
-                    .build();
-            //del 操作数据写日志
-            String logLine = "del " + key;
-            /*BackUpAof backUpAof = BackUpAof.getInstance();
-            backUpAof.appendAofLog(logLine, cache);*/
-            asyncAppendFileQueue.put(logLine);
-        } else {
-            responseMessage = UserMessageProto.ResponseMessage
-                    .newBuilder()
-                    .setResponseType(UserMessageProto.ResponseType.NIL)
-                    .setVal("key not exist")
-                    .build();
-        }
-        userMessage = UserMessageProto.UserMessage
-                .newBuilder()
-                .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                .setResponseMessage(responseMessage)
-                .build();
-        ctx.write(userMessage);
-
-    }
-
-    /**
-     * 当前key 是否在本机.
-     *
-     * @param key key
-     * @return bool
-     */
-    private boolean switchNode(String key) {
-
-        return !myNode.equals(consistentHash.get(key));
-    }
-
-    private void doSwitchNode(core.nio.Channel ctx, String key) {
-        Node node = consistentHash.get(key);
-        UserMessageProto.UserMessage userMessage;
-        UserMessageProto.ResponseMessage responseMessage;
-        responseMessage = UserMessageProto.ResponseMessage
-                .newBuilder()
-                .setResponseType(UserMessageProto.ResponseType.SWITCH)
-                .setVal(node.toString())
-                .build();
-        userMessage = UserMessageProto.UserMessage
-                .newBuilder()
-                .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                .setResponseMessage(responseMessage)
-                .build();
-        ctx.write(userMessage);
-
-    }
-
-
-    /**
-     * 处理查看集群状态请求.
-     *
-     * @param ctx ctx
-     */
-    private void doStatus(core.nio.Channel ctx) {
-        String resData = getStatus();
-        UserMessageProto.UserMessage userMessage = UserMessageProto.UserMessage
-                .newBuilder()
-                .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                .setResponseMessage(UserMessageProto.ResponseMessage
-                        .newBuilder()
-                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
-                        .setVal(resData)
-                        .build()
-                )
-                .build();
-        ctx.write(userMessage);
-
-    }
-
-    /**
-     * 返回服务器集群状态
-     *
-     * @return string
-     */
-    private String getStatus() {
-        String res = "------------------------------------------" + "\n" +
-                "State:" + state + "\n" +
-                "Term:" + currentTerm + "\n" +
-                "Id:" + myNode.getNodeId() + "\n" +
-                "Ip:" + myNode.getIp() + "\n" +
-                "Port:" + myNode.getListenClientPort() + "\n" +
-                "Alive Servers:" + "\n";
-        StringBuilder builder = new StringBuilder();
-        for (Node node : getAliveNodes()) {
-            String temp = "server." +
-                    node.getNodeId() +
-                    "=" + node.getIp() +
-                    ":" + node.getListenClientPort() + "\n";
-            builder.append(temp);
-        }
-        builder.append("------------------------------------------" + "\n");
-        return res + builder.toString();
-    }
-
-    /**
-     * 获取集群中所有活跃节点
-     *
-     * @return 活跃节点集合
-     */
-    private Set<Node> getAliveNodes() {
-        Map<Short, Node> circle = consistentHash.getCircle();
-        Set<Node> resNodes = new TreeSet<Node>();
-        for (short key : circle.keySet()) {
-            resNodes.add(circle.get(key));
-        }
-        return resNodes;
-    }
-
-    /**
-     * 处理get请求
-     */
-    private void doGet(core.nio.Channel ctx, UserMessageProto.UserMessage msg) {
-        UserMessageProto.UserMessage userMessage;
-        UserMessageProto.ResponseMessage responseMessage;
-        String key = msg.getGetMessage().getKey();
-        //切换节点
-        if (switchNode(key)) {
-            doSwitchNode(ctx, key);
-            return;
-        }
-        if (!readAble) {
-            responseMessage = UserMessageProto.ResponseMessage
-                    .newBuilder()
-                    .setResponseType(UserMessageProto.ResponseType.NOT_READ)
-                    .setVal("不可读")
-                    .build();
-            userMessage = UserMessageProto.UserMessage
-                    .newBuilder()
-                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                    .setResponseMessage(responseMessage)
-                    .build();
-            ctx.write(userMessage);
-            return;
-        }
-        CacheData cacheData = cache.get(key);
-        if (cacheData != null && !cacheData.isOutDate()) {
-            if (cacheData instanceof CacheDataInt) {
-                responseMessage = UserMessageProto.ResponseMessage
-                        .newBuilder()
-                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
-                        .setVal(((CacheDataInt) cacheData).val + "")
-                        .build();
-                userMessage = UserMessageProto.UserMessage
-                        .newBuilder()
-                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                        .setResponseMessage(responseMessage)
-                        .build();
-                ctx.write(userMessage);
-            } else if (cacheData instanceof CacheDataString) {
-                responseMessage = UserMessageProto.ResponseMessage
-                        .newBuilder()
-                        .setResponseType(UserMessageProto.ResponseType.SUCCESS)
-                        .setVal(((CacheDataString) cacheData).val)
-                        .build();
-                userMessage = UserMessageProto.UserMessage
-                        .newBuilder()
-                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                        .setResponseMessage(responseMessage)
-                        .build();
-                ctx.write(userMessage);
+        @Override
+        protected void processReadKey(SelectionKey selectionKey) {
+            NioChannel nioChannel = nioChannelGroup.findChannel(selectionKey);
+            if (nioChannel == null) {
+                log.info("Channel already closed!");
             } else {
-                responseMessage = UserMessageProto.ResponseMessage
-                        .newBuilder()
-                        .setResponseType(UserMessageProto.ResponseType.ERROR)
-                        .setVal("Error")
-                        .build();
-                userMessage = UserMessageProto.UserMessage
-                        .newBuilder()
-                        .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                        .setResponseMessage(responseMessage)
-                        .build();
-                ctx.write(userMessage);
+                Object obj = nioChannel.read();
+                if (obj == null) {
+                    return;
+                }
+                if (obj instanceof UserMessageProto.UserMessage) {
+                    UserMessageProto.UserMessage msg = (UserMessageProto.UserMessage) obj;
+                    if (msg.getMessageType() == UserMessageProto.MessageType.GET) {
+                        doGet(nioChannel, msg);
+                    } else if (msg.getMessageType() == UserMessageProto.MessageType.SET) {
+                        doSet(nioChannel, msg);
+                    } else if (msg.getMessageType() == UserMessageProto.MessageType.DEL) {
+                        doDel(nioChannel, msg);
+                    } else if (msg.getMessageType() == UserMessageProto.MessageType.STATUS) {
+                        doStatus(nioChannel);
+                    }
+
+                }
             }
-        } else {
-            responseMessage = UserMessageProto.ResponseMessage
-                    .newBuilder()
-                    .setResponseType(UserMessageProto.ResponseType.NIL)
-                    .setVal("key not exist")
-                    .build();
-            userMessage = UserMessageProto.UserMessage
-                    .newBuilder()
-                    .setMessageType(UserMessageProto.MessageType.RESPONSE)
-                    .setResponseMessage(responseMessage)
-                    .build();
-            ctx.write(userMessage);
         }
     }
 }

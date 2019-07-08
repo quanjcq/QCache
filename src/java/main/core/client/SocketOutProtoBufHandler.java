@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public abstract class SocketOutProtoBufHandler<T extends MessageLite> implements SocketOutHandler<T> {
+    private int bufferSize = 1024;
+    private byte[] buffer = new byte[bufferSize];
     @Override
     public void write(Socket socket, T msg) {
         try {
@@ -16,13 +18,16 @@ public abstract class SocketOutProtoBufHandler<T extends MessageLite> implements
                 throw new IllegalArgumentException("msg length not bigger than  " + Short.MAX_VALUE);
             }
 
-
             byte[] head = (shortToBytes((short) bodyLen));
             byte[] body = msg.toByteArray();
-            byte[] content = new byte[head.length + body.length];
-            System.arraycopy(head, 0, content, 0, head.length);
-            System.arraycopy(body, 0, content, 2, bodyLen);
-            outputStream.write(content);
+            int contentLen = bodyLen + 2;
+            if (contentLen > bufferSize) {
+                bufferSize = contentLen;
+                buffer = new byte[bufferSize];
+            }
+            System.arraycopy(head, 0, buffer, 0, 2);
+            System.arraycopy(body, 0, buffer, 2, bodyLen);
+            outputStream.write(buffer,0,contentLen);
             outputStream.flush();
         } catch (IOException ex) {
             ex.printStackTrace();

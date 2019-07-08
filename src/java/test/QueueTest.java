@@ -11,22 +11,23 @@ public class QueueTest {
     @Test
     public void queueTest(){
         final QLinkedBlockingQueue<Integer> queue = new QLinkedBlockingQueue<Integer>();
-        ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(2,2,0,
+        ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(3,3,0,
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         final CountDownLatch countDownLatch = new CountDownLatch(2);
         long start = System.currentTimeMillis();
         poolExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0;i< 1000000;i++) {
+                for (int i = 0;i< 100000;i++) {
                     //System.out.println("a");
-                    queue.put(i);
+
+                        queue.put(i);
+
 
                 }
                 countDownLatch.countDown();;
                 System.out.println("complete");
                 System.out.println("size " + queue.size());
-
 
             }
         });
@@ -34,11 +35,11 @@ public class QueueTest {
         poolExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0;i< 1000000;i++) {
-                    queue.poll();
+                for (int i = 0;i< 100000;i++) {
+                        queue.poll();
+
                     //System.out.println(i);
                 }
-
                 countDownLatch.countDown();
                 System.out.println("complete2");
 
@@ -50,7 +51,6 @@ public class QueueTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //System.out.println(atomicInteger.get());
         System.out.println(queue.size());
         System.out.println(System.currentTimeMillis() - start);
         poolExecutor.shutdown();
