@@ -18,8 +18,12 @@
 * Raft算法.
 * 一致性Hash.
 * Netty,集群节点之间的通信使用的Netty.
-* NIO.(处理客户端请求是基于Java原生的nio实现,ProtoBuf对象的序列化,反序列化.<br>之前也是用的Netty实现的,由于是异步通信框架最后自己做了同步处理,然后性能测试的时候不到redis的1/20) 
-* 并发编程
+* NIO.<br>
+    处理客户端请求的这部分通信,之前采用的netty性能不太好,netty是个异步通信框架,做同步后性能会很差.然后自己实现的.<br>
+    多线程跟单线程都尝试过,多线程是有不错的性能提升,但是一做线程同步,性能急剧下降.<br>
+    通信数据最早使用的是google,ProtoBuf序列化反序列化,不够灵活,重点还慢,后来自己实现的,通过单利减少对象的反复创建<br>
+    将序列化后的数据直接放入channel的写缓冲区(DirectBuffer),减少数据的拷贝,从而提升这部分的性能.
+* 并发编程.
 
 # 处理客户端请求
     尝试了使用下面三种方式
@@ -35,58 +39,68 @@
 # Quick Start
 * chmod -R 777 ./out
 * cd out
-* ./build.sh 5    可以快速在本机上部署五个实例的集群(必须写正常的参数,shell脚本不太会,没处理异常的)
-* ./kill_all.sh 5 可以关闭这五台集群(必须正确的参数)
-* ./kill.sh 1     可以关闭id = 1 的一个实例(必须正确的参数)
-* ./start.sh 1    可以开启id = 1 的一个实例(必须正确的参数)
+* ./build.sh 5    可以快速在本机上部署五个实例的集群
+* ./kill_all.sh 5 可以关闭这五台集群
+* ./kill.sh 1     可以关闭id = 1 的一个实例
+* ./start.sh 1    可以开启id = 1 的一个实例
 * ./client.sh     简单的命令行客户端
 * 反复创建(执行build.sh) 而没有对应关掉的话,自己jps 查看下手动kill
 * build.sh 之后一定要有kill，才能再build,pid文件存在创建实例的时候会自己退出
-* Client Demo
-```java
-public class Demo {
-    public static void main(String[] args) {
-        CacheClient cacheClient = new CacheClient.newBuilder()
-                .setNumberOfReplicas(CacheOptions.numberOfReplicas)
-                .setNewNode("1:127.0.0.1:8081:9091")
-                .setNewNode("2:127.0.0.1:8082:9092")
-                .setNewNode("3:127.0.0.1:8083:9093")
-                //.setNewNode("4:127.0.0.1:8084:9094")
-                //.setNewNode("5:127.0.0.1:8085:9095")
-                .build();
-        boolean flag  = cacheClient.set("name", "quan",-1);
-        if (flag) {
-            String val = cacheClient.get("name");
-            System.out.println(val);
-        }
-        flag = cacheClient.set("sex", "man", 1234506);
-        System.out.println(flag);
-        System.out.println("name=" + cacheClient.get("name") + " sex = " + cacheClient.get("sex"));
 
-        flag = cacheClient.del("sex");
-        System.out.println(flag);
-        flag = cacheClient.del("name");
-        System.out.println(flag);
+#缓存的存储(下面性能测试,测的时候是放在内存中的数据)
+* 使用HashMap作为索引.
+* 基于内存映射文件存储具体消息.
+* 缓存的插入是追加的方式,满足很好的局部性,性能没有大的下降
+* 随机读,在数据量较大的时候,有明显的下降,数据较小的时候性能差不多.
 
-        System.out.println("name=" + cacheClient.get("name") + " sex = " + cacheClient.get("sex"));
-
-        System.out.println(cacheClient.status(null));
-        cacheClient.close();
+# raft
+* leader 选举.<br>
+    节点在倒计时内没有收到来自leader选举,会在一个随机时间内0~500ms,(150~300,论文推荐)发起选举,在选举之前先预选举(防止应为自身网络原因而没有收到来自leader 心跳包)
+    收到半数以上的节点当选为leader,并向所有follower 发送心跳信息.
+    最终基本达到了,不管是集群刚起步,还是leader挂了,都能一轮选举选出leader.
+* 数据同步.<br>
+    基本上所有能看到的数据同步原理都差不多. leader 跟 follower 的心跳包中,包含了节点的数据信息.
+    zookeeper中是事务id,RocketMQ是文件偏移量,leader根据这个信息将之后的数据同步给follower.
+* 安全性.<br>
+    1) 同时存在两个follower?<br>
+        半数以上的投票才能当选为leader,所以每一轮选举最多只能选出一个leader
+    2) 当选为leader的节点,没有包含最多的数据?
+        所有写操作,只有半数以上节点确认才提交,所以一定有半数以上的节点含有最新的数据,投票的时候,若节点数据少于该节点,是不会把选票投给它.
+        所以,只有含有最新数据的节点才能当选为leader.
+    3) leader接收到半数以上节点确认,并在本地提交数据,这时候leader挂了,这条数据如何处理?
+        raft论文是选择放弃这条消息,也有直接当做已经提交数据,还有通过查询是否得到半数以上确认决定是否提交.
+        这里我采用的方式,是让现在的leader把它当做一条新消息,等待半数以上确认然后提交.
+# recycle
+* 1) 标记.<br>
+    缓存的回收是先标记的,达到一定数量然后再回收,标记的过程,不需要任何线程同步
+* 2) 回收.<br>
+    这一块的数据访问是跟主线程需要同步的,通过屏蔽读写的方式,而非加锁,使得主线程在非垃圾回收性能很好
+    ```java
+    //关闭服务器的写请求
+    canWrite.set(false);
+    //通过sleep 使得正在执行的写请求,能够正常执行完成
+    try {
+        Thread.sleep(1000);
+    } catch (InterruptedException e) {
+        logger.warn(e.toString());
     }
-}
+    //重建cache文件
+    cacheFileGroup.rebulid();
+    //关闭读请求
+    canRead.set(false);
+    //通过sleep 使得正在执行的读请求,能够正常执行完成
+    try {
+        Thread.sleep(100);
+    } catch (InterruptedException e) {
+        logger.warn(e.toString());
+    }
+    //新建立的cache,替换之前的cache
+    cacheFileGroup.setRebulidEffective();
 
-```
-
-# 程序运行流程
-* load node 
-* load snaphot 
-* load raft logs
-* 加载缓存备份数据,恢复到之前的状态
-* init thread pool
-* 启动监听其它节点消息的线程
-* 启动监听客户端的消息的线程
-* 启动异步写日志线程
-
+    //开启服务的读写功能
+    canWrite.set(true);
+    canRead.set(true);
+    ```
 # 性能测试(只是跟redis对比测试)
 * 该程序是在本机上跑的五个实例的集群,redis 单机的.
 * 对于100w 次的请求没有任何请求异常
@@ -96,140 +110,8 @@ public class Demo {
 * 一致性hash的数据倾斜问题,在虚拟节点开到200个的时候,即hash环上有1000个节点的时候,<br>
   对于100w 次的请求每个节点处理的数据都是 20w +/- 50 基本没有数据倾斜问题
 * 即使对收到的消息直接返回,不做任何处理依然没有redis快,语言本身的性能差异摆在哪里的.
-* 该程序测试代码
-```java
-public class ClientTest {
-    public static void main(String[] args) {
-        ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(10, 10, 0,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        long start = System.currentTimeMillis();
-        final CountDownLatch countDownLatch = new CountDownLatch(10);
-        for (int i = 0; i < 10; i++) {
-            poolExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    CacheClient cacheClient = new CacheClient.newBuilder()
-                            .setNumberOfReplicas(CacheOptions.numberOfReplicas)
-                            .setNewNode("1:127.0.0.1:8081:9091")
-                            .setNewNode("2:127.0.0.1:8082:9092")
-                            .setNewNode("3:127.0.0.1:8083:9093")
-                            /*.setNewNode("4:127.0.0.1:8084:9094")
-                            .setNewNode("5:127.0.0.1:8085:9095")*/
-                            .build();
-                    int success = 0;
-                    for (int j = 0; j < 100000; j++) {
-                        //UserMessageProto.ResponseMessage responseMessage = cacheClient.doSet(getRandomString(),getRandomString(),-1);
-                        UserMessageProto.ResponseMessage responseMessage = cacheClient.doGet(getRandomString());
-                        //UserMessageProto.ResponseMessage responseMessage = cacheClient.doDel(getRandomString());
-                        if (responseMessage.getResponseType() == UserMessageProto.ResponseType.SUCCESS) {
-                            success++;
-                        }
-                        //del 12174 ms
-                        //get 11002 ms
-                        //set 13862 ms
-                    }
-                    System.out.println(success);
-                    cacheClient.close();
-                    countDownLatch.countDown();
-                }
-            });
-        }
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(System.currentTimeMillis() - start);
-        poolExecutor.shutdown();
-    }
 
-    /**
-     * 获取一个随机的字符串.
-     *
-     * @return string
-     */
-    private static String getRandomString() {
-        char[] chars = {
-                'a', 'b', 'c', 'd', 'e',
-                'f', 'g', 'h', 'i', 'j',
-                'k', 'l', 'm', 'n', 'o',
-                'p', 'q', 'r', 's', 't',
-                'u', 'v', 'w', 'x', 'y',
-                'z'
-        };
-        Random random = new Random();
-        int num = random.nextInt(20) + 2;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < num; i++) {
-            int index = random.nextInt(26);
-            builder.append(chars[index]);
-        }
-        return builder.toString();
-    }
-}
-```
-* Redis 测试代码
-```java
-public class RedisTest {
-    public static void main(String[] args) {
-        ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(10, 10, 0,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        long start = System.currentTimeMillis();
-        final CountDownLatch countDownLatch = new CountDownLatch(10);
-        for (int i = 0; i < 10; i++) {
-            poolExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    Jedis jedis = new Jedis("127.0.0.1");
-                    for (int j = 0; j < 100000; j++) {
-                        //jedis.set(getRandomString(), getRandomString());
-                        //String val = jedis.get(getRandomString());
-                        jedis.del(getRandomString());
-                        //set 11698 ms
-                        //get 10510 ms
-                        //del 10662 ms
-                    }
-                    jedis.close();
-                    countDownLatch.countDown();
-                }
-            });
-        }
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(System.currentTimeMillis() - start);
-        poolExecutor.shutdown();
-    }
 
-    /**
-     * 获取一个随机的字符串.
-     *
-     * @return string
-     */
-    private static String getRandomString() {
-        char[] chars = {
-                'a', 'b', 'c', 'd',
-                'e', 'f', 'g', 'h',
-                'i', 'j', 'k', 'l',
-                'm', 'n', 'o', 'p',
-                'q', 'r', 's', 't',
-                'u', 'v', 'w', 'x',
-                'y', 'z'
-        };
-        Random random = new Random();
-        int num = random.nextInt(20) + 2;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < num; i++) {
-            int index = random.nextInt(26);
-            builder.append(chars[index]);
-        }
-        return builder.toString();
-    }
-}
-
-```
 # 总结(遇到的坑)
 * lock.lock() 一定要在finally里面unlock 释放锁，状态转换的时候可能会中断该线程，导致锁没有释放
     最后其他线程无限等待状态
@@ -237,16 +119,5 @@ public class RedisTest {
 * 本来是用map维护socket连接的，最后自己粗心了，创建socket之后没有put进去,导致监听该socket连接的server
     创建过多连接，导致线程池线程耗完，无法处理后续连接
 * 考虑所有的情况，不要在编码的时候合并流程（即使该流程是不会发生的）,可以在编码完成后再合并
-
-# 从数据一致性到系统架构的认识(猜想)
-以前我总觉的mysql 这种主从复制集群模式,跟单机没啥区别,因为数据需要同步,主服务器写入的数据还是会到达从服务器<br>
-这种集群能提供的性能跟单机差不多.现在自己实现了下,一致性算法,更能明显感觉到,需要提供数据一致性的功能集群(特别是对一致性要求高的)服务器
-他能提供的最大性能是单机的k倍(k值可能就是2,3 这种小数字),不像web之类的服务器,它可以一直扩展下去,最后整个服务器集群提供的性能线性上升
-所以这导致了随着用户的增加,整个系统的压力瓶颈会在mysql这里,所以后面出现了缓存,消息队列等就是为了避免大量请求到mysql数据库,导致数据库的崩溃.
-为了将需要维护的一致性数据量减少,采用分库的形式,就是让每个mysql集群维护一部分的数据,每个集群之间没有数据交叉.
-根据功能,服务拆分整个系统的数据库,就进一步演变成了,现在微服务的架构模式(微服務最大的好处是解耦降低系統設計的复杂度).
-分库,或者微服务架构最后出现了新的问题,分布式事务.<br>
-
-......
 
 

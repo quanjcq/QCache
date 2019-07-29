@@ -11,6 +11,10 @@ public class RedisTest {
 
         ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(10, 10, 0,
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        final StringBuilder builder = new StringBuilder();
+        for (int i = 0;i< 29;i++) {
+            builder.append("0123456789abcdefghijklmnopqrstuvwxyz");
+        }
         long start = System.currentTimeMillis();
         final CountDownLatch countDownLatch = new CountDownLatch(10);
         for (int i = 0; i < 10; i++) {
@@ -20,8 +24,8 @@ public class RedisTest {
                     Jedis jedis = new Jedis("127.0.0.1");
                     //int count = 0;
                     for (int j = 0; j < 100000; j++) {
-                        jedis.set(getRandomString(), getRandomString());
-                        //String val = jedis.get(getRandomString());
+                        //jedis.set("name" + j, builder.toString());
+                        String val = jedis.get("name" + j);
                         //jedis.del(getRandomString());
                         //set 11698 ms
                         //get 10510 ms
@@ -58,7 +62,7 @@ public class RedisTest {
                 'y', 'z'
         };
         Random random = new Random();
-        int num = random.nextInt(20) + 2;
+        int num = random.nextInt(5) + 2;
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < num; i++) {
             int index = random.nextInt(26);

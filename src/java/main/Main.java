@@ -1,11 +1,17 @@
+import cache.CacheServer;
+import client.CacheClient;
 import common.Node;
 import common.QCacheConfiguration;
 import common.Tools;
 import constant.CacheOptions;
-import core.RaftNode;
-import core.cache.Method;
-import core.client.CacheClient;
-import core.message.UserMessageProto;
+import raft.ConsistentHash;
+import recycle.MarkExpire;
+import recycle.RecycleService;
+import store.AofLogService;
+import store.CacheFileGroup;
+import store.RaftLogMessageService;
+import store.RaftStateMachineService;
+import store.checkpoint.CheckPoint;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,7 +51,7 @@ public class Main {
             try {
                 boolean flag = file.createNewFile();
                 if (!flag) {
-                    System.out.println("创建文件失败");
+                    System.out.println("create pid file error");
                     System.exit(1);
                 }
             } catch (IOException ex) {
@@ -69,8 +75,54 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        RaftNode raftNode = new RaftNode();
-        raftNode.init();
+        List<Node> nodes = QCacheConfiguration.getNodeList();
+        Node myNode = QCacheConfiguration.getMyNode();
+        ConsistentHash consistentHash = new ConsistentHash(CacheOptions.numberOfReplicas);
+
+        //checkPoint
+        CheckPoint checkPoint = new CheckPoint(QCacheConfiguration.getCheckPointPath());
+
+        //raftLog
+        int raftLogFileSize = 1024 * 1024; //1m
+        RaftLogMessageService raftLogMessageService = new RaftLogMessageService(QCacheConfiguration.getRaftLogsPath(),raftLogFileSize);
+
+        //state machine
+        int raftStateFileSize = 1024 * 1024;//1m
+        RaftStateMachineService raftStateMachineService = new RaftStateMachineService(raftStateFileSize,QCacheConfiguration.getRaftSnaphotPath(),consistentHash);
+        raftLogMessageService.setRaftStateMachineService(raftStateMachineService);
+
+        CacheServer server = new CacheServer();
+
+        //缓存文件
+        int cacheFileSize = 1024 * 1024 * 1024;
+        CacheFileGroup cacheFileGroup = new CacheFileGroup(QCacheConfiguration.getCacheFilesPath(),cacheFileSize);
+
+        //recycle
+        RecycleService recycleService = new RecycleService(new MarkExpire(cacheFileGroup),
+                cacheFileGroup,
+                server.getCanWrite(),
+                server.getCanRead());
+
+        int cacheAofLogSize = 1024 * 1204;
+        AofLogService aofLogService = new AofLogService(QCacheConfiguration.getCacheAofPath(),cacheAofLogSize);
+
+
+        //自身节点
+        server.setMyNode(myNode);
+        server.setNodes(nodes);
+        //一致性hash
+        server.setConsistentHash(consistentHash);
+        server.setCacheFileGroup(cacheFileGroup);
+        server.setCheckPoint(checkPoint);
+        server.setRecycleService(recycleService);
+        server.setAofLogService(aofLogService);
+        server.setRaftLogMessageService(raftLogMessageService);
+        server.setRaftStateMachineService(raftStateMachineService);
+
+        //启动server
+        server.start();
+
+
     }
 
     private static void runClient() {
@@ -79,7 +131,7 @@ public class Main {
         cacheBuilder = cacheBuilder.setNumberOfReplicas(CacheOptions.numberOfReplicas);
         List<Node> nodes = QCacheConfiguration.getNodeList();
         for (Node node : nodes) {
-            cacheBuilder = cacheBuilder.setNewNode(node.toString());
+            cacheBuilder = cacheBuilder.setNewNode(node.getNodeId() +":"+ node.getIp() + ":" + node.getListenClientPort());
         }
         CacheClient cacheClient = cacheBuilder.build();
         while (true) {
@@ -115,20 +167,23 @@ public class Main {
                 System.out.println(client.status(null));
             }
         } else if (command.equalsIgnoreCase(Method.get)) {
-            UserMessageProto.ResponseMessage responseMessage = client.doGet(list.get(1));
-            System.out.println("(" + responseMessage.getResponseType() + ") " + responseMessage.getVal());
-        } else if (command.equalsIgnoreCase(Method.set)) {
-            UserMessageProto.ResponseMessage responseMessage;
-            if (list.size() == 3) {
-                responseMessage = client.doSet(list.get(1), list.get(2), -1);
+            String val = client.get(list.get(1));
+            if (val == null) {
+                System.out.println("(NIL) key not exist");
             } else {
-                responseMessage = client.doSet(list.get(1), list.get(2), Integer.valueOf(list.get(3)));
+                System.out.println(val);
             }
-            System.out.println("(" + responseMessage.getResponseType() + ") " + responseMessage.getVal());
+        } else if (command.equalsIgnoreCase(Method.put)) {
+            boolean res;
+            if (list.size() == 3) {
+                res = client.put(list.get(1), list.get(2), -1);
+            } else {
+                res = client.put(list.get(1), list.get(2), Integer.valueOf(list.get(3)));
+            }
+            System.out.println(res ? "OK" : "error!");
         } else if (command.equalsIgnoreCase(Method.del)) {
-            UserMessageProto.ResponseMessage responseMessage;
-            responseMessage = client.doDel(list.get(1));
-            System.out.println("(" + responseMessage.getResponseType() + ") " + responseMessage.getVal());
+            boolean res = client.del(list.get(1));
+            System.out.println(res ? "OK" : "error!");
         } else {
             System.out.println("SYNTAX_ERROR");
         }
@@ -146,7 +201,7 @@ public class Main {
             return true;
         } else if (command.equalsIgnoreCase(Method.get) || command.equalsIgnoreCase(Method.del)) {
             return temp.length == 2;
-        } else if (command.equalsIgnoreCase(Method.set)) {
+        } else if (command.equalsIgnoreCase(Method.put)) {
             List<String> setStr = Tools.split(line);
             if (setStr == null)
                 return false;
@@ -174,11 +229,17 @@ public class Main {
     private static void printUsage() {
         String info = "------------------Usage-------------------" + "\n" +
                 "status [id:ip:port1:port2]-查看服务器信息" + "\n" +
-                "set key val [time]添加缓存" + "\n" +
+                "put key val [time]添加缓存" + "\n" +
                 "get key---获取缓存数据" + "\n" +
                 "del key---删除缓存数据" + "\n" +
                 "exit or q---退出！" + "\n" +
                 "------------------------------------------";
         System.out.println(info);
+    }
+    private static class Method{
+        public static String status = "status";
+        public static String get = "get";
+        public static String put = "put";
+        public static String del ="del";
     }
 }

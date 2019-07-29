@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package raft.message;
+option java_package = "";
+option java_outer_classname = "RaftMessageProto";
+
+message RaftMessage{
+    MessageType message_type = 1;
+    int32 id = 2;
+    int64 current_term = 3;
+    int64 last_applied_index = 4;
+    bool  leader = 5;
+    oneof MessageBody {
+        PreVoteMessage pre_vote_message = 6;
+        VoteMessage vote_message = 7;
+        HeartMessage heart_message = 8;
+        AckMessage ack_message = 9;
+        CommitMessage commit_message = 10;
+        NodeMessage node_message = 11;
+        UnCommitMessage un_commit_message = 12;
+    }
+}
+
+enum MessageType{
+    PRE_VOTE = 0;
+    VOTE = 1;
+    HEART = 2;
+    ACK = 3;
+    COMMIT = 4;
+    NODE = 5;
+    //添加新节点
+    UN_COMMIT = 6;
+}
+
+message PreVoteMessage{
+    bool vote_for = 1;
+}
+
+message VoteMessage{
+    bool vote_for = 1;
+}
+
+message HeartMessage{
+
+}
+
+message AckMessage{
+    int64 ack_index = 1;
+}
+
+//可以一下传多条然后特殊字符分开
+message CommitMessage{
+    string commit_message = 1;
+}
+
+//同步节点信息
+message NodeMessage{
+    string node_message = 1;
+}
+
+message UnCommitMessage{
+    string un_commit_message = 1;
+}

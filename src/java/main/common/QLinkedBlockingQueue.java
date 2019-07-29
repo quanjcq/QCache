@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * 阻塞队列,入队出队都是无锁状态,值实现线程的等待通知模型,相比{@link java.util.concurrent.LinkedBlockingQueue} 快很多.
+ * 阻塞队列,入队出队都是无锁状态,只实现线程的等待通知模型,相比{@link java.util.concurrent.LinkedBlockingQueue} 快很多.
  * 注: 适合单线程读,单线程写的情况,在多写多读会出现线程安全问题,只适合该场景.
  * @param <E>
  */
@@ -21,7 +21,7 @@ public class QLinkedBlockingQueue<E> {
     private volatile transient Node<E> head;
     private volatile transient Node<E> last;
     private int capacity;
-    private volatile AtomicInteger count = new AtomicInteger(0);
+    private AtomicInteger count = new AtomicInteger(0);
 
     public QLinkedBlockingQueue() {
         this(Integer.MAX_VALUE - 5);
@@ -36,7 +36,7 @@ public class QLinkedBlockingQueue<E> {
     }
 
     /**
-     * read lock，当读线程发现没有可读的内容的时候调用他自锁（只有读线程会调用该方法）
+     * read lock，当读线程发现没有可读的内容的时候调用它,自锁（只有读线程会调用该方法）
      */
     private void readLock() {
         waitReadThread = Thread.currentThread();

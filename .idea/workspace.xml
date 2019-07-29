@@ -2,164 +2,282 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5ec4c8de-1b03-4dc9-a98b-f1f0d2f45a57" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/AcceptorClientHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/MultiThread_2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioChannel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioChannelGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioEventLoop.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioReadGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioReadLoop.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioWriteGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/NioWriteLoop.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/Server.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/ServerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio/TaskEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_2/NioChannel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_2/NioChannelGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_2/NioServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_2/SingleThread.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_3/AcceptorClientHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_3/MultiThread.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_3/NioChannel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_3/NioChannelGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_3/NioEventLoop.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_3/NioEventLoopGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/example/nio_3/NioServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/main/core/nio/NioChannel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/main/core/nio/NioChannelGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/main/core/nio/NioServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/ProtoBufPerformanceTest$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/ProtoBufPerformanceTest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenClientServer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/core/nio/NioChannel.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/core/nio/NioChannelGroup.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/core/nio/NioServer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/AcceptorClientHandler.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioChannel.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioChannelGroup.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioEventLoop$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioEventLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioReadGroup.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioReadLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioServer$MessageProcess.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioServer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioWriteGroup.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/NioWriteLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/Server$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/Server$MessageProcessImpl.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/Server.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/ServerTest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio/TaskEntity.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_2/NioChannel.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_2/NioChannelGroup.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_2/NioServer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_3/AcceptorClientHandler.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_3/NioChannel.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_3/NioChannelGroup.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_3/NioEventLoop$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_3/NioEventLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_3/NioEventLoopGroup.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/nio_3/NioServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/example/nio_1/UserMessage.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/example/nio_1/UserMessageProto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/example/raft/RaftServer2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/example/raft/RaftServer3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/example/server/ClusterServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/example/server/SingleServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/cache/CacheServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/common/UtilAll.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/raft/RaftServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/raft/RaftState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/raft/SendMessageType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/raft/StateMachine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/recycle/Mark.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/recycle/MarkExpire.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/recycle/MarkFistIn.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/recycle/MarkLRU.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/recycle/RecycleOptions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/recycle/RecycleService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/remote/message/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/remote/message/RemoteMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/remote/message/RemoteMessageType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/AofLogService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/AppendMessageResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/CacheFileGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/MappedFile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/RaftLogMessageService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/RaftStateMachineService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/StoreOptions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/checkpoint/CheckPoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/message/AofLogMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/message/CacheStoreMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/message/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/main/store/message/RaftLogMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/AofLogMessageTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/AofLogServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/CacheFileGroupTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/CacheStoreMessageTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/CheckPointTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/ConsistentHashTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/RaftLogMessageServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/RaftStateMachineServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/RemoteMessageTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/java/test/UtilAllTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/artifacts/QCache_jar/QCache.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/QCache_jar/QCache.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/out/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/kill.sh" beforeDir="false" afterPath="$PROJECT_DIR$/out/kill.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/kill_all.sh" beforeDir="false" afterPath="$PROJECT_DIR$/out/kill_all.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resource/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/resource/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/example/ClientTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/ClientTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/ClientTest.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/example/Demo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/Demo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/example/NioServer.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/example/NioTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/NioTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/example/ProtoBufPerformanceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/ProtoBufPerformanceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/ProtoBufPerformanceTest.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/example/RedisTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/RedisTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/AcceptorClientHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/MultiThread_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioChannel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioChannelGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioEventLoop.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioReadGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioReadLoop.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioWriteGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/NioWriteLoop.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/Server.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/ServerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio/TaskEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_2/NioChannel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_2/NioChannelGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_2/NioServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_2/SingleThread.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio/SingleThread.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_3/AcceptorClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio_1/AcceptorClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_3/MultiThread.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio_1/MultiThread.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_3/NioChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio_1/NioChannel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_3/NioChannelGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio_1/NioChannelGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_3/NioEventLoop.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio_1/NioEventLoop.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_3/NioEventLoopGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio_1/NioEventLoopGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/example/nio_3/NioServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/example/nio_1/NioServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/common/ConsistentHash.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/raft/ConsistentHash.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/common/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/Node.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/common/QCacheConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/QCacheConfiguration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/common/QLinkedBlockingQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/QLinkedBlockingQueue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/common/Tools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/common/Tools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/main/constant/CacheOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/constant/CacheOptions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/constant/RaftOptions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/constant/RaftState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/constant/RaftState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/RaftNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/RaftNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataInt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataInt.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/Method.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/Method.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpRdb.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpRdb.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/recycle/Gc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/cache/recycle/Gc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/CacheClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/client/CacheClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/ClientSocket.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/client/ClientSocket.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketInHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/client/SocketInHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketInProtoBufHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/client/SocketInProtoBufHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketOutHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/client/SocketOutHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketOutProtoBufHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/client/SocketOutProtoBufHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/LastRaftMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/LastRaftMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.proto" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftMessageProto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/RaftMessageProto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/UserMessage.proto" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/UserMessage.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/UserMessageProto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/core/message/UserMessageProto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/Channel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/NioInHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/NioInProtoBufHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/NioOutHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/NioOutProtoBufHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/RaftLog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLogParse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/RaftLogParse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLogUnCommit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/log/RaftLogUnCommit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/QueueTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/QueueTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/RaftLogParseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/RaftLogParseTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/test/RaftSnaphotTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/test/RaftSnaphotTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/ClientTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ClientTest$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/ClientTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ClientTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/NioServer$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/NioServer$NioInMessageHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/NioServer$NioOutMessageHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/NioServer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/common/QLinkedBlockingQueue$Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/QLinkedBlockingQueue$Node.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/RaftNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataInt.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataList.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/CacheDataString.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/Method.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpRdb.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/cache/recycle/Gc.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/CacheClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/client/CacheClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/ClientSocket.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/client/ClientSocket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketInHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/client/SocketInHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketInProtoBufHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/client/SocketInProtoBufHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketOutHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/client/SocketOutHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/client/SocketOutProtoBufHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/client/SocketOutProtoBufHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/LastRaftMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/raft/LastRaftMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftMessage.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/RaftMessageProto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/UserMessage.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/message/UserMessageProto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/NioChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/remote/NioChannel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/NioChannelGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/remote/NioChannelGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/core/nio/NioServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/remote/NioServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLogParse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/main/log/RaftLogUnCommit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/main/raft/RaftUnCommitLog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/test/RaftLogParseTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/test/RaftSnaphotTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/ClientTest$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/ClientTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Demo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Demo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/NioTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/NioTest$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/NioTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/NioTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/ProtoBufPerformanceTest$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/ProtoBufPerformanceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/RedisTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/RedisTest$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/RedisTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/RedisTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/ConsistentHash.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/Node$Builder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/Node$Builder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/Node.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/QCacheConfiguration.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/QCacheConfiguration.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/common/QLinkedBlockingQueue.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/common/QLinkedBlockingQueue.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/common/RaftSnaphot.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/constant/CacheOptions.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/constant/CacheOptions.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$5.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$6.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$7.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$7.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$8.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$8.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeInitializer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeInitializer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$NioServer$NioInMessageHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$NioServer$NioOutMessageHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$NioServer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$SocketClientHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$SocketClientHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$SocketClientInitializer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode$SocketClientInitializer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode.back" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/RaftNode.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpAof.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpAof.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/client/ClientSocket$newBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/client/ClientSocket$newBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/client/SocketInProtoBufHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/client/SocketInProtoBufHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/client/SocketOutProtoBufHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/client/SocketOutProtoBufHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessage.proto" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/RaftMessage.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessage.proto" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/core/message/UserMessage.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/Channel$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/Channel$newBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/Channel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/NioInHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/NioInProtoBufHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/NioOutHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/NioOutProtoBufHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$5.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$6.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$7.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$8.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenClientServer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$ListenNodeInitializer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$SocketClientHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode$SocketClientInitializer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/RaftNode.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/CacheData.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/CacheDataInt.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/CacheDataList.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/CacheDataString.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/Method.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpAof.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpI.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/backup/BackUpRdb.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/cache/recycle/Gc.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/CacheClient$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/CacheClient$SocketInHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/CacheClient$SocketOutHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/CacheClient$newBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/CacheClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/ClientSocket$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/ClientSocket$newBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/ClientSocket.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/SocketInHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/SocketInProtoBufHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/SocketOutHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/client/SocketOutProtoBufHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/LastRaftMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessage.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AckMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AckMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AckMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AckMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AddNewNodeMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AddNewNodeMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AddNewNodeMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$AddNewNodeMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$CommitMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$CommitMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$CommitMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$CommitMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$HeartMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$HeartMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$HeartMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$HeartMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$MessageType$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$MessageType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$NodeMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$NodeMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$NodeMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$NodeMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$PreVoteMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$PreVoteMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$PreVoteMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$PreVoteMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$RaftMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$RaftMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$RaftMessage$MessageBodyCase.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$RaftMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$RaftMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$VoteMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$VoteMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$VoteMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto$VoteMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/RaftMessageProto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessage.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$DelMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$DelMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$DelMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$DelMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$GetMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$GetMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$GetMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$GetMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$MessageType$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$MessageType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$ResponseMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$ResponseMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$ResponseMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$ResponseMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$ResponseType$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$ResponseType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$SetMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$SetMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$SetMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$SetMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$StatusMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$StatusMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$StatusMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$StatusMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$UserMessage$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$UserMessage$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$UserMessage$MessageBodyCase.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$UserMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto$UserMessageOrBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/message/UserMessageProto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/NioChannel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/NioChannelGroup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/core/nio/NioServer.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/QueueTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/QueueTest$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/QueueTest$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/QueueTest$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/QueueTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/QueueTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/AcceptorClientHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/MultiThread_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioChannel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioChannelGroup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioEventLoop$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioEventLoop.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioReadGroup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioReadLoop.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioServer$MessageProcess.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioServer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioWriteGroup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/NioWriteLoop.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/Server$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/Server$MessageProcessImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/Server.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/ServerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio/TaskEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_2/NioChannel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_2/NioChannelGroup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_2/NioServer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_2/SingleThread.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/AcceptorClientHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/MultiThread.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/NioChannel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/NioChannelGroup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/NioEventLoop$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/NioEventLoop.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/NioEventLoopGroup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/nio_3/NioServer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/RaftLogParseTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/RaftSnaphotTest.class" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -175,6 +293,9 @@
         <entry key="last-active-plugin-version" value="5.23.0" />
       </map>
     </option>
+  </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/QCache$CacheServer.ic" NAME="CacheServer Coverage Results" MODIFIED="1557072846984" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
@@ -206,65 +327,70 @@
           <entry key="project.open.time.12" value="3" />
           <entry key="project.open.time.13" value="4" />
           <entry key="project.open.time.14" value="2" />
-          <entry key="project.open.time.15" value="1" />
+          <entry key="project.open.time.15" value="5" />
           <entry key="project.open.time.16" value="1" />
-          <entry key="project.open.time.17" value="2" />
+          <entry key="project.open.time.17" value="4" />
+          <entry key="project.open.time.18" value="1" />
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.3" value="3" />
           <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="29" />
+          <entry key="project.opened" value="36" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="cfg" value="96" />
-          <entry key="dummy" value="62" />
-          <entry key="java" value="71672" />
-          <entry key="md" value="1883" />
-          <entry key="properties" value="204" />
+          <entry key="dummy" value="68" />
+          <entry key="java" value="128894" />
+          <entry key="md" value="3597" />
+          <entry key="properties" value="252" />
+          <entry key="proto" value="58" />
           <entry key="text" value="894" />
-          <entry key="xml" value="20" />
+          <entry key="xml" value="21" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="71672" />
-          <entry key="Markdown" value="1577" />
-          <entry key="PLAIN_TEXT" value="1262" />
-          <entry key="Properties" value="300" />
-          <entry key="XML" value="20" />
+          <entry key="JAVA" value="128895" />
+          <entry key="Markdown" value="3290" />
+          <entry key="PLAIN_TEXT" value="1280" />
+          <entry key="PROTO" value="46" />
+          <entry key="Properties" value="348" />
+          <entry key="XML" value="21" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="MF" value="3" />
           <entry key="cfg" value="5" />
-          <entry key="class" value="6" />
+          <entry key="class" value="14" />
           <entry key="groovy" value="1" />
-          <entry key="java" value="666" />
-          <entry key="md" value="10" />
+          <entry key="java" value="1437" />
+          <entry key="md" value="12" />
           <entry key="out" value="1" />
-          <entry key="png" value="7" />
+          <entry key="png" value="22" />
           <entry key="pom" value="1" />
-          <entry key="properties" value="11" />
+          <entry key="properties" value="18" />
+          <entry key="proto" value="12" />
           <entry key="text" value="4" />
-          <entry key="xml" value="8" />
+          <entry key="xml" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="6" />
+          <entry key="CLASS" value="14" />
           <entry key="Groovy" value="1" />
-          <entry key="Image" value="7" />
-          <entry key="JAVA" value="666" />
+          <entry key="Image" value="22" />
+          <entry key="JAVA" value="1437" />
           <entry key="Manifest" value="3" />
-          <entry key="Markdown" value="9" />
-          <entry key="PLAIN_TEXT" value="6" />
-          <entry key="Properties" value="16" />
-          <entry key="XML" value="9" />
+          <entry key="Markdown" value="11" />
+          <entry key="PLAIN_TEXT" value="10" />
+          <entry key="PROTO" value="8" />
+          <entry key="Properties" value="23" />
+          <entry key="XML" value="10" />
         </counts>
       </usages-collector>
     </session>
@@ -275,51 +401,77 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/common/QLinkedBlockingQueue.java">
+        <entry file="file://$PROJECT_DIR$/src/java/main/raft/ConsistentHash.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="241">
-              <caret line="30" column="28" lean-forward="true" selection-start-line="30" selection-start-column="28" selection-end-line="30" selection-end-column="28" />
+            <state relative-caret-position="291">
+              <caret line="198" column="7" selection-start-line="198" selection-start-column="7" selection-end-line="198" selection-end-column="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar:///usr/local/jdk/src.zip!/java/lang/Thread.java">
+        <entry file="file://$PROJECT_DIR$/src/java/main/remote/message/RemoteMessage.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="129" column="46" selection-start-line="129" selection-start-column="42" selection-end-line="129" selection-end-column="46" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/java/example/ClientTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="49" column="27" lean-forward="true" selection-start-line="49" selection-start-column="27" selection-end-line="49" selection-end-column="27" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/main/core/RaftNode.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1864">
-              <caret line="1513" column="31" selection-start-line="1513" selection-start-column="31" selection-end-line="1513" selection-end-column="31" />
+            <state relative-caret-position="1122">
+              <caret line="51" column="29" lean-forward="true" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
               <folding>
-                <element signature="e#3054#3062#0" expanded="true" />
-                <element signature="e#54733#54741#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/store/checkpoint/CheckPoint.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1413">
+              <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/store/message/AofLogMessage.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4532">
+              <caret line="208" column="51" selection-start-line="208" selection-start-column="51" selection-end-line="208" selection-end-column="51" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/store/message/Message.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="154">
+              <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/store/MappedFile.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-5394">
+              <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/java/main/store/RaftLogMessageService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2139">
+              <caret line="35" column="20" selection-start-line="35" selection-start-column="20" selection-end-line="35" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="220">
-                <caret line="94" column="30" selection-start-line="94" selection-start-column="30" selection-end-line="94" selection-end-column="30" />
+              <first_editor relative-caret-position="-1430">
+                <caret line="16" column="5" lean-forward="true" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
               </first_editor>
               <second_editor />
             </state>
@@ -327,38 +479,17 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/example/nio_3/MultiThread.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/example/nio/MultiThread_2.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/test/RaftLogParseTest.java">
+        <entry file="file://$PROJECT_DIR$/src/java/main/raft/message/RaftMessage.proto">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-            </state>
+            <state relative-caret-position="-410" />
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/test/RaftSnaphotTest.java">
+        <entry file="file://$PROJECT_DIR$/src/java/main/raft/message/RaftMessageProto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/example/NioTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="25" column="21" lean-forward="true" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
+            <state relative-caret-position="678">
+              <caret line="6152" column="21" lean-forward="true" selection-start-line="6152" selection-start-column="21" selection-end-line="6152" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -382,57 +513,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/java/example/RedisTest.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/NioOutProtoBufHandler.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/message/UserMessageProto.java" />
-        <option value="$PROJECT_DIR$/src/java/example/ProtoBufPerformanceTest.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/NioInHandler.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/MsgNode.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/Channel.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/NioInProtoBufHandler.java" />
-        <option value="$PROJECT_DIR$/src/java/example/NioTest.java" />
-        <option value="$PROJECT_DIR$/src/java/example/NioServer.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/ChannelGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/Channel.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioEventLoopGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioChannelGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/Server.java" />
-        <option value="$PROJECT_DIR$/src/java/example/ServerTest.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/client/SocketInProtoBufHandler.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/client/ClientSocket.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_3/NioChannelGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_3/NioChannel.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_3/NioEventLoopGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_3/NioEventLoop.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_3/AcceptorClientHandler.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/ServerTest.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_3/NioServer.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/NioChannelGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/client/SocketOutProtoBufHandler.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/NioServer.java" />
-        <option value="$PROJECT_DIR$/resource/log4j.properties" />
-        <option value="$PROJECT_DIR$/src/java/main/core/client/CacheClient.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java" />
-        <option value="$PROJECT_DIR$/src/java/test/QueueTest.java" />
-        <option value="$PROJECT_DIR$/src/java/main/core/nio/NioChannel.java" />
-        <option value="$PROJECT_DIR$/src/java/main/constant/CacheOptions.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_2/NioChannel.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_2/NioChannelGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio_2/NioServer.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/AcceptorClientHandler.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioChannel.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioEventLoop.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioReadGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioReadLoop.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioServer.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioWriteGroup.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/NioWriteLoop.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/Server.java" />
-        <option value="$PROJECT_DIR$/src/java/example/nio/TaskEntity.java" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/java/main/core/RaftNode.java" />
+        <option value="$PROJECT_DIR$/src/java/main/client/SocketInHandler.java" />
+        <option value="$PROJECT_DIR$/src/java/main/client/SocketOutHandler.java" />
+        <option value="$PROJECT_DIR$/src/java/main/client/SocketOutProtoBufHandler.java" />
+        <option value="$PROJECT_DIR$/src/java/main/client/ClientSocket.java" />
+        <option value="$PROJECT_DIR$/src/java/main/raft/RaftUnCommitLog.java" />
+        <option value="$PROJECT_DIR$/src/java/main/recycle/Mark.java" />
+        <option value="$PROJECT_DIR$/src/java/main/store/StoreOptions.java" />
         <option value="$PROJECT_DIR$/src/java/main/common/QLinkedBlockingQueue.java" />
-        <option value="$PROJECT_DIR$/src/java/example/ClientTest.java" />
+        <option value="$PROJECT_DIR$/src/java/main/common/Node.java" />
+        <option value="$PROJECT_DIR$/src/java/main/recycle/MarkFistIn.java" />
+        <option value="$PROJECT_DIR$/src/java/main/recycle/RecycleOptions.java" />
+        <option value="$PROJECT_DIR$/src/java/main/remote/message/UserMessage.proto" />
+        <option value="$PROJECT_DIR$/src/java/example/nio_1/UserMessgeProto.java" />
+        <option value="$PROJECT_DIR$/src/java/example/nio_1/NioEventLoop.java" />
+        <option value="$PROJECT_DIR$/src/java/example/nio_1/NioServer.java" />
+        <option value="$PROJECT_DIR$/src/java/example/nio_1/UserMessage.proto" />
+        <option value="$PROJECT_DIR$/src/java/main/Server.java" />
+        <option value="$PROJECT_DIR$/src/java/main/client/SocketInProtoBufHandler.java" />
+        <option value="$PROJECT_DIR$/src/java/main/recycle/MarkExpire.java" />
+        <option value="$PROJECT_DIR$/src/java/main/remote/NioChannelGroup.java" />
+        <option value="$PROJECT_DIR$/src/java/main/common/QCacheConfiguration.java" />
+        <option value="$PROJECT_DIR$/src/java/main/recycle/MarkLRU.java" />
+        <option value="$PROJECT_DIR$/src/java/main/CacheServer.java" />
+        <option value="$PROJECT_DIR$/src/java/example/server/Server.java" />
+        <option value="$PROJECT_DIR$/src/java/example/server/SingleServer.java" />
+        <option value="$PROJECT_DIR$/src/java/example/server/ClusterServer.java" />
+        <option value="$PROJECT_DIR$/src/java/main/raft/message/RaftMessage.proto" />
+        <option value="$PROJECT_DIR$/src/java/main/raft/message/RaftMessageProto.java" />
+        <option value="$PROJECT_DIR$/src/java/main/raft/RaftServer.java" />
+        <option value="$PROJECT_DIR$/src/java/main/cache/CacheServer.java" />
+        <option value="$PROJECT_DIR$/src/java/test/UtilAllTest.java" />
+        <option value="$PROJECT_DIR$/src/java/test/ConsistentHashTest.java" />
+        <option value="$PROJECT_DIR$/src/java/test/CacheFileGroupTest.java" />
+        <option value="$PROJECT_DIR$/src/java/main/raft/ConsistentHash.java" />
+        <option value="$PROJECT_DIR$/resource/log4j.properties" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/java/main/store/LibC.java" />
+        <option value="$PROJECT_DIR$/src/java/main/store/MappedFile.java" />
+        <option value="$PROJECT_DIR$/src/java/example/RedisTest.java" />
+        <option value="$PROJECT_DIR$/src/java/main/client/CacheClient.java" />
+        <option value="$PROJECT_DIR$/src/java/main/Main.java" />
+        <option value="$PROJECT_DIR$/src/java/example/NioTest.java" />
+        <option value="$PROJECT_DIR$/src/java/example/Demo.java" />
+        <option value="$PROJECT_DIR$/src/java/main/common/UtilAll.java" />
+        <option value="$PROJECT_DIR$/src/java/main/store/CacheFileGroup.java" />
+        <option value="$PROJECT_DIR$/src/java/main/store/message/AofLogMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/store/message/CacheStoreMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/remote/message/RemoteMessage.java" />
+        <option value="$PROJECT_DIR$/src/java/main/remote/NioChannel.java" />
+        <option value="$PROJECT_DIR$/src/java/main/recycle/RecycleService.java" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -481,9 +612,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -494,11 +622,6 @@
             <path>
               <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
               <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="resource" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -506,13 +629,6 @@
               <item name="QCache" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="example" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
@@ -527,7 +643,7 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="common" type="462c0819:PsiDirectoryNode" />
+              <item name="remote" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
@@ -535,22 +651,7 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="constant" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="QCache" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="store" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="QCache" type="b2602c69:ProjectViewProjectNode" />
@@ -560,13 +661,16 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;ObjectCo&#9;PSI&#9;JAVA://javafx.beans.binding.When.ObjectCondition&#10;LinkedBlockingQueue&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;Deli&#9;PSI&#9;JAVA://io.netty.handler.codec.DelimiterBasedFrameDecoder&#10;Linked&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;Link&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;LinkedB&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;currenTerm&#9;PSI&#9;JAVA://core.message.RaftMessage#currentTerm" />
+    <property name="SearchEverywhereHistoryKey" value="HashMap&#9;PSI&#9;JAVA://java.util.HashMap&#10;hashMap&#9;PSI&#9;JAVA://java.util.HashMap&#10;enum&#9;ACTION&#9;EditorToggleShowLineNumbers&#10;ObjectCo&#9;PSI&#9;JAVA://javafx.beans.binding.When.ObjectCondition&#10;LinkedBlockingQueue&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;Deli&#9;PSI&#9;JAVA://io.netty.handler.codec.DelimiterBasedFrameDecoder&#10;Linked&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;Link&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;LinkedB&#9;FILE&#9;jar:///usr/local/jdk/src.zip!/java/util/concurrent/LinkedBlockingQueue.java&#10;currenTerm&#9;PSI&#9;JAVA://core.message.RaftMessage#currentTerm" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1562554033802" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1564404830035" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Groovy JUnit" value="groovy.util.GroovyTestCase" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
@@ -585,21 +689,23 @@
       <recent name="Test" />
       <recent name="core" />
     </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="nio" />
-      <recent name="nio_3" />
-      <recent name="core.message" />
-    </key>
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
       <recent name="groovy.util.GroovyTestCase" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="cache" />
+      <recent name="raft" />
+      <recent name="nio" />
+      <recent name="nio_3" />
+      <recent name="core.message" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/java/main/client" />
+      <recent name="$PROJECT_DIR$/src/java/main/remote" />
       <recent name="$PROJECT_DIR$/src/java/main/core/nio" />
       <recent name="$PROJECT_DIR$/src/java/example/nio" />
       <recent name="$PROJECT_DIR$/src/java/example/nio_3" />
-      <recent name="$PROJECT_DIR$/src/java/example/nio_2" />
-      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -614,9 +720,9 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.ClientTest">
-    <configuration name="ClientTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="ClientTest" />
+  <component name="RunManager" selected="Application.Demo">
+    <configuration name="CacheServerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="CacheServerTest" />
       <module name="QCache" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -629,9 +735,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="NioTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="NioTest" />
+    <configuration name="RaftServer3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="raft.RaftServer3" />
       <module name="QCache" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="raft.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -643,30 +755,30 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="QueueTest.queueTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="CacheFileGroupTest.cacheTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="QCache" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="QueueTest" />
-      <option name="METHOD_NAME" value="queueTest" />
+      <option name="MAIN_CLASS_NAME" value="CacheFileGroupTest" />
+      <option name="METHOD_NAME" value="cacheTest" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.ClientTest" />
+      <item itemvalue="Application.RaftServer3" />
+      <item itemvalue="JUnit.CacheFileGroupTest.cacheTest" />
+      <item itemvalue="Application.CacheServerTest" />
       <item itemvalue="Application.RedisTest" />
-      <item itemvalue="Application.NioTest" />
       <item itemvalue="Application.Demo" />
-      <item itemvalue="JUnit.QueueTest.queueTest" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.ClientTest" />
-        <item itemvalue="JUnit.QueueTest.queueTest" />
         <item itemvalue="Application.Demo" />
+        <item itemvalue="Application.CacheServerTest" />
         <item itemvalue="Application.RedisTest" />
-        <item itemvalue="Application.NioTest" />
+        <item itemvalue="JUnit.CacheFileGroupTest.cacheTest" />
+        <item itemvalue="Application.RaftServer3" />
       </list>
     </recent_temporary>
   </component>
@@ -691,64 +803,72 @@
       <workItem from="1561343159305" duration="38718000" />
       <workItem from="1561462915854" duration="146901000" />
       <workItem from="1562488926581" duration="7899000" />
-      <workItem from="1562504653045" duration="13330000" />
+      <workItem from="1562504653045" duration="20525000" />
+      <workItem from="1562672498585" duration="598000" />
+      <workItem from="1562736466568" duration="2549000" />
+      <workItem from="1562983793822" duration="324640000" />
+      <workItem from="1564129641181" duration="20965000" />
+      <workItem from="1564211606832" duration="31922000" />
+      <workItem from="1564282503788" duration="43994000" />
+      <workItem from="1564378507679" duration="19947000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="QueueTest_queueTest - 2019.07.02 at 19h 45m 11s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheRebulidTest - 2019.07.28 at 00h 30m 06s.xml">
+      <configuration name="CacheFileGroupTest.cacheRebulidTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.02 at 19h 45m 16s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheRebulidTest - 2019.07.28 at 00h 30m 31s.xml">
+      <configuration name="CacheFileGroupTest.cacheRebulidTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.02 at 19h 45m 21s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheRebulidTest - 2019.07.28 at 00h 31m 18s.xml">
+      <configuration name="CacheFileGroupTest.cacheRebulidTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.07 at 21h 16m 18s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheRebulidTest - 2019.07.28 at 00h 35m 02s.xml">
+      <configuration name="CacheFileGroupTest.cacheRebulidTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.07 at 21h 16m 24s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheRebulidTest - 2019.07.28 at 00h 36m 45s.xml">
+      <configuration name="CacheFileGroupTest.cacheRebulidTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.07 at 21h 16m 33s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheRebulidTest - 2019.07.28 at 00h 37m 43s.xml">
+      <configuration name="CacheFileGroupTest.cacheRebulidTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.07 at 21h 16m 48s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheRebulidTest - 2019.07.28 at 09h 40m 44s.xml">
+      <configuration name="CacheFileGroupTest.cacheRebulidTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.08 at 09h 37m 13s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="ConsistentHashTest_serializedConsistentHash - 2019.07.29 at 11h 14m 50s.xml">
+      <configuration name="ConsistentHashTest.serializedConsistentHash" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.08 at 09h 37m 52s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="ConsistentHashTest_serializedConsistentHash - 2019.07.29 at 11h 15m 08s.xml">
+      <configuration name="ConsistentHashTest.serializedConsistentHash" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="QueueTest_queueTest - 2019.07.08 at 09h 46m 42s.xml">
-      <configuration name="QueueTest.queueTest" configurationId="JUnit" />
+    <history-entry file="CacheFileGroupTest_cacheTest - 2019.07.29 at 11h 20m 01s.xml">
+      <configuration name="CacheFileGroupTest.cacheTest" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="271254000" />
+    <option name="totallyTimeSpent" value="723064000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="33" width="1920" height="1047" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Designer" order="0" />
       <window_info id="UI Designer" order="1" />
       <window_info id="Capture Tool" order="2" />
-      <window_info id="Favorites" order="3" sideWeight="0.8956229" side_tool="true" weight="0.30301398" />
+      <window_info id="Favorites" order="3" sideWeight="0.8909091" side_tool="true" weight="0.21636169" />
       <window_info id="Image Layers" order="4" />
-      <window_info content_ui="combo" id="Project" order="5" sideWeight="0.09023486" visible="true" weight="0.27987084" />
-      <window_info id="Structure" order="6" sideWeight="0.9097651" side_tool="true" weight="0.25888053" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" sideWeight="0.10839532" visible="true" weight="0.2174381" />
+      <window_info id="Structure" order="6" sideWeight="0.89160466" side_tool="true" weight="0.12486545" />
       <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="1" weight="0.32837406" />
-      <window_info anchor="bottom" id="Event Log" order="2" sideWeight="0.5048439" side_tool="true" weight="0.2805526" />
+      <window_info anchor="bottom" id="Terminal" order="1" weight="0.32943678" />
+      <window_info anchor="bottom" id="Event Log" order="2" sideWeight="0.5053821" side_tool="true" weight="0.2773645" />
       <window_info anchor="bottom" id="Messages" order="3" sideWeight="0.4919268" weight="0.2603613" />
       <window_info anchor="bottom" id="CheckStyle" order="4" weight="0.22848034" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info anchor="bottom" id="Find" order="6" weight="0.1402763" />
-      <window_info active="true" anchor="bottom" id="Run" order="7" sideWeight="0.49515608" visible="true" weight="0.2656748" />
-      <window_info anchor="bottom" id="Debug" order="8" weight="0.4900881" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.2646121" />
+      <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49461788" weight="0.25185972" />
+      <window_info anchor="bottom" id="Debug" order="8" weight="0.48990434" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="11" />
@@ -757,30 +877,30 @@
       <window_info anchor="right" id="Capture Analysis" order="1" />
       <window_info anchor="right" id="Theme Preview" order="2" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="4" weight="0.2497309" />
-      <window_info anchor="right" id="Palette" order="5" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="6" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Database" order="7" weight="0.32992464" />
-      <window_info anchor="right" id="Maven Projects" order="8" weight="0.32938644" />
-      <window_info anchor="right" id="Ant Build" order="9" weight="0.2497309" />
+      <window_info anchor="right" id="Maven Projects" order="4" weight="0.32938644" />
+      <window_info anchor="right" id="Ant Build" order="5" weight="0.2497309" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="6" weight="0.3164693" />
+      <window_info anchor="right" id="Palette" order="7" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="8" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Database" order="9" weight="0.32992464" />
     </layout>
     <layout-to-restore>
       <window_info id="Designer" order="0" />
       <window_info id="UI Designer" order="1" />
       <window_info id="Capture Tool" order="2" />
-      <window_info id="Favorites" order="3" sideWeight="0.8956229" side_tool="true" weight="0.30301398" />
+      <window_info id="Favorites" order="3" sideWeight="0.9060606" side_tool="true" weight="0.19913886" />
       <window_info id="Image Layers" order="4" />
-      <window_info content_ui="combo" id="Project" order="5" sideWeight="0.09023486" visible="true" weight="0.25888053" />
-      <window_info id="Structure" order="6" sideWeight="0.9097651" side_tool="true" weight="0.25888053" />
+      <window_info content_ui="combo" id="Project" order="5" sideWeight="0.10953058" visible="true" weight="0.16576965" />
+      <window_info id="Structure" order="6" sideWeight="0.89046943" side_tool="true" visible="true" weight="0.16576965" />
       <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="1" weight="0.32837406" />
+      <window_info anchor="bottom" id="Terminal" order="1" weight="0.32943678" />
       <window_info anchor="bottom" id="Event Log" order="2" sideWeight="0.5048439" side_tool="true" weight="0.2805526" />
       <window_info anchor="bottom" id="Messages" order="3" sideWeight="0.4919268" weight="0.2603613" />
-      <window_info anchor="bottom" id="CheckStyle" order="4" weight="0.33368757" />
+      <window_info anchor="bottom" id="CheckStyle" order="4" weight="0.22848034" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info anchor="bottom" id="Find" order="6" weight="0.1402763" />
-      <window_info active="true" anchor="bottom" id="Run" order="7" sideWeight="0.49515608" visible="true" weight="0.3028693" />
-      <window_info anchor="bottom" id="Debug" order="8" weight="0.4900881" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.2646121" />
+      <window_info active="true" anchor="bottom" id="Run" order="7" sideWeight="0.49515608" visible="true" weight="0.25292242" />
+      <window_info anchor="bottom" id="Debug" order="8" weight="0.48990434" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="11" />
@@ -789,12 +909,12 @@
       <window_info anchor="right" id="Capture Analysis" order="1" />
       <window_info anchor="right" id="Theme Preview" order="2" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="4" weight="0.2497309" />
-      <window_info anchor="right" id="Palette" order="5" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="6" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Database" order="7" weight="0.32992464" />
-      <window_info anchor="right" id="Maven Projects" order="8" weight="0.32938644" />
-      <window_info anchor="right" id="Ant Build" order="9" weight="0.2497309" />
+      <window_info anchor="right" id="Maven Projects" order="4" weight="0.32938644" />
+      <window_info anchor="right" id="Ant Build" order="5" weight="0.2497309" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="6" weight="0.3164693" />
+      <window_info anchor="right" id="Palette" order="7" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="8" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Database" order="9" weight="0.32992464" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -808,96 +928,117 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_3/NioEventLoopGroup.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/store/message/CacheStoreMessage.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="39" column="45" selection-start-line="39" selection-start-column="45" selection-end-line="39" selection-end-column="45" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2153#2154#0" expanded="true" />
-            <element signature="e#2180#2181#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-334">
+          <caret line="185" column="47" selection-start-line="185" selection-start-column="47" selection-end-line="185" selection-end-column="47" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_3/AcceptorClientHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/store/message/RaftLogMessage.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="21" column="46" selection-start-line="21" selection-start-column="46" selection-end-line="21" selection-end-column="46" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/ServerTest.java" />
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_3/NioServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_2/SingleThread.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/NioServer.java" />
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/client/SocketInProtoBufHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="880">
-          <caret line="46" column="45" selection-start-line="46" selection-start-column="45" selection-end-line="46" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/common/RaftSnaphot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
+        <state relative-caret-position="-1765">
           <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/client/SocketOutProtoBufHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/remote/message/RemoteMessageType.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="22" column="41" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="41" />
+        <state relative-caret-position="44">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/nio/NioServer.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/remote/message/Message.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-289">
-          <caret line="36" column="16" selection-start-line="36" selection-start-column="16" selection-end-line="36" selection-end-column="16" />
+        <state relative-caret-position="88">
+          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/recycle/Mark.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/recycle/MarkExpire.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-269">
+          <caret line="33" column="17" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resource/log4j.properties">
+    <entry file="file://$PROJECT_DIR$/src/java/main/recycle/MarkFistIn.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="467">
-          <caret line="24" column="33" lean-forward="true" selection-start-line="24" selection-start-column="33" selection-end-line="24" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/client/ClientSocket.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="20" column="9" selection-start-line="20" selection-start-column="9" selection-end-line="20" selection-end-column="9" />
+        <state relative-caret-position="-357">
+          <caret line="12" column="41" selection-start-line="12" selection-start-column="41" selection-end-line="12" selection-end-column="41" />
           <folding>
-            <element signature="e#613#614#0" expanded="true" />
-            <element signature="e#664#665#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/RedisTest.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/LastRaftMessage.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-484">
-          <caret line="22" column="17" lean-forward="true" selection-start-line="22" selection-start-column="17" selection-end-line="22" selection-end-column="17" />
+        <state relative-caret-position="132">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/RaftServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8782">
+          <caret line="1216" column="45" selection-start-line="1216" selection-start-column="45" selection-end-line="1216" selection-end-column="45" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/RaftState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/RaftUnCommitLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-357">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/SendMessageType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/StateMachine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/constant/CacheOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/constant/RaftOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-115">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -908,355 +1049,271 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/client/CacheClient.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/common/Node.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4588">
-          <caret line="224" column="25" selection-start-line="224" selection-start-column="25" selection-end-line="224" selection-end-column="25" />
+        <state relative-caret-position="-2512">
+          <caret line="12" column="19" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/QueueTest.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/common/QCacheConfiguration.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+        <state relative-caret-position="-2711">
+          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/nio/NioChannel.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/common/QLinkedBlockingQueue.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="241">
-          <caret line="243" column="38" selection-start-line="243" selection-start-column="38" selection-end-line="243" selection-end-column="38" />
+        <state relative-caret-position="-2293">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/common/Tools.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-401">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/common/UtilAll.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="214" column="7" lean-forward="true" selection-start-line="214" selection-start-column="7" selection-end-line="214" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/client/CacheClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8848">
+          <caret line="21" column="19" selection-start-line="21" selection-start-column="19" selection-end-line="21" selection-end-column="19" />
           <folding>
-            <element signature="e#2607#2608#0" expanded="true" />
-            <element signature="e#2642#2643#0" expanded="true" />
-            <element signature="e#2751#2752#0" expanded="true" />
-            <element signature="e#2782#2783#0" expanded="true" />
-            <element signature="e#5852#5853#0" expanded="true" />
-            <element signature="e#5896#5897#0" expanded="true" />
-            <element signature="e#6155#6156#0" expanded="true" />
-            <element signature="e#6195#6196#0" expanded="true" />
-            <element signature="e#6243#6244#0" expanded="true" />
-            <element signature="e#6296#6297#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#1347#1348#0" expanded="true" />
+            <element signature="e#1387#1388#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/nio/NioChannelGroup.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/client/ClientSocket.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="82" column="4" selection-start-line="82" selection-start-column="4" selection-end-line="82" selection-end-column="4" />
+        <state relative-caret-position="-1149">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/client/SocketInHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/client/SocketInHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="88">
-          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/client/SocketOutHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/client/SocketInProtoBufHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+        <state relative-caret-position="-797">
+          <caret line="9" column="22" selection-start-line="9" selection-start-column="22" selection-end-line="9" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpAof.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="501">
-          <caret line="88" column="11" lean-forward="true" selection-start-line="88" selection-start-column="11" selection-end-line="88" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/cache/backup/BackUpRdb.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/client/SocketOutHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="88">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/constant/CacheOptions.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/client/SocketOutProtoBufHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="11" column="66" selection-start-line="11" selection-start-column="66" selection-end-line="11" selection-end-column="66" />
+        <state relative-caret-position="88">
+          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/Demo.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/cache/CacheServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="19" column="33" selection-start-line="19" selection-start-column="33" selection-end-line="19" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_2/NioChannel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
+        <state relative-caret-position="-6714">
+          <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2604#2605#0" expanded="true" />
-            <element signature="e#2639#2640#0" expanded="true" />
-            <element signature="e#2748#2749#0" expanded="true" />
-            <element signature="e#2779#2780#0" expanded="true" />
-            <element signature="e#5849#5850#0" expanded="true" />
-            <element signature="e#5893#5894#0" expanded="true" />
-            <element signature="e#6006#6007#0" expanded="true" />
-            <element signature="e#6036#6037#0" expanded="true" />
-            <element signature="e#6152#6153#0" expanded="true" />
-            <element signature="e#6192#6193#0" expanded="true" />
-            <element signature="e#6240#6241#0" expanded="true" />
-            <element signature="e#6293#6294#0" expanded="true" />
+            <element signature="e#10605#10606#0" expanded="true" />
+            <element signature="e#10667#10668#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_2/NioChannelGroup.java">
+    <entry file="file://$PROJECT_DIR$/src/java/example/server/ClusterServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="385">
-          <caret line="21" column="30" selection-start-line="21" selection-start-column="30" selection-end-line="21" selection-end-column="30" />
+        <state relative-caret-position="-27">
+          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_2/NioServer.java">
+    <entry file="file://$PROJECT_DIR$/src/java/test/AofLogMessageTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="66" column="7" selection-start-line="66" selection-start-column="7" selection-end-line="66" selection-end-column="7" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5480#5481#0" expanded="true" />
-            <element signature="e#5513#5514#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="44">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/AcceptorClientHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-341">
-          <caret line="35" column="4" selection-start-line="35" selection-start-column="4" selection-end-line="35" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5092#5093#0" expanded="true" />
-            <element signature="e#5134#5135#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioChannel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="276" column="4" selection-start-line="276" selection-start-column="4" selection-end-line="276" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3045#3046#0" expanded="true" />
-            <element signature="e#3080#3081#0" expanded="true" />
-            <element signature="e#3189#3190#0" expanded="true" />
-            <element signature="e#3220#3221#0" expanded="true" />
-            <element signature="e#6943#6944#0" expanded="true" />
-            <element signature="e#6987#6988#0" expanded="true" />
-            <element signature="e#7144#7145#0" expanded="true" />
-            <element signature="e#7183#7184#0" expanded="true" />
-            <element signature="e#7442#7443#0" expanded="true" />
-            <element signature="e#7482#7483#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioChannelGroup.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="81" column="4" selection-start-line="81" selection-start-column="4" selection-end-line="81" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1721#1722#0" expanded="true" />
-            <element signature="e#1777#1778#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioEventLoop.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1322">
-          <caret line="183" column="14" selection-start-line="183" selection-start-column="14" selection-end-line="183" selection-end-column="14" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#6490#6491#0" expanded="true" />
-            <element signature="e#6532#6533#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioReadGroup.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="7" column="14" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="14" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#504#505#0" expanded="true" />
-            <element signature="e#580#581#0" expanded="true" />
-            <element signature="e#862#863#0" expanded="true" />
-            <element signature="e#908#909#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioReadLoop.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="343">
-          <caret line="24" column="5" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="5" />
-          <folding>
-            <element signature="e#668#669#0" expanded="true" />
-            <element signature="e#701#702#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="329">
-          <caret line="84" column="8" selection-start-line="84" selection-start-column="8" selection-end-line="84" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3394#3395#0" expanded="true" />
-            <element signature="e#3435#3436#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioWriteGroup.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#628#629#0" expanded="true" />
-            <element signature="e#680#681#0" expanded="true" />
-            <element signature="e#801#802#0" expanded="true" />
-            <element signature="e#878#879#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/NioWriteLoop.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
-          <folding>
-            <element signature="e#581#582#0" expanded="true" />
-            <element signature="e#633#634#0" expanded="true" />
-            <element signature="e#1240#1241#0" expanded="true" />
-            <element signature="e#1273#1274#0" expanded="true" />
-            <element signature="e#1373#1374#0" expanded="true" />
-            <element signature="e#1409#1410#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/Server.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="22" column="20" selection-start-line="22" selection-start-column="20" selection-end-line="22" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/ServerTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="15" column="16" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/TaskEntity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="24" column="1" selection-start-line="24" selection-start-column="1" selection-end-line="24" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/ProtoBufPerformanceTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="14" column="43" lean-forward="true" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/common/ConsistentHash.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-286">
-          <caret line="177" column="15" lean-forward="true" selection-start-line="177" selection-start-column="15" selection-end-line="177" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/NioTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="25" column="21" lean-forward="true" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/RaftLogParseTest.java">
+    <entry file="file://$PROJECT_DIR$/src/java/test/AofLogServiceTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="44">
           <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/test/RaftSnaphotTest.java">
+    <entry file="file://$PROJECT_DIR$/src/java/test/CacheFileGroupTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-863">
+          <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/test/CacheStoreMessageTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-180">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/test/CheckPointTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-93">
+          <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/test/ConsistentHashTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="44">
-          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio_3/MultiThread.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/nio/MultiThread_2.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="220">
-            <caret line="94" column="30" selection-start-line="94" selection-start-column="30" selection-end-line="94" selection-end-column="30" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/core/RaftNode.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/recycle/MarkLRU.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1864">
-          <caret line="1513" column="31" selection-start-line="1513" selection-start-column="31" selection-end-line="1513" selection-end-column="31" />
+        <state relative-caret-position="110">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/recycle/RecycleOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/recycle/RecycleService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-400">
+          <caret line="59" column="33" selection-start-line="59" selection-start-column="33" selection-end-line="59" selection-end-column="33" />
           <folding>
-            <element signature="e#3054#3062#0" expanded="true" />
-            <element signature="e#54733#54741#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="jar:///usr/local/jdk/src.zip!/java/lang/Thread.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/remote/NioServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="129" column="46" selection-start-line="129" selection-start-column="42" selection-end-line="129" selection-end-column="46" />
+        <state relative-caret-position="638">
+          <caret line="145" column="7" lean-forward="true" selection-start-line="145" selection-start-column="7" selection-end-line="145" selection-end-column="7" />
+          <folding>
+            <element signature="e#2220#2221#0" expanded="true" />
+            <element signature="e#2242#2243#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/main/common/QLinkedBlockingQueue.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/remote/NioChannelGroup.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="241">
-          <caret line="30" column="28" lean-forward="true" selection-start-line="30" selection-start-column="28" selection-end-line="30" selection-end-column="28" />
+        <state relative-caret-position="176">
+          <caret line="18" column="13" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/example/ClientTest.java">
+    <entry file="file://$PROJECT_DIR$/src/java/main/remote/NioChannel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="49" column="27" lean-forward="true" selection-start-line="49" selection-start-column="27" selection-end-line="49" selection-end-column="27" />
+        <state relative-caret-position="-374">
+          <caret line="26" column="19" selection-start-line="26" selection-start-column="19" selection-end-line="26" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/message/RaftMessage.proto">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-410" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/message/RaftMessageProto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="678">
+          <caret line="6152" column="21" lean-forward="true" selection-start-line="6152" selection-start-column="21" selection-end-line="6152" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/raft/ConsistentHash.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="198" column="7" selection-start-line="198" selection-start-column="7" selection-end-line="198" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/remote/message/RemoteMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1122">
+          <caret line="51" column="29" lean-forward="true" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/store/checkpoint/CheckPoint.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1413">
+          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/store/message/AofLogMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4532">
+          <caret line="208" column="51" selection-start-line="208" selection-start-column="51" selection-end-line="208" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/store/message/Message.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/store/MappedFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5394">
+          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/main/store/RaftLogMessageService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2139">
+          <caret line="35" column="20" selection-start-line="35" selection-start-column="20" selection-end-line="35" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="-1430">
+            <caret line="16" column="5" lean-forward="true" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>

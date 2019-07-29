@@ -1,12 +1,17 @@
 package common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  * Created by quan on 2019/4/25
- * 服务器节点
+ * 服务器节点.
  */
 public final class Node implements Comparable, Serializable {
+    private static Logger logger = LoggerFactory.getLogger(Node.class);
     /**
      * 所有节点都有个唯一id.
      */
@@ -16,14 +21,25 @@ public final class Node implements Comparable, Serializable {
      */
     private String ip;
     /**
-     * 节点监听Heartbeart端口
-     */
-    private int listenHeartbeatPort;
-
-    /**
      * 节点负责监听 client的端口
      */
     private int listenClientPort;
+
+    /**
+     * node 序列化后的长度
+     */
+    public final static int NODE_SERIALIZED_SIZE = 10;
+    /**
+     * client port 到heartbeat port
+     */
+    public final static int CLIENT_TO_HEART = 1000;
+    /**
+     * 节点监听Heartbeart端口
+     * [这个端口是根据client端口生成的,简化配置,不用配置过多端口信息]
+     * listenHeartbeatPort = listenClientPort - 1000
+     */
+    private int listenHeartbeatPort;
+
 
     private Node(Builder builder) {
         this.nodeId = builder.nodeId;
@@ -32,6 +48,55 @@ public final class Node implements Comparable, Serializable {
         this.listenClientPort = builder.listenClientPort;
     }
 
+    /**
+     * 返回序列化的字节数组.
+     * @return byte[],or null if error happened.
+     */
+    public byte[] serialized(){
+        ByteBuffer buffer = ByteBuffer.allocate(getSerializedSize());
+        buffer.putShort(nodeId);
+        byte[] ipByte = UtilAll.ipToByte(ip);
+        if (ipByte == null) {
+            return null;
+        }
+        buffer.put(ipByte);
+        buffer.putInt(listenClientPort);
+        return buffer.array();
+    }
+
+    /**
+     * 将字节数组转Node实例;
+     * @param buffer buffer
+     * @return Node ,错误将返回null
+     */
+    public static Node deSerialized(ByteBuffer buffer){
+        if (buffer.limit() - buffer.position() != Node.NODE_SERIALIZED_SIZE) {
+            logger.warn("buffer's limit {} not equal node size  {}",buffer.limit(),Node.NODE_SERIALIZED_SIZE);
+            return null;
+        }
+        //id
+        short id = buffer.getShort();
+        byte[] ip = new byte[4];
+        //ip
+        buffer.get(ip);
+        String ipString = UtilAll.ipToString(ip);
+        //port
+        int port = buffer.getInt();
+        return new Node.Builder()
+                .setNodeId(id)
+                .setIp(ipString)
+                .setListenClientPort(port)
+                .setListenHeartbeatPort(port-Node.CLIENT_TO_HEART)
+                .build();
+    }
+
+    /**
+     * 获取序列化后字节数组长度.
+     * @return short.
+     */
+    private short getSerializedSize(){
+        return Node.NODE_SERIALIZED_SIZE;
+    }
     public short getNodeId() {
         return nodeId;
     }
