@@ -123,7 +123,7 @@ public class CacheServer extends NioServer {
         raftServer.setRaftLogMessageService(raftLogMessageService);
         raftServer.setRaftStateMachineService(raftStateMachineService);
         raftServer.start();
-        System.out.println("raft start");
+        logger.info("raft server start");
     }
 
     private boolean validate() {
@@ -233,7 +233,7 @@ public class CacheServer extends NioServer {
         }
         //不可读
         if (!canRead.get()) {
-            remoteMessage.setMessageType(RemoteMessage.getTypeByte(RemoteMessageType.NOT_WRITE));
+            remoteMessage.setMessageType(RemoteMessage.getTypeByte(RemoteMessageType.NOT_READ));
             nioChannel.write(remoteMessage);
             return;
         }
