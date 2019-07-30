@@ -105,7 +105,7 @@ public class MappedFile {
     }
 
     public AppendMessageResult appendMessage(@NotNull byte[] message, int start, int length, boolean flush) {
-        if (message.length == 0 || start + length > message.length) {
+        if (message.length == 0 || start + length >= message.length) {
             return new AppendMessageResult(AppendMessageResult.AppendMessageState.APPEND_MESSAGE_MESSAGE_EMPTY);
         }
         ByteBuffer buffer = mappedByteBuffer.slice();
@@ -174,7 +174,7 @@ public class MappedFile {
      * @return AppendMessageResult
      */
     public AppendMessageResult insertMessage(@NotNull byte[] message, int offset, int start, int length, boolean flush) {
-        if (message.length == 0 || start > message.length) {
+        if (message.length == 0 || start >= message.length) {
             return new AppendMessageResult(AppendMessageResult.AppendMessageState.APPEND_MESSAGE_MESSAGE_EMPTY);
         }
         if (offset >= fileSize) {
