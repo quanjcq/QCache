@@ -11,10 +11,7 @@ import remote.NioChannel;
 import remote.NioServer;
 import remote.message.RemoteMessage;
 import remote.message.RemoteMessageType;
-import store.AofLogService;
-import store.CacheFileGroup;
-import store.RaftLogMessageService;
-import store.RaftStateMachineService;
+import store.*;
 import store.checkpoint.CheckPoint;
 
 import java.nio.ByteBuffer;
@@ -67,15 +64,18 @@ public class CacheServer extends NioServer {
      * Cache 数据操作写日志
      */
     private AofLogService aofLogService;
+
+    /**
+     * 异步刷盘服务.
+     */
+    private AsyncFlushService asyncFlushService;
     /**
      * 是否可读
      */
     private AtomicBoolean canRead = new AtomicBoolean(true);
 
     /**
-     * 是否可写.过期数据或者被删除,只做标记并没有在物理上删除,所以需要回收这部分数据.
-     * 在回收空间的时候是采用屏蔽所有写操作,将数据写入新文件中,读请求还是读原来数据,
-     * 保证回收空间不影响读
+     * 是否可写.
      */
     private AtomicBoolean canWrite = new AtomicBoolean(true);
 
@@ -95,6 +95,7 @@ public class CacheServer extends NioServer {
                 || recycleService == null
                 || myNode == null
                 || nodes == null
+                || asyncFlushService == null
         ) {
             throw new RuntimeException("args not set");
         }
@@ -102,6 +103,15 @@ public class CacheServer extends NioServer {
         super.start();
         startRaft();
         recycleService.start();
+        asyncFlushService.start();
+
+        //在程序被关闭(kill)的时候,会执行这个方法
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                shutdown();
+            }
+        }));
 
     }
 
@@ -133,11 +143,34 @@ public class CacheServer extends NioServer {
                 && raftStateMachineService != null;
     }
 
+    public void shutdown() {
+        super.shutdown();
+
+        if (raftServer != null) {
+            raftServer.shutdown();
+        }
+
+        if (cacheFileGroup != null) {
+            //将内存中的数据写回磁盘
+            cacheFileGroup.flush();
+        }
+
+        if (recycleService != null) {
+            recycleService.shutdown();
+        }
+
+        if (asyncFlushService != null) {
+            asyncFlushService.shutdown();
+        }
+
+
+    }
+
     @Override
     protected void processReadKey(SelectionKey selectionKey) {
         NioChannel nioChannel = nioChannelGroup.findChannel(selectionKey);
         if (nioChannel == null) {
-            logger.info("Channel already closed! {}", nioChannel.toString());
+            logger.debug("Channel already removed!");
         } else {
             ByteBuffer readBuf = nioChannel.read();
             if (readBuf == null) {
@@ -188,6 +221,23 @@ public class CacheServer extends NioServer {
         //不可写
         if (!canWrite.get()) {
             remoteMessage.setMessageType(RemoteMessage.getTypeByte(RemoteMessageType.NOT_WRITE));
+            nioChannel.write(remoteMessage);
+            return;
+        }
+
+        //不可读
+        if (!canRead.get()) {
+            //服务器不可读的时间只发生的,Cache文件重建后,将新建的文件指向该文件,时间很短,通过sleep,继续向下执行
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+        //不可读
+        if (!canRead.get()) {
+            remoteMessage.setMessageType(RemoteMessage.getTypeByte(RemoteMessageType.NOT_READ));
             nioChannel.write(remoteMessage);
             return;
         }
@@ -271,6 +321,23 @@ public class CacheServer extends NioServer {
         //不可读
         if (!canWrite.get()) {
             remoteMessage.setMessageType(RemoteMessage.getTypeByte(RemoteMessageType.NOT_WRITE));
+            nioChannel.write(remoteMessage);
+            return;
+        }
+
+        //不可读
+        if (!canRead.get()) {
+            //服务器不可读的时间只发生的,Cache文件重建后,将新建的文件指向该文件,时间很短,通过sleep,继续向下执行
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                logger.warn(e.toString());
+            }
+
+        }
+        //不可读
+        if (!canRead.get()) {
+            remoteMessage.setMessageType(RemoteMessage.getTypeByte(RemoteMessageType.NOT_READ));
             nioChannel.write(remoteMessage);
             return;
         }
@@ -368,6 +435,10 @@ public class CacheServer extends NioServer {
 
     public void setRecycleService(RecycleService recycleService) {
         this.recycleService = recycleService;
+    }
+
+    public void setAsyncFlushService(AsyncFlushService asyncFlushService) {
+        this.asyncFlushService = asyncFlushService;
     }
 
     public AtomicBoolean getCanRead() {

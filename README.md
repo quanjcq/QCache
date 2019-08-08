@@ -1,10 +1,5 @@
 # Raft Based Distributed Cache
-基于Raft论文实现的,github有个中文的[Raft中文翻译版](https://github.com/maemual/raft-zh_cn)<br>
-翻译的很准,不过简化了好多,感觉还是英文的比较好,英文的读的慢思考时间更多。<br>
-整体思路就是由Raft算法维持集群状态的一致性（节点丢失，增加问题）
-一致性hash将数据分散到各个节点上
-
-
+基于Raft论文实现的,整体思路就是由Raft算法维持集群状态的一致性（节点丢失，增加问题）,一致性hash将数据分散到各个节点上
 # 支持的功能
 * leader选举.不管是刚启动还是leader丢失,都能保证一轮选举选出新leader
 * 集群成员动态更变,保证集群半数以上server活着,依然能对外提供服务
@@ -72,18 +67,13 @@
 * 1) 标记.<br>
     缓存的回收是先标记的,达到一定数量然后再回收,标记的过程,不需要任何线程同步
 * 2) 回收.<br>
-    这一块的数据访问是跟主线程需要同步的,通过屏蔽读写的方式,而非加锁,使得主线程在非垃圾回收性能很好
+    这个步骤是唯一跟主线程需要做线程同步的地方,通过重建文件的方法,将写操作,在新旧文件里面都操作一次,读请求依然,请求到原来的文件里面.
+    在创建文件完成后,关闭服务器的读写请求,然后做资源的切换,切换完成后开启服务读写,服务器的读写功能关闭的时间很短,
+    通过这种方式,使得主线程在垃圾回收期间,对外提供服务基本无影响,主线程没有用到任何锁,性能很高.
     ```java
-    //关闭服务器的写请求
-    canWrite.set(false);
-    //通过sleep 使得正在执行的写请求,能够正常执行完成
-    try {
-        Thread.sleep(1000);
-    } catch (InterruptedException e) {
-        logger.warn(e.toString());
-    }
     //重建cache文件
     cacheFileGroup.rebulid();
+
     //关闭读请求
     canRead.set(false);
     //通过sleep 使得正在执行的读请求,能够正常执行完成
@@ -92,11 +82,11 @@
     } catch (InterruptedException e) {
         logger.warn(e.toString());
     }
-    //新建立的cache,替换之前的cache
+    
+    //资源切换
     cacheFileGroup.setRebulidEffective();
 
-    //开启服务的读写功能
-    canWrite.set(true);
+    //开启服务的读功能
     canRead.set(true);
     ```
 # 性能测试(只是跟redis对比测试)

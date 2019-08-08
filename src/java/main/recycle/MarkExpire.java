@@ -35,12 +35,12 @@ public class MarkExpire implements Mark{
             fileIndex = (int) (scanPosition / (long) fileSize);
             //计算文件的位置
             fileOffset = (int) (scanPosition % fileSize);
-            if (fileOffset + 18 <= fileSize) {
+            if (fileOffset + 21 <= fileSize) {
                 //该文件后面可能还有消息,尝试读
                 MappedFile mappedFile = mappedFileList.get(fileIndex);
                 //size 2B
                 short size = mappedFile.getShort(fileOffset);
-                if (size <= 18 || size + fileOffset > fileSize) {
+                if (size <= 21 || size + fileOffset > fileSize) {
                     scanPosition = (fileIndex + 1) * (long) fileSize;
                     continue;
                 }
@@ -53,14 +53,14 @@ public class MarkExpire implements Mark{
                     continue;
                 }
                 //timeOut 4B
-                int timeOut = mappedFile.getInt(fileOffset + 9);
+                int timeOut = mappedFile.getInt(fileOffset + 11);
                 if (timeOut == -1) {
                     //这个消息不会过期
                     scanPosition += size;
                     continue;
                 }
                 //storeTime 4B
-                int storeTime = mappedFile.getInt(fileOffset + 5);
+                int storeTime = mappedFile.getInt(fileOffset + 7);
                 if (timeOut > 0 && System.currentTimeMillis() - storeTime - baseTime > timeOut) {
                     //logger.info("time out!");
                     //标记删除

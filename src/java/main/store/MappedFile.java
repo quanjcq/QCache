@@ -228,7 +228,7 @@ public class MappedFile {
         try {
             fileChannel.close();
         } catch (IOException e) {
-            logger.warn("close fileChannel error: {}", e);
+            logger.error("close fileChannel error: {}", e);
         }
     }
 

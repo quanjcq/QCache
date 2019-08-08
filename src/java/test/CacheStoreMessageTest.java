@@ -12,6 +12,8 @@ public class CacheStoreMessageTest {
         int timeOut = 222;
         boolean createNew = true;
         CacheStoreMessage cacheStoreMessage = CacheStoreMessage.getInstance(key,val,storeTime,timeOut,createNew);
+        cacheStoreMessage.addExtField("ext","jpf");
+        cacheStoreMessage.addExtField("signature","quan");
 
         byte[] serializedData = cacheStoreMessage.encode();
         CacheStoreMessage cacheStoreMessage1 = cacheStoreMessage.decode(ByteBuffer.wrap(serializedData));
@@ -30,6 +32,8 @@ public class CacheStoreMessageTest {
         int timeOut = 222;
         boolean createNew = false;
         CacheStoreMessage cacheStoreMessage = CacheStoreMessage.getInstance(key,val,storeTime,timeOut,false);
+        cacheStoreMessage.addExtField("ext","jpf");
+        cacheStoreMessage.addExtField("signature","quan");
         byte[] serializedData = cacheStoreMessage.encode();
         System.out.println(cacheStoreMessage);
         CacheStoreMessage cacheStoreMessage1 = cacheStoreMessage.decode(ByteBuffer.wrap(serializedData));

@@ -4,17 +4,20 @@ import common.UtilAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
+import java.util.TreeMap;
 
 /**
  * MessageSize: 2B
  * status: 1B(是否被删除)
- * visit: 2B(访问次数,可以根据访问次数,决定将数据放在那些文件,让访问频率高的数据待在一块)
+ * visit: 4B(访问时间,LRU算法回收,visit = currentTime - minTime)
  * StoreTime:4B(StoreTime = currentTime - minTime)
  * timeOut:4B(过时时间,-1不过时)
  * keyLen:1B(key长度[0~255])
  * key:keyLen B
+ * ext: 1B 扩展字段长度(0~255)
  * val: 根据MessageSize 计算
- * crc32.检验码[只校验key,val]
+ *
+ * crc32.检验码[只校验key,val,为了效率程序运行时候会动态变化的字段不校验]
  */
 //该对象只是当做容器使用,所以是单例,注意多线程的情况下可能会出现的问题.
 public class CacheStoreMessage implements Message {
@@ -23,9 +26,12 @@ public class CacheStoreMessage implements Message {
     private String key;
     private String val;
     private byte status;
-    private short visit;
+    private int visit;
     private int storeTime;
     private int timeOut;
+
+    //存放扩展字段
+    private TreeMap<String,String> ext = new TreeMap<String, String>();
     private boolean createNew;
     private short bufferSize = 0;
     private byte[] buffer;
@@ -72,7 +78,7 @@ public class CacheStoreMessage implements Message {
         cacheStoreMessage.storeTime = storeTime;
         cacheStoreMessage.timeOut = timeOut;
         cacheStoreMessage.status = 0;
-        cacheStoreMessage.visit = 0;
+        cacheStoreMessage.visit = storeTime;
         cacheStoreMessage.createNew = false;
         return cacheStoreMessage;
     }
@@ -82,13 +88,15 @@ public class CacheStoreMessage implements Message {
         /**
          * MessageSize: 2B
          * status: 1B(是否被删除)
-         * visit: 2B(访问次数,可以根据访问次数,决定将数据放在那些文件,让访问频率高的数据待在一块)
+         * visit: 4B(访问时间,LRU算法回收,visit = currentTime - minTime)
          * StoreTime:4B(StoreTime = currentTime - minTime)
          * timeOut:4B(过时时间,-1不过时)
          * keyLen:1B(key长度[0~255])
          * key:keyLen B
-         * val 根据MessageSize 计算
-         * crc32.检验码[只校验key,val]
+         * ext: 1B 扩展字段长度(0~255)
+         * val: 根据MessageSize 计算
+         *
+         * crc32.检验码[为了效率程序运行时候会动态变化的字段不校验,比如visitTime]
          */
         short size = getSerializedSize();
         //创建新对象
@@ -110,26 +118,57 @@ public class CacheStoreMessage implements Message {
         byteBuffer.putShort(size);
         //status 1B 2
         byteBuffer.put(status);
-        //visit 2B  3
-        byteBuffer.putShort(visit);
-        //storeTime 4B 5
+        //visit 4B  3
         byteBuffer.putInt(storeTime);
-        //timeOut 4B   9
+        //storeTime 4B 7
+        byteBuffer.putInt(storeTime);
+        //timeOut 4B   11
         byteBuffer.putInt(timeOut);
-        //keyLen  1B  13
+        //keyLen  1B  15
         byteBuffer.put(UtilAll.intToByte(UtilAll.getStrLen(key,"UTF-8")));
 
         byte[] keyByte = UtilAll.string2Byte(key,"UTF-8");
         if (keyByte != null){
             byteBuffer.put(keyByte);
         } else {
-            System.out.println("key error");
+            logger.error("key error");
+            return null;
         }
+
+        //extSize
+        byteBuffer.put(UtilAll.intToByte(getExtSize()));
+        for (String key:ext.keySet()) {
+            int extkeyLen = UtilAll.getStrLen(key,"UTF-8");
+            String extVal = ext.get(key);
+            int extValLen = UtilAll.getStrLen(extVal,"UTF-8");
+            //put key
+            byteBuffer.put((byte)extkeyLen);
+            byte[] extKeyByte = UtilAll.string2Byte(key,"UTF-8");
+            if (extKeyByte != null) {
+                byteBuffer.put(extKeyByte);
+            } else {
+                logger.error("ext fields error");
+                return null;
+            }
+            //put val
+            byteBuffer.put((byte)extValLen);
+            byte[] extValByte = UtilAll.string2Byte(extVal,"UTF-8");
+            if (extValByte != null) {
+                byteBuffer.put(extValByte);
+            } else {
+                logger.error("ext fields error");
+                return null;
+            }
+
+
+        }
+        //val
         byte[] valByte =  UtilAll.string2Byte(val,"UTF-8");
         if (valByte != null) {
             byteBuffer.put(valByte);
         } else {
-            System.out.println("val error");
+            logger.error("val error");
+            return null;
         }
         int crc32Code = UtilAll.crc32(buffer, 0, size - 4);
         //crc32Code 4B
@@ -141,48 +180,89 @@ public class CacheStoreMessage implements Message {
     public CacheStoreMessage decode(ByteBuffer buffer) {
         /**
          * MessageSize: 2B
-         * status: 1B(0,正常: 1删除)
-         * visit: 2B(访问次数,可以根据访问次数,决定将数据放在那些文件,让访问频率高的数据待在一块)
+         * status: 1B(是否被删除)
+         * visit: 4B(访问时间,LRU算法回收,visit = currentTime - minTime)
          * StoreTime:4B(StoreTime = currentTime - minTime)
          * timeOut:4B(过时时间,-1不过时)
          * keyLen:1B(key长度[0~255])
          * key:keyLen B
-         * val 根据MessageSize 计算
-         * crc32: 4B检验码[只在启动的时候计算这个值]
+         * ext: 1B 扩展字段长度(0~255)
+         * val: 根据MessageSize 计算
+         *
+         * crc32.检验码[只校验key,val,为了效率程序运行时候会动态变化的字段不校验]
          */
         short size = buffer.getShort();
         if (buffer.limit() -buffer.position() < size - 2) {
             return null;
         }
         byte status = buffer.get();
-        short visit = buffer.getShort();
+
+        int visit = buffer.getInt();
         int storeTime = buffer.getInt();
         int timeOut = buffer.getInt();
-        byte keyLen = buffer.get();
+
+        int keyLen = UtilAll.byteToInt(buffer.get());
         byte[] key = new byte[keyLen];
         buffer.get(key);
         String keyStr = UtilAll.byte2String(key,"UTF-8");
-        byte[] val = new byte[size - 18 - keyLen];
+        //ext
+        int extSize = UtilAll.byteToInt(buffer.get());
+        int tempExtSize = extSize;
+        ext.clear();
+        while (tempExtSize > 0 && buffer.remaining() > 0) {
+            //key
+            int extKeyLen = UtilAll.byteToInt(buffer.get());
+            byte[] extKeyByte = new byte[extKeyLen];
+            buffer.get(extKeyByte);
+            String extKeyStr = UtilAll.byte2String(extKeyByte,"UTF-8");
+
+            //val
+            int extValLen = UtilAll.byteToInt(buffer.get());
+            byte[] extValByte = new byte[extValLen];
+            buffer.get(extValByte);
+            String extValStr = UtilAll.byte2String(extValByte,"UTF-8");
+
+
+            ext.put(extKeyStr,extValStr);
+            tempExtSize -= 2 + extKeyLen + extValLen;
+
+        }
+
+
+
+
+        byte[] val = new byte[size - 21 - keyLen - extSize];
         buffer.get(val);
         String valStr = UtilAll.byte2String(val,"UTF-8");
         buffer.getInt();
         CacheStoreMessage cacheStoreMessage = CacheStoreMessage.getInstance(keyStr, valStr, storeTime, timeOut, createNew);
-
         cacheStoreMessage.setStatus(status);
         cacheStoreMessage.setVisit(visit);
+        cacheStoreMessage.addExtFields(ext);
 
         return cacheStoreMessage;
     }
 
     @Override
     public short getSerializedSize() {
+        int extSize = getExtSize();
+        if (extSize == -1) {
+            return -1;
+        }
+        int keyLen = UtilAll.getStrLen(key,"UTF-8");
+        if (keyLen > 255) {
+            logger.error("key Len {} can not than 255",keyLen);
+            return -1;
+        }
         int result = 2   //size
                 + 1      //status
-                + 2      //visit
+                + 4      //visit
                 + 4      //storeTime
                 + 4      //timeOut
                 + 1      //keyLen
-                + UtilAll.getStrLen(key,"UTF-8")   //key 长度
+                + keyLen //key 长度
+                + 1      //extLen
+                + extSize//extVal
                 + UtilAll.getStrLen(val,"UTF-8")   //val val长度
                 + 4;     //校验码
         if (result > Short.MAX_VALUE) {
@@ -191,7 +271,50 @@ public class CacheStoreMessage implements Message {
         return (short) result;
     }
 
+    /**
+     * 获取扩展列的长度
+     * extSize: 1B [0~255]
+     * 对于每个key val 都是keyLen(1B): key,valLen(1B): val
+     * @return int
+     */
+    private int getExtSize(){
+        int result = 0;
+        for (String key:ext.keySet()) {
+            result += UtilAll.getStrLen(key,"UTF-8") + UtilAll.getStrLen(ext.get(key),"UTF-8") + 2;
+        }
+        if (result > 255) {
+            logger.error("ext fields total size: {} can not bigger than 255",result);
+            return -1;
+        }
+        return result;
+    }
 
+    /**
+     * 添加ext 属性
+     * @param key key
+     * @param val val
+     */
+    public void addExtField(String key,String val) {
+        ext.put(key,val);
+    }
+
+    /**
+     * 获取一个ext 属性值
+     * @param key key
+     * @return String val
+     */
+    public String getExtField(String key) {
+        return ext.get(key);
+    }
+
+    public TreeMap<String,String> getExt(){
+        return ext;
+    }
+
+    public void addExtFields(TreeMap<String,String> data) {
+        ext.clear();
+        ext.putAll(data);
+    }
 
     public String getKey() {
         return key;
@@ -217,11 +340,11 @@ public class CacheStoreMessage implements Message {
         this.status = status;
     }
 
-    public short getVisit() {
+    public int getVisit() {
         return visit;
     }
 
-    public void setVisit(short visit) {
+    public void setVisit(int visit) {
         this.visit = visit;
     }
 
@@ -250,6 +373,7 @@ public class CacheStoreMessage implements Message {
                 ", visit=" + visit +
                 ", storeTime=" + storeTime +
                 ", timeOut=" + timeOut +
+                ", ext=" + ext +
                 ", createNew=" + createNew +
                 ", bufferSize=" + bufferSize +
                 '}';

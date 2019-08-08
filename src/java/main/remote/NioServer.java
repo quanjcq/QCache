@@ -140,6 +140,7 @@ public abstract class NioServer implements Runnable{
      */
     public void shutdown() {
         isShutdown = true;
+        //关闭所有连接
         nioChannelGroup.closeAll();
     }
 

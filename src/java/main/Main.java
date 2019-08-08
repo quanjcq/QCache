@@ -5,12 +5,9 @@ import common.QCacheConfiguration;
 import common.Tools;
 import constant.CacheOptions;
 import raft.ConsistentHash;
-import recycle.MarkExpire;
+import recycle.MarkLRU;
 import recycle.RecycleService;
-import store.AofLogService;
-import store.CacheFileGroup;
-import store.RaftLogMessageService;
-import store.RaftStateMachineService;
+import store.*;
 import store.checkpoint.CheckPoint;
 
 import java.io.File;
@@ -94,18 +91,20 @@ public class Main {
         CacheServer server = new CacheServer();
 
         //缓存文件
-        int cacheFileSize = 1024 * 1024 * 1024;
+        int cacheFileSize = 1024 * 1024 * 50;
         CacheFileGroup cacheFileGroup = new CacheFileGroup(QCacheConfiguration.getCacheFilesPath(),cacheFileSize);
 
         //recycle
-        RecycleService recycleService = new RecycleService(new MarkExpire(cacheFileGroup),
+        RecycleService recycleService = new RecycleService(new MarkLRU(cacheFileGroup),
                 cacheFileGroup,
-                server.getCanWrite(),
+                cacheFileGroup.getCanFlush(),
                 server.getCanRead());
 
         int cacheAofLogSize = 1024 * 1204;
         AofLogService aofLogService = new AofLogService(QCacheConfiguration.getCacheAofPath(),cacheAofLogSize);
 
+        //刷盘服务
+        AsyncFlushService asyncFlushService = new AsyncFlushService(cacheFileGroup,checkPoint);
 
         //自身节点
         server.setMyNode(myNode);
@@ -118,6 +117,7 @@ public class Main {
         server.setAofLogService(aofLogService);
         server.setRaftLogMessageService(raftLogMessageService);
         server.setRaftStateMachineService(raftStateMachineService);
+        server.setAsyncFlushService(asyncFlushService);
 
         //启动server
         server.start();

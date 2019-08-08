@@ -7,9 +7,12 @@ import store.message.CacheStoreMessage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 存放缓存数据是多个文件,该文件实现统一读写,文件名对应该文件第一个数据的偏移量
@@ -25,7 +28,7 @@ public class CacheFileGroup {
     private String storePath;
 
     //storePath 下面的一个子目录,具体文件是放在这个下面的
-    private String storePathNow = null;
+    private volatile String storePathNow = null;
     //每个文件的大小
     private int fileSize;
     //目前文件写到的位置
@@ -33,7 +36,7 @@ public class CacheFileGroup {
 
 
     //具体文件列表
-    private volatile List<MappedFile> mappedFileList = new ArrayList<MappedFile>();
+    private  List<MappedFile> mappedFileList = new ArrayList<MappedFile>();
 
     //第一条记录的时间
     private long firstTime = 0;
@@ -49,13 +52,27 @@ public class CacheFileGroup {
 
     private String storePathNext;
     private AtomicLong writePositionNext = new AtomicLong(0);
-    private List<MappedFile> mappedFileListNext;
-    private Map<String, Long> cacheIndexNext;
+    /**
+     * 是否有线程在重建Cache文件.
+     * 在重建索引的过程,所有写请求需要写两份,读请求读之前的
+     */
+    private volatile boolean isRebulid = false;
+
+    /**
+     * 磁盘是否可以执行刷盘.
+     */
+    private AtomicBoolean canFlush = new AtomicBoolean(false);
+    //对重建的索引的写操作需要加锁
+    private ReentrantLock lock = new ReentrantLock();
+
+    private List<MappedFile> mappedFileListNext = new ArrayList<MappedFile>();
+    private volatile Map<String, Long> cacheIndexNext = new HashMap<String, Long>();
 
     public CacheFileGroup(String storePath, int fileSize) {
         this.storePath = storePath;
         this.fileSize = fileSize;
         load();
+        canFlush.set(true);
     }
 
     private boolean load() {
@@ -110,18 +127,7 @@ public class CacheFileGroup {
             long maxPosition = (long) mappedFileList.size() * (long) fileSize;
             long read = StoreOptions.OS_PAGE_SIZE;
             writePosition.set(read);
-            /**
-             * 0  MessageSize: 2B
-             * 2  status: 1B(0,正常: 1,非正常)
-             * 3  visit: 2B(访问次数,可以根据访问次数,决定将数据放在那些文件,让访问频率高的数据待在一块)
-             * 5  StoreTime:4B(StoreTime = currentTime - minTime)
-             * 9  timeOut:4B(过时时间,-1不过时)
-             * 13 keyLen:1B(key长度[0~255])
-             * 14 key:keyLen B
-             *    val 根据MessageSize 计算
-             *    crc32: 4B检验码[只在启动的时候计算这个值]
-             * 2 + 1 + 2 + 4 + 4 + 1 + 4 + key.len + val.len = 18 + key.len + val.len
-             */
+
             while (read < maxPosition) {
                 //计算那个文件
                 int fileIndex = (int) (read / (long) fileSize);
@@ -129,12 +135,12 @@ public class CacheFileGroup {
                 //获取文件的位置
                 int fileOffset = (int) (read % fileSize);
 
-                if (fileOffset + 18 <= fileSize) {
+                if (fileOffset + 21 <= fileSize) {
                     //该文件后面可能还有消息,尝试读
                     MappedFile mappedFile = mappedFileList.get(fileIndex);
                     //size 2B
                     short size = mappedFile.getShort(fileOffset);
-                    if (size <= 18 || size + fileOffset > fileSize) {
+                    if (size <= 21 || size + fileOffset > fileSize) {
 
                         //System.out.println("到达该文件末尾,进入下个文件");
                         read = (fileIndex + 1) * (long) fileSize;
@@ -144,16 +150,21 @@ public class CacheFileGroup {
 
                     //status 1B
                     byte status = mappedFile.getByte(fileOffset + 2);
+                    //该记录被删除
+                    if (status == (byte) 1) {
+                        //System.out.println("该记录被删除,读下个记录");
+                        read += size;
+                        continue;
+                    }
 
-
-                    //visit 2B
-                    short visit = mappedFile.getShort(fileOffset + 3);
+                    //visit 4B
+                    int visit = mappedFile.getInt(fileOffset + 3);
 
                     //storeTime 4B
-                    int storeTime = mappedFile.getInt(fileOffset + 5);
+                    int storeTime = mappedFile.getInt(fileOffset + 7);
 
                     //timeOut 4B
-                    int timeOut = mappedFile.getInt(fileOffset + 9);
+                    int timeOut = mappedFile.getInt(fileOffset + 11);
 
                     if (timeOut > 0 && System.currentTimeMillis() - storeTime - firstTime > timeOut) {
                         //System.out.println("time out!");
@@ -162,18 +173,24 @@ public class CacheFileGroup {
                     }
 
                     //keyLen
-                    int keyLen = UtilAll.byteToInt(mappedFile.getByte(fileOffset + 13));
+                    int keyLen = UtilAll.byteToInt(mappedFile.getByte(fileOffset + 15));
                     if (keyLen <= 0 || 18 + keyLen >= size) {
-                        logger.info("keyLen error!,this file destroy,go next file! size: " + keyLen);
+                        logger.debug("keyLen error!,this file destroy,go next file! size: " + keyLen);
                         read = (fileIndex + 1) * (long) fileSize;
                         continue;
                     }
                     //key kenLen
-                    byte[] key = mappedFile.getBytes(fileOffset + 14, keyLen);
+                    byte[] key = mappedFile.getBytes(fileOffset + 16, keyLen);
                     String keyStr = UtilAll.byte2String(key,"UTF-8");
 
-                    //val size - 18 - keyLen
-                    byte[] val = mappedFile.getBytes(fileOffset + 14 + keyLen, size - 18 - keyLen);
+                    //extSize
+                    int extSize = UtilAll.byteToInt(mappedFile.getByte(fileOffset + 16 + keyLen));
+
+                    //略过ext的内容
+                    //byte[] extBody = mappedFile.getBytes(fileOffset + 17 + keyLen,extSize);
+
+                    //val size - 21 - kenLen - extSize
+                    byte[] val = mappedFile.getBytes(fileOffset + 17 + keyLen + extSize, size - 21 - keyLen - extSize);
                     String valStr = UtilAll.byte2String(val,"UTF-8");
 
                     //crc32Code
@@ -184,45 +201,65 @@ public class CacheFileGroup {
                     byteBuffer.putShort(size);
                     //status 1B 2
                     byteBuffer.put((byte) 0);
-                    //visit 2B  3
-                    byteBuffer.putShort(visit);
-                    //storeTime 4B 5
+                    //visit 4B  3
                     byteBuffer.putInt(storeTime);
-                    //timeOut 4B   9
+                    //storeTime 4B 7
+                    byteBuffer.putInt(storeTime);
+                    //timeOut 4B   11
                     byteBuffer.putInt(timeOut);
-                    //keyLen  1B  13
+                    //keyLen  1B  15
                     byteBuffer.put(UtilAll.intToByte(keyLen));
                     //key
                     byteBuffer.put(key);
+
+                    //ext
+                    byteBuffer.put(UtilAll.intToByte(extSize));
+                    TreeMap<String,String> ext = new TreeMap<String, String>();
+                    if (extSize != 0) {
+                        byte[] extBody = mappedFile.getBytes(fileOffset + 17 + keyLen,extSize);
+                        byteBuffer.put(extBody);
+                        int start = fileOffset + 17 + keyLen;
+                        int index = 0;
+                        while (index < extSize) {
+                            int extKeyLen = UtilAll.byteToInt(mappedFile.getByte(start + index));
+                            int extValLen = UtilAll.byteToInt(mappedFile.getByte(start + index + 1 + extKeyLen));
+                            try {
+                                String extKey = new String(extBody,start + index + 1,extKeyLen,"UTF-8");
+                                String extVal = new String(extBody,start + index + extKeyLen + 2,extValLen,"UTF-8");
+                                ext.put(extKey,extVal);
+                                index += extKeyLen + extValLen + 2;
+                            } catch (UnsupportedEncodingException e) {
+                                logger.error(e.toString());
+                                break;
+                            }
+
+                        }
+
+                    }
                     byteBuffer.put(val);
 
                     int crc32CodeCaculate = UtilAll.crc32(byteBuffer.array());
 
                     //检验文件是否正常
                     if (crc32Code != crc32CodeCaculate) {
-                        logger.info("{} file destroy!", mappedFile.getFilePath());
+                        logger.debug("{} file destroy!", mappedFile.getFilePath());
                         read = (fileIndex + 1) * (long) fileSize;
                         continue;
                     }
-                    //该记录被删除
-                    if (status == (byte) 1) {
-                        //System.out.println("该记录被删除,读下个记录");
-                        read += size;
-                        continue;
-                    }
+
                     totalMessageAdd();
                     if (read == writePosition.get()) {
                         cacheIndex.put(keyStr, read);
                         read += size;
                         writePosition.addAndGet(size);
-                        //不需要移动元素
-                        //System.out.println("不需要移动");
+                        //logger.debug("不需要移动元素");
                         continue;
                     }
                     //
 
                     CacheStoreMessage cacheStoreMessage = CacheStoreMessage.getInstance(keyStr, valStr, storeTime, timeOut, false);
                     cacheStoreMessage.setVisit(visit);
+                    cacheStoreMessage.addExtFields(ext);
 
                     AppendMessageResult appendMessageResult = appendMessage(mappedFileList, writePosition, storePathNow, cacheStoreMessage);
                     if (appendMessageResult.getState() == AppendMessageResult.AppendMessageState.APPEND_MESSAGE_OK) {
@@ -272,17 +309,17 @@ public class CacheFileGroup {
     }
 
     /**
-     * 重新构建CacheFile.将被删除的,过期数据清除.rebulid过程需要关闭所有写操作.
+     * 重新构建CacheFile.将被删除的,过期数据清除.
      *
      * @return bool
      */
     public boolean rebulid() {
         totalMessage.set(0);
         totalDelete.set(0);
+        isRebulid = true;
         //1.创建一个新的目录
         storePathNext = getDirName(Long.parseLong(new File(storePathNow).getName()) + 1) + "/";
-        mappedFileListNext = new ArrayList<MappedFile>();
-        cacheIndexNext = new HashMap<String, Long>();
+
         try {
             MappedFile mappedFile = new MappedFile(getFileName(storePathNext, 0L), fileSize);
             mappedFileListNext.add(mappedFile);
@@ -307,12 +344,12 @@ public class CacheFileGroup {
             //获取文件的位置
             int fileOffset = (int) (read % fileSize);
 
-            if (fileOffset + 18 <= fileSize) {
+            if (fileOffset + 21 <= fileSize) {
                 //该文件后面可能还有消息,尝试读
                 MappedFile mappedFile = mappedFileList.get(fileIndex);
                 //size 2B
                 short size = mappedFile.getShort(fileOffset);
-                if (size <= 18 || size + fileOffset > fileSize) {
+                if (size <= 21 || size + fileOffset > fileSize) {
 
                     //System.out.println("到达该文件末尾,进入下个文件");
                     read = (fileIndex + 1) * (long) fileSize;
@@ -322,7 +359,6 @@ public class CacheFileGroup {
 
                 //status 1B
                 byte status = mappedFile.getByte(fileOffset + 2);
-
                 //该记录被删除
                 if (status == (byte) 1) {
                     //System.out.println("该记录被删除,读下个记录");
@@ -330,34 +366,40 @@ public class CacheFileGroup {
                     continue;
                 }
 
-                //visit 2B
-                short visit = mappedFile.getShort(fileOffset + 3);
+                //visit 4B
+                int visit = mappedFile.getInt(fileOffset + 3);
 
                 //storeTime 4B
-                int storeTime = mappedFile.getInt(fileOffset + 5);
+                int storeTime = mappedFile.getInt(fileOffset + 7);
 
                 //timeOut 4B
-                int timeOut = mappedFile.getInt(fileOffset + 9);
+                int timeOut = mappedFile.getInt(fileOffset + 11);
 
                 if (timeOut > 0 && System.currentTimeMillis() - storeTime - firstTime > timeOut) {
-                    //logger.info("time out!");
+                    //System.out.println("time out!");
                     read += size;
                     continue;
                 }
 
                 //keyLen
-                int keyLen = UtilAll.byteToInt(mappedFile.getByte(fileOffset + 13));
+                int keyLen = UtilAll.byteToInt(mappedFile.getByte(fileOffset + 15));
                 if (keyLen <= 0 || 18 + keyLen >= size) {
-                    logger.info("keyLen error!,this file destroy,go next file! size: " + keyLen);
+                    logger.debug("keyLen error!,this file destroy,go next file! size: " + keyLen);
                     read = (fileIndex + 1) * (long) fileSize;
                     continue;
                 }
-                //key keyLen
-                byte[] key = mappedFile.getBytes(fileOffset + 14, keyLen);
+                //key kenLen
+                byte[] key = mappedFile.getBytes(fileOffset + 16, keyLen);
                 String keyStr = UtilAll.byte2String(key,"UTF-8");
 
-                //val size - 18 - keyLen
-                byte[] val = mappedFile.getBytes(fileOffset + 14 + keyLen, size - 18 - keyLen);
+                //extSize
+                int extSize = UtilAll.byteToInt(mappedFile.getByte(fileOffset + 16 + keyLen));
+
+                //略过ext的内容
+                //byte[] extBody = mappedFile.getBytes(fileOffset + 17 + keyLen,extSize);
+
+                //val size - 21 - kenLen - extSize
+                byte[] val = mappedFile.getBytes(fileOffset + 17 + keyLen + extSize, size - 21 - keyLen - extSize);
                 String valStr = UtilAll.byte2String(val,"UTF-8");
 
                 //crc32Code
@@ -366,57 +408,130 @@ public class CacheFileGroup {
                 ByteBuffer byteBuffer = ByteBuffer.allocate(size - 4);
                 //size 2B   0
                 byteBuffer.putShort(size);
+                /**
+                 * status ,and visit 在程序运行时,会变化,所以不检验这个值,把他最初值放进去检验
+                 */
                 //status 1B 2
-                byteBuffer.put(status);
-
-                //visit 2B  3
-                byteBuffer.putShort(visit);
-                //storeTime 4B 5
+                byteBuffer.put((byte) 0);
+                //visit 4B  3
                 byteBuffer.putInt(storeTime);
-                //timeOut 4B   9
+                //storeTime 4B 7
+                byteBuffer.putInt(storeTime);
+                //timeOut 4B   11
                 byteBuffer.putInt(timeOut);
-                //keyLen  1B  13
+                //keyLen  1B  15
                 byteBuffer.put(UtilAll.intToByte(keyLen));
                 //key
                 byteBuffer.put(key);
+
+                //ext
+                byteBuffer.put(UtilAll.intToByte(extSize));
+                TreeMap<String,String> ext = new TreeMap<String, String>();
+                if (extSize != 0) {
+                    byte[] extBody = mappedFile.getBytes(fileOffset + 17 + keyLen,extSize);
+                    byteBuffer.put(extBody);
+                    int start = fileOffset + 17 + keyLen;
+                    int index = 0;
+                    while (index < extSize) {
+                        int extKeyLen = UtilAll.byteToInt(mappedFile.getByte(start + index));
+                        int extValLen = UtilAll.byteToInt(mappedFile.getByte(start + index + 1 + extKeyLen));
+                        try {
+                            String extKey = new String(extBody,start + index + 1,extKeyLen,"UTF-8");
+                            String extVal = new String(extBody,start + index + extKeyLen + 2,extValLen,"UTF-8");
+                            ext.put(extKey,extVal);
+                            index += extKeyLen + extValLen + 2;
+                        } catch (UnsupportedEncodingException e) {
+                            logger.error(e.toString());
+                            break;
+                        }
+
+                    }
+
+                }
+
+
                 byteBuffer.put(val);
 
                 int crc32CodeCaculate = UtilAll.crc32(byteBuffer.array());
 
                 //检验文件是否正常
                 if (crc32Code != crc32CodeCaculate) {
-                    //进入下个文件
-                    CacheStoreMessage cacheStoreMessage = CacheStoreMessage.getInstance(keyStr, valStr, storeTime, timeOut, false);
-                    System.out.println(cacheStoreMessage);
+                    logger.debug("{} file destroy!", mappedFile.getFilePath());
                     read = (fileIndex + 1) * (long) fileSize;
                     continue;
                 }
+
                 //将数据插入到新文件当中
                 CacheStoreMessage cacheStoreMessage = CacheStoreMessage.getInstance(keyStr, valStr, storeTime, timeOut, false);
                 cacheStoreMessage.setVisit(visit);
-                AppendMessageResult appendMessageResult = appendMessage(mappedFileListNext, writePositionNext, storePathNext, cacheStoreMessage);
-                if (appendMessageResult.getState() == AppendMessageResult.AppendMessageState.APPEND_MESSAGE_OK) {
-                    cacheIndexNext.put(keyStr, appendMessageResult.getAppendOffset());
-                    writePositionNext.set(appendMessageResult.getAppendOffset());
-                    writePositionNext.addAndGet(size);
-                    read += size;
-                } else {
-                    logger.info("appendMessage error! {}", appendMessageResult);
-                    //读下一个文件
-                    read = (fileIndex + 1) * (long) fileSize;
+                cacheStoreMessage.addExtFields(ext);
+
+                //主线程的写操作也会写这个数据,所以需要加锁
+                lock.lock();
+                try {
+                    Long preOffset = cacheIndexNext.get(keyStr);
+                    boolean flag = true;
+                    if (preOffset != null) {
+                        int preFileIndex = (int)(preOffset / fileSize);
+                        int preFileOffset = (int)(preOffset % fileSize);
+                        MappedFile mappedFileTemp = mappedFileListNext.get(preFileIndex);
+                        byte preStatus = mappedFileTemp.getByte(preFileOffset + 2);
+
+                        int preKeyLen = UtilAll.byteToInt(mappedFileTemp.getByte(preFileOffset + 15));
+
+                        int preExtSize = UtilAll.byteToInt(mappedFileTemp.getByte(preFileOffset + 16 + preKeyLen));
+
+                        byte[] preValByte = mappedFile.getBytes(fileOffset + 17 + keyLen + preExtSize, size - 21 - keyLen - preExtSize);
+                        String preValStr = UtilAll.byte2String(preValByte,"UTF-8");
+
+                        /**
+                         * 相等说明之前已经插入了
+                         * 这里主要防止插入双份
+                         */
+
+                        if (preValStr != null && preValStr.equals(valStr)) {
+                            if (preStatus == 1) {
+                                mappedFileTemp.put(preFileOffset + 2,(byte)0);
+                                totalDelete.getAndDecrement();
+                            }
+                            flag = false;
+                        } else {
+                            mappedFileTemp.put(preFileOffset + 2,(byte)1);
+                            totalDelete.getAndIncrement();
+                        }
+                    }
+
+                    if (flag) {
+                        AppendMessageResult appendMessageResult = appendMessage(mappedFileListNext, writePositionNext, storePathNext, cacheStoreMessage);
+                        if (appendMessageResult.getState() == AppendMessageResult.AppendMessageState.APPEND_MESSAGE_OK) {
+                            Long offset = cacheIndexNext.get(keyStr);
+                            if (offset != null) {
+                                deleteMessage(offset,true);
+                            }
+                            cacheIndexNext.put(keyStr, appendMessageResult.getAppendOffset());
+                            writePositionNext.set(appendMessageResult.getAppendOffset());
+                            writePositionNext.addAndGet(size);
+                            read += size;
+                        } else {
+                            logger.debug("appendMessage error! {}", appendMessageResult);
+                            //读下一个文件
+                            read = (fileIndex + 1) * (long) fileSize;
+                        }
+                        totalMessageAdd();
+                    }
+                } finally {
+                    lock.unlock();
                 }
-                totalMessageAdd();
             } else {
                 read = (fileIndex + 1) * (long) fileSize;
             }
         }
-        //被删除数至于0
-        totalDelete.set(0);
+
         return true;
     }
 
     /**
-     * 重建Cache file在这之是没有生效的[这个方法执行前是要关闭读写]
+     * 重建Cache file在这之是没有生效的[这个方法执行前需要关闭主线程的读服务]
      */
     public void setRebulidEffective() {
         //1.删除之前mappedFileList 所有mappedFile
@@ -430,12 +545,14 @@ public class CacheFileGroup {
         //4.修改index
         cacheIndex.clear();
         cacheIndex = cacheIndexNext;
+        cacheIndexNext = new HashMap<String, Long>();
 
         //5.删除之前的目录文件文件
         File file = new File(storePathNow);
         boolean result = file.delete();
         logger.info(storePathNow + " delete " + (result ? "OK" : "Failed"));
         storePathNow = storePathNext;
+        isRebulid = false;
     }
 
     public long getFirstTime() {
@@ -569,13 +686,20 @@ public class CacheFileGroup {
 
     /**
      * 删除指定位置的数据[只是标记删除]
-     *
-     * @param offset
-     * @return
+     * @param offset offset.
+     * @param rebulid 是删除之前的文件还是重建文件
      */
-    private boolean deleteMessage(long offset) {
+    private void deleteMessage(long offset,boolean rebulid) {
+        if (rebulid) {
+            deleteRebulidMessage(offset);
+        } else {
+            deleteNowMessage(offset);
+        }
+    }
+
+    private void deleteNowMessage(long offset) {
         if (offset > writePosition.get()) {
-            return false;
+            return;
         }
         //计算那个文件
         int fileIndex = (int) (offset / fileSize);
@@ -583,14 +707,32 @@ public class CacheFileGroup {
         //获取文件的位置
         int fileOffset = (int) (offset % fileSize);
         if (fileIndex + 2 >= fileSize) {
-            return false;
+            return;
         }
         MappedFile mappedFile = mappedFileList.get(fileIndex);
 
         //标记删除
         mappedFile.put(fileOffset + 2, (byte) 1);
         totalDelete.getAndIncrement();
-        return true;
+    }
+
+    private void deleteRebulidMessage(long offset) {
+        if (offset > writePositionNext.get()) {
+            return;
+        }
+        //计算那个文件
+        int fileIndex = (int) (offset / fileSize);
+
+        //获取文件的位置
+        int fileOffset = (int) (offset % fileSize);
+        if (fileIndex + 2 >= fileSize) {
+            return;
+        }
+        MappedFile mappedFile = mappedFileListNext.get(fileIndex);
+
+        //标记删除
+        mappedFile.put(fileOffset + 2, (byte) 1);
+        totalDelete.getAndIncrement();
     }
 
     /**
@@ -613,12 +755,36 @@ public class CacheFileGroup {
             Long preVal = cacheIndex.get(key);
             if (preVal != null) {
                 //System.out.println("删除已经存在的");
-                deleteMessage(preVal);
+                deleteMessage(preVal,false);
             }
             cacheIndex.put(key, res);
             writePosition.set(appendMessageResult.getAppendOffset());
             writePosition.addAndGet(cacheStoreMessage.getSerializedSize());
             totalMessageAdd();
+            //如果有线程在后台重建索引,需要将正在写的内容写一份到重建的里面
+            if (isRebulid) {
+                lock.lock();
+                try {
+                    AppendMessageResult appendMessageResult2 = appendMessage(mappedFileListNext, writePositionNext, storePathNext, cacheStoreMessage);
+                    if (appendMessageResult2.getState() == AppendMessageResult.AppendMessageState.APPEND_MESSAGE_OK) {
+                        Long offset = cacheIndexNext.get(key);
+                        if (offset != null) {
+                            deleteMessage(offset,true);
+                        }
+                        cacheIndexNext.put(key, appendMessageResult2.getAppendOffset());
+                        writePositionNext.set(appendMessageResult2.getAppendOffset());
+                        writePositionNext.addAndGet(cacheStoreMessage.getSerializedSize());
+                    } else {
+                        logger.debug("appendMessage error! {}", appendMessageResult);
+
+                    }
+                    totalMessageAdd();
+                    logger.debug("put message in rebulid mode");
+                } finally {
+                    lock.unlock();
+                }
+
+            }
             return true;
         } else {
             logger.info("AppendMessage error! {}", appendMessageResult);
@@ -648,30 +814,31 @@ public class CacheFileGroup {
 
         //获取文件的位置
         int fileOffset = (int) (valOffset % fileSize);
-        //System.out.println("fileOffset:" + fileOffset);
+
         MappedFile mappedFile = mappedFileList.get(fileIndex);
         byte status = mappedFile.getByte(fileOffset + 2);
         if (status == (byte) 1) {
             //该数据被删
-            //System.out.println("数据已经被删除");
             return result;
         }
         //storeTime
-        int storeTime = mappedFile.getInt(fileOffset + 5);
-        //System.out.println("storeTime:" +storeTime);
-        //timeOut
-        int timeOut = mappedFile.getInt(fileOffset + 9);
+        int storeTime = mappedFile.getInt(fileOffset + 7);
 
-        //System.out.println("timeOut: " + timeOut);
+        //timeOut
+        int timeOut = mappedFile.getInt(fileOffset + 11);
+
         if (timeOut >= 0 && System.currentTimeMillis() - storeTime - firstTime > timeOut) {
             System.out.println("time out!");
             return result;
         }
+        //修改visitTime
+        mappedFile.putInt(fileOffset + 3,(int)(System.currentTimeMillis() - firstTime));
+
         short size = mappedFile.getShort(fileOffset);
 
         int keyLen = UtilAll.getStrLen(key,"UTF-8");
-
-        byte[] valByte = mappedFile.getBytes(fileOffset + 14 + keyLen, size - 18 - keyLen);
+        int extSize = UtilAll.byteToInt(mappedFile.getByte(fileOffset + 16 + keyLen));
+        byte[] valByte = mappedFile.getBytes(fileOffset + 17 + keyLen + extSize, size - 21 - keyLen - extSize);
 
         result = UtilAll.byte2String(valByte,"UTF-8");
 
@@ -699,6 +866,29 @@ public class CacheFileGroup {
         //标记删除
         mappedFile.put(fileOffset + 2, (byte) 1);
         deleteMessageAdd();
+        cacheIndex.remove(key);
+        if (isRebulid) {
+            try {
+                lock.lock();
+                Long valOffsetNext = cacheIndexNext.get(key);
+                if (valOffsetNext == null) {
+                    return true;
+                }
+                //计算那个文件
+                int fileIndexNext = (int) (valOffsetNext / fileSize);
+
+                //获取文件的位置
+                int fileOffsetNext = (int) (valOffsetNext % fileSize);
+
+                MappedFile mappedFileNext = mappedFileListNext.get(fileIndexNext);
+                //标记删除
+                mappedFileNext.put(fileOffsetNext + 2, (byte) 1);
+                cacheIndexNext.remove(key);
+                logger.debug("del message in rebulid mode");
+            } finally {
+                lock.unlock();
+            }
+        }
         return true;
     }
 
@@ -746,8 +936,10 @@ public class CacheFileGroup {
      * 刷盘.
      */
     public void flush() {
-        for (MappedFile mappedFile : mappedFileList) {
-            mappedFile.flush();
+        if (canFlush.get()) {
+            for (MappedFile mappedFile : mappedFileList) {
+                mappedFile.flush();
+            }
         }
     }
 
@@ -757,5 +949,9 @@ public class CacheFileGroup {
 
     public int getFileSize () {
         return fileSize;
+    }
+
+    public AtomicBoolean getCanFlush() {
+        return canFlush;
     }
 }

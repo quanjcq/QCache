@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * 标记最早放入内存的数据.
- * 数据全是append方式放入的,所以最早放入的数据,一定都是在前面,把前面一半删除把
+ * 数据全是append方式放入的,所以最早放入的数据,一定都是在前面,把前面一半删除.
  */
 public class MarkFistIn implements Mark {
     /**
@@ -34,12 +34,12 @@ public class MarkFistIn implements Mark {
             fileIndex = (int) (scanPosition / (long) fileSize);
             //计算文件的位置
             fileOffset = (int) (scanPosition % fileSize);
-            if (fileOffset + 18 <= fileSize) {
+            if (fileOffset + 21 <= fileSize) {
                 //该文件后面可能还有消息,尝试读
                 MappedFile mappedFile = mappedFileList.get(fileIndex);
                 //size 2B
                 short size = mappedFile.getShort(fileOffset);
-                if (size <= 18 || size + fileOffset > fileSize) {
+                if (size <= 21 || size + fileOffset > fileSize) {
                     scanPosition = (fileIndex + 1) * (long) fileSize;
                     continue;
                 }

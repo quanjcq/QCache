@@ -3,7 +3,7 @@ package server;
 import cache.CacheServer;
 import common.Node;
 import raft.ConsistentHash;
-import recycle.MarkExpire;
+import recycle.MarkLRU;
 import recycle.RecycleService;
 import store.AofLogService;
 import store.CacheFileGroup;
@@ -20,8 +20,8 @@ public class SingleServer {
         Node node = new Node.Builder()
                 .setNodeId((short)1)
                 .setIp("127.0.0.1")
-                .setListenClientPort(9002)
-                .setListenHeartbeatPort(8002)
+                .setListenClientPort(9001)
+                .setListenHeartbeatPort(8001)
                 .build();
         //集群信息
         List<Node> nodes = new ArrayList<Node>();
@@ -40,7 +40,7 @@ public class SingleServer {
         CheckPoint checkPoint = new CheckPoint(checkPointPath);
 
         //recycle
-        RecycleService recycleService = new RecycleService(new MarkExpire(cacheFileGroup),
+        RecycleService recycleService = new RecycleService(new MarkLRU(cacheFileGroup),
                 cacheFileGroup,
                 server.getCanWrite(),server.getCanRead());
 

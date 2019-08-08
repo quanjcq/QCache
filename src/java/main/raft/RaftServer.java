@@ -1238,7 +1238,7 @@ public class RaftServer implements Runnable {
     /**
      * 关闭RaftServer
      */
-    public void shutDown() {
+    public void shutdown() {
         if (isShutDown()) {
             return;
         }

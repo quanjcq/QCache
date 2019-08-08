@@ -52,11 +52,11 @@ public class NioChannelGroup implements Runnable{
         if (channels.isEmpty()) {
             return;
         }
-        logger.info("total channel: {}",channels.size());
+        logger.debug("total channel: {}",channels.size());
         for (NioChannel nioChannel:channels.values()) {
             if (nioChannel.canClosed()) {
                 nioChannel.close();
-                logger.info("close channel" + nioChannel.toString());
+                logger.debug("close channel" + nioChannel.toString());
             }
         }
     }

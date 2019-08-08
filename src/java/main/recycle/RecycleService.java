@@ -21,16 +21,19 @@ public class RecycleService implements Runnable {
     private ScheduledFuture scheduledFuture;
     private ScheduledExecutorService scheduledExecutorService;
 
-    private AtomicBoolean canWrite;
+    /**
+     * 磁盘有个异步刷盘的机制,在回收期间暂停磁盘的刷盘
+     */
+    private AtomicBoolean canFlush;
     private AtomicBoolean canRead;
 
     public RecycleService(Mark mark,
                           CacheFileGroup cacheFileGroup,
-                          AtomicBoolean canWrite,
+                          AtomicBoolean canFlush,
                           AtomicBoolean canRead) {
         this.mark = mark;
         this.cacheFileGroup = cacheFileGroup;
-        this.canWrite = canWrite;
+        this.canFlush = canFlush;
         this.canRead = canRead;
         this.scheduledExecutorService = UtilAll.getScheduledExecutorService();
     }
@@ -45,32 +48,24 @@ public class RecycleService implements Runnable {
                     RecycleOptions.RECYCLE_DELAY,
                     TimeUnit.MILLISECONDS);
         }
+        logger.debug("recycle service start!");
     }
     @Override
     public void run() {
         if (!isShutdown()) {
-            logger.info("Cache File Size : {} (M) ",cacheFileGroup.getWriteSize() / (1024 * 1024));
+            logger.debug("Cache File Size : {} (M) ",cacheFileGroup.getWriteSize() / (1024 * 1024));
             if (cacheFileGroup.getWriteSize() < UtilAll.getTotalMemorySize() >> 2) {
                 return;
             }
             int num = mark.mark();
             cacheFileGroup.deleteMessageAddCount(num);
-            logger.info("delete num: {},total num:{} ",cacheFileGroup.getTotalDelete(),cacheFileGroup.getTotalMessage());
+            logger.debug("delete num: {},total num:{} ",cacheFileGroup.getTotalDelete(),cacheFileGroup.getTotalMessage());
             if (1.0 * cacheFileGroup.getTotalDelete() / 1.0 * cacheFileGroup.getTotalMessage() < RecycleOptions.DEFAULT_FACTOR) {
                 //垃圾占比比较少,不运行垃圾回收
                 return;
             }
-            //System.out.println(1.0 * cacheFileGroup.getTotalDelete() / 1.0 * cacheFileGroup.getTotalMessage());
-
-            //关闭服务器的写请求
-            canWrite.set(false);
-            //通过sleep 使得正在执行的写请求,能够正常执行完成
-            //这种方式实现多线程安全,可以使得主线程更快
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.warn(e.toString());
-            }
+            //关闭服务的刷盘
+            canFlush.set(false);
             //重建cache文件
             cacheFileGroup.rebulid();
 
@@ -82,11 +77,13 @@ public class RecycleService implements Runnable {
             } catch (InterruptedException e) {
                 logger.warn(e.toString());
             }
+
+            //资源切换
             cacheFileGroup.setRebulidEffective();
 
-            //开启服务的读写功能
-            canWrite.set(true);
+            //开启服务的读功能
             canRead.set(true);
+            canFlush.set(true);
         }
     }
 

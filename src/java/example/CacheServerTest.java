@@ -27,11 +27,13 @@ public class CacheServerTest {
                     CacheClient cacheClient = new CacheClient.newBuilder()
                             .setNumberOfReplicas(CacheOptions.numberOfReplicas)
                             //.setNewNode("3:127.0.0.1:9093")
-                            //.setNewNode("2:127.0.0.1:9092")
-                            .setNewNode("1:127.0.0.1:9091")
+                            //这里值设置一个服务器地址,请求无效,会同步服务器集群状态
+                            .setNewNode("1:127.0.0.1:9001")
+                            //.setNewNode("1:127.0.0.1:9091")
                             .build();
-                    /*for (int j = 0;j<500000;j++) {
-                        cacheClient.get( "name" + j);
+                    /*for (int j = 0;j<10;j++) {
+                        String val = cacheClient.get( "name" + j);
+                        System.out.println(val);
                     }*/
                     for (int j = 0;j<500000;j++) {
                         cacheClient.put("name" + j + getRandomString(),builder.toString(),-1);
