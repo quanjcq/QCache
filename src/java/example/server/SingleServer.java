@@ -6,6 +6,7 @@ import raft.ConsistentHash;
 import recycle.MarkLRU;
 import recycle.RecycleService;
 import store.AofLogService;
+import store.AsyncFlushService;
 import store.CacheFileGroup;
 import store.checkpoint.CheckPoint;
 
@@ -47,7 +48,8 @@ public class SingleServer {
         String aofLogPath = "/home/jcq/store/aof/0";
         int aofLogSize = 1024 * 1204;
         AofLogService aofLogService = new AofLogService(aofLogPath,aofLogSize);
-
+        //刷盘服务
+        AsyncFlushService asyncFlushService = new AsyncFlushService(cacheFileGroup,checkPoint);
 
         //自身节点
         server.setMyNode(node);
@@ -58,6 +60,7 @@ public class SingleServer {
         server.setCheckPoint(checkPoint);
         server.setRecycleService(recycleService);
         server.setAofLogService(aofLogService);
+        server.setAsyncFlushService(asyncFlushService);
 
 
 

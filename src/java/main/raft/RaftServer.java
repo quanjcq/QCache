@@ -79,7 +79,7 @@ public class RaftServer implements Runnable {
     //Netty server eventLoopGroup for deal connect
     private EventLoopGroup worker = new NioEventLoopGroup(1);
 
-    private AtomicBoolean isShutDown = new AtomicBoolean(true);
+    private AtomicBoolean isShutdown = new AtomicBoolean(true);
 
     //下面的变量都要通过参数传过来
     //集群信息
@@ -113,7 +113,7 @@ public class RaftServer implements Runnable {
             return;
         }
         UtilAll.getThreadPool().execute(this);
-        isShutDown.compareAndSet(true,false);
+        isShutdown.compareAndSet(true,false);
     }
 
     private void init() {
@@ -1232,7 +1232,7 @@ public class RaftServer implements Runnable {
     }
 
     private boolean isShutDown() {
-        return isShutDown.get();
+        return isShutdown.get();
     }
 
     /**
@@ -1242,7 +1242,7 @@ public class RaftServer implements Runnable {
         if (isShutDown()) {
             return;
         }
-        isShutDown.getAndSet(false);
+        isShutdown.getAndSet(false);
         //关闭其他资源
         boss.shutdownGracefully();
         worker.shutdownGracefully();

@@ -6,10 +6,7 @@ import constant.CacheOptions;
 import raft.ConsistentHash;
 import recycle.MarkExpire;
 import recycle.RecycleService;
-import store.AofLogService;
-import store.CacheFileGroup;
-import store.RaftLogMessageService;
-import store.RaftStateMachineService;
+import store.*;
 import store.checkpoint.CheckPoint;
 
 import java.util.LinkedList;
@@ -62,7 +59,8 @@ public class ClusterServer {
         String aofLogServicePath = "/home/jcq/store/0/0000";
         int cacheAofLogSize = 1024 * 1204;
         AofLogService aofLogService = new AofLogService(aofLogServicePath,cacheAofLogSize);
-
+        //刷盘服务
+        AsyncFlushService asyncFlushService = new AsyncFlushService(cacheFileGroup,checkPoint);
 
         //自身节点
         server.setMyNode(myNode);
@@ -75,6 +73,7 @@ public class ClusterServer {
         server.setAofLogService(aofLogService);
         server.setRaftLogMessageService(raftLogMessageService);
         server.setRaftStateMachineService(raftStateMachineService);
+        server.setAsyncFlushService(asyncFlushService);
 
         //启动server
         server.start();

@@ -91,7 +91,7 @@ public class Main {
         CacheServer server = new CacheServer();
 
         //缓存文件
-        int cacheFileSize = 1024 * 1024 * 50;
+        int cacheFileSize = 1024 * 1024 * 512;
         CacheFileGroup cacheFileGroup = new CacheFileGroup(QCacheConfiguration.getCacheFilesPath(),cacheFileSize);
 
         //recycle
