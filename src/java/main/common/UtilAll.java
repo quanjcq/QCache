@@ -17,12 +17,12 @@ public class UtilAll {
     /**
      * 线程池
      */
-    private static ThreadPoolExecutor threadPoolExecutor = null;
+    private static volatile ThreadPoolExecutor threadPoolExecutor = null;
 
     /**
      * 执行定时任务的线程.
      */
-    private static ScheduledExecutorService scheduledlExecutorService = null;
+    private static volatile ScheduledExecutorService scheduledExecutorService = null;
 
     /**
      * 获取一个线程池实例.(单例)
@@ -51,14 +51,14 @@ public class UtilAll {
      * @return ScheduledExecutorService
      */
     public static ScheduledExecutorService getScheduledExecutorService() {
-        if (scheduledlExecutorService == null) {
+        if (scheduledExecutorService == null) {
             synchronized (UtilAll.class) {
-                if (scheduledlExecutorService == null) {
-                    scheduledlExecutorService = Executors.newScheduledThreadPool(1);
+                if (scheduledExecutorService == null) {
+                    scheduledExecutorService = Executors.newScheduledThreadPool(1);
                 }
             }
         }
-        return scheduledlExecutorService;
+        return scheduledExecutorService;
     }
 
     /**

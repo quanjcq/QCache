@@ -22,7 +22,7 @@ import java.util.TreeMap;
 //该对象只是当做容器使用,所以是单例,注意多线程的情况下可能会出现的问题.
 public class CacheStoreMessage implements Message {
     private static Logger logger = LoggerFactory.getLogger(CacheStoreMessage.class);
-    private static CacheStoreMessage cacheStoreMessage = null;
+    private static volatile CacheStoreMessage cacheStoreMessage = null;
     private String key;
     private String val;
     private byte status;

@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
  * crcCode32: 4B
  */
 public class AofLogMessage implements Message {
-    private static AofLogMessage aofLogMessage;
+    private static volatile AofLogMessage aofLogMessage;
     private byte status;
     private byte type;
     //put

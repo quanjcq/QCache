@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
  */
 public class RemoteMessage implements Message{
     private static Logger logger = LoggerFactory.getLogger(RemoteMessage.class);
-    private static RemoteMessage remoteMessage;
+    private static volatile RemoteMessage remoteMessage;
     private byte messageType;
     private int timeOut;
     private String key;

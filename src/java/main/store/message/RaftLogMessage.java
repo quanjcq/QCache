@@ -15,7 +15,7 @@ import java.nio.ByteBuffer;
 public class RaftLogMessage implements Message {
     public final static byte RAFT_LOG_MESSAGE_SIZE = 8 + 1 + Node.NODE_SERIALIZED_SIZE + 4;
     private static Logger logger = LoggerFactory.getLogger(RaftLogMessage.class);
-    private static RaftLogMessage raftLogMessage;
+    private static volatile RaftLogMessage raftLogMessage;
     private byte raftMessageType;
     private long lastAppliedIndex;
     private Node node;
