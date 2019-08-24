@@ -18,20 +18,20 @@ import java.nio.channels.spi.SelectorProvider;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-public abstract class NioServer implements Runnable{
+public abstract class NioServer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(NioServer.class);
     private final SelectorProvider provider = SelectorProvider.provider();
-    private ServerSocketChannel serverChannel;
-    private ServerSocket serverSocket;
-    private Selector selector;
-    private SelectedSelectionKeySet selectionKeys;
     /**
      * 监听端口
      */
     protected int port;
-
     protected volatile boolean isShutdown = false;
     protected NioChannelGroup nioChannelGroup = new NioChannelGroup();
+    private ServerSocketChannel serverChannel;
+    private ServerSocket serverSocket;
+    private Selector selector;
+    private SelectedSelectionKeySet selectionKeys;
+
     public NioServer(int port) {
         this.port = port;
     }
@@ -40,7 +40,7 @@ public abstract class NioServer implements Runnable{
 
     }
 
-    public void start(){
+    public void start() {
         if (!isShutdown()) {
             UtilAll.getThreadPool().execute(this);
             logger.info("Nio server runing");
@@ -65,7 +65,7 @@ public abstract class NioServer implements Runnable{
         while (!isShutdown()) {
             try {
                 selector.select();
-                for (int i = 0;i< selectionKeys.size();i++) {
+                for (int i = 0; i < selectionKeys.size(); i++) {
                     SelectionKey key = selectionKeys.keys[i];
                     processKey(key);
                     selectionKeys.keys[i] = null;
@@ -109,6 +109,7 @@ public abstract class NioServer implements Runnable{
      *
      * @param selectionKey key
      */
+
     private void processAcceptKey(SelectionKey selectionKey) {
         if (!selectionKey.isAcceptable()) {
             return;
@@ -134,13 +135,14 @@ public abstract class NioServer implements Runnable{
     /**
      * open selector.
      * 来自Netty源码,主要是为了改善Selector性能问题
+     *
      * @return Selector.
      */
     private Selector openSelector() {
         try {
             selector = provider.openSelector();
         } catch (IOException e) {
-            logger.error("fail to create a new selector {}",e);
+            logger.error("fail to create a new selector {}", e);
         }
 
         final SelectedSelectionKeySet selectedKeySet = new SelectedSelectionKeySet();
@@ -158,7 +160,6 @@ public abstract class NioServer implements Runnable{
                 }
             }
         });
-
 
 
         final Class<?> selectorImplClass = (Class<?>) maybeSelectorImplClass;
@@ -212,6 +213,7 @@ public abstract class NioServer implements Runnable{
 
     /**
      * 是否关闭.
+     *
      * @return bool
      */
     public boolean isShutdown() {

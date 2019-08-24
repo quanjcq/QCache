@@ -61,8 +61,7 @@ public class NioChannel {
     private NioChannelGroup nioChannelGroup;
 
 
-
-    public NioChannel(NioChannelGroup nioChannelGroup,SocketChannel socketChannel) {
+    public NioChannel(NioChannelGroup nioChannelGroup, SocketChannel socketChannel) {
 
         this.nioChannelGroup = nioChannelGroup;
         this.channel = socketChannel;
@@ -78,7 +77,7 @@ public class NioChannel {
     public SelectionKey register(Selector selector, int interestOps) {
         this.selector = selector;
         try {
-            this.selectionKey =  channel.register(selector, interestOps,this);
+            this.selectionKey = channel.register(selector, interestOps, this);
         } catch (ClosedChannelException e) {
             logger.error("can not register {}", e);
         }
@@ -118,8 +117,10 @@ public class NioChannel {
         }
     }
 
+
     /**
      * 写数据
+     *
      * @param message message
      */
     public void write(RemoteMessage message) {
@@ -244,9 +245,10 @@ public class NioChannel {
 
     /**
      * 连接是否可以关闭.[超过多久没有通信的连接可以关闭]
+     *
      * @return bool.
      */
-    public boolean canClosed(){
+    public boolean canClosed() {
         return System.currentTimeMillis() - transferTime > maxKeepTime;
     }
 

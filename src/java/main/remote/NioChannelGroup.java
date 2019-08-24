@@ -16,15 +16,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * 管理所有Channel
  */
-public class NioChannelGroup implements Runnable{
+public class NioChannelGroup implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(NioChannelGroup.class);
     private Map<SelectionKey, NioChannel> channels = new HashMap<SelectionKey, NioChannel>();
     private ScheduledExecutorService scheduledThreadPoolExecutor = UtilAll.getScheduledExecutorService();
     private volatile boolean isShutdown = true;
 
-    public void start(){
+    public void start() {
         //定时任务,删除超时连接
-        if(isShutdown()){
+        if (isShutdown()) {
             scheduledThreadPoolExecutor.scheduleWithFixedDelay(this,
                     0,
                     CacheOptions.maxKeepTime,
@@ -44,13 +44,14 @@ public class NioChannelGroup implements Runnable{
         return channels.get(selectionKey);
     }
 
-    public void shutdown () {
+    public void shutdown() {
         if (!isShutdown()) {
             closeAll();
             isShutdown = true;
             logger.debug("NioChannelGroup Service shutdown!");
         }
     }
+
     /**
      * 关闭所有channel
      */
@@ -67,8 +68,8 @@ public class NioChannelGroup implements Runnable{
         if (channels.isEmpty() && !isShutdown()) {
             return;
         }
-        logger.debug("total channel: {}",channels.size());
-        for (NioChannel nioChannel:channels.values()) {
+        logger.debug("total channel: {}", channels.size());
+        for (NioChannel nioChannel : channels.values()) {
             if (nioChannel.canClosed()) {
                 nioChannel.close();
                 logger.debug("close channel" + nioChannel.toString());
@@ -76,9 +77,10 @@ public class NioChannelGroup implements Runnable{
         }
     }
 
-    public boolean isShutdown(){
+    public boolean isShutdown() {
         return isShutdown;
     }
+
     /**
      * put.
      *
@@ -88,6 +90,7 @@ public class NioChannelGroup implements Runnable{
     public void put(SelectionKey selectionKey, NioChannel nioChannel) {
         channels.put(selectionKey, nioChannel);
     }
+
 
     /**
      * put.
