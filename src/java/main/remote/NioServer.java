@@ -1,10 +1,13 @@
 package remote;
 
 import common.UtilAll;
+import io.netty.util.internal.PlatformDependent;
+import io.netty.util.internal.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.channels.SelectionKey;
@@ -12,7 +15,8 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
-import java.util.Iterator;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public abstract class NioServer implements Runnable{
     private static Logger logger = LoggerFactory.getLogger(NioServer.class);
@@ -20,6 +24,7 @@ public abstract class NioServer implements Runnable{
     private ServerSocketChannel serverChannel;
     private ServerSocket serverSocket;
     private Selector selector;
+    private SelectedSelectionKeySet selectionKeys;
     /**
      * 监听端口
      */
@@ -60,12 +65,13 @@ public abstract class NioServer implements Runnable{
         while (!isShutdown()) {
             try {
                 selector.select();
-                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                while (iterator.hasNext()) {
-                    SelectionKey key = iterator.next();
-                    iterator.remove();
+                for (int i = 0;i< selectionKeys.size();i++) {
+                    SelectionKey key = selectionKeys.keys[i];
                     processKey(key);
+                    selectionKeys.keys[i] = null;
                 }
+                selectionKeys.reset();
+
             } catch (IOException ex) {
                 logger.error(ex.toString());
             }
@@ -111,9 +117,12 @@ public abstract class NioServer implements Runnable{
             SocketChannel clientChannel = serverChannel.accept();
             if (clientChannel != null) {
                 clientChannel.configureBlocking(false);
-                SelectionKey key = clientChannel.register(selector, SelectionKey.OP_READ);
                 clientChannel.socket().setTcpNoDelay(true);
-                NioChannel nioChannel = new NioChannel(nioChannelGroup, key);
+
+                NioChannel nioChannel = new NioChannel(nioChannelGroup, clientChannel);
+
+                nioChannel.register(selector, SelectionKey.OP_READ);
+
                 nioChannelGroup.put(nioChannel);
             }
         } catch (IOException ex) {
@@ -124,15 +133,72 @@ public abstract class NioServer implements Runnable{
 
     /**
      * open selector.
+     * 来自Netty源码,主要是为了改善Selector性能问题
      * @return Selector.
      */
     private Selector openSelector() {
         try {
-            return selector = provider.openSelector();
+            selector = provider.openSelector();
         } catch (IOException e) {
             logger.error("fail to create a new selector {}",e);
         }
-        return null;
+
+        final SelectedSelectionKeySet selectedKeySet = new SelectedSelectionKeySet();
+
+        Object maybeSelectorImplClass = AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            @Override
+            public Object run() {
+                try {
+                    return Class.forName(
+                            "sun.nio.ch.SelectorImpl",
+                            false,
+                            PlatformDependent.getSystemClassLoader());
+                } catch (Throwable cause) {
+                    return cause;
+                }
+            }
+        });
+
+
+
+        final Class<?> selectorImplClass = (Class<?>) maybeSelectorImplClass;
+
+        Object maybeException = AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            @Override
+            public Object run() {
+                try {
+                    Field selectedKeysField = selectorImplClass.getDeclaredField("selectedKeys");
+                    Field publicSelectedKeysField = selectorImplClass.getDeclaredField("publicSelectedKeys");
+
+                    Throwable cause = ReflectionUtil.trySetAccessible(selectedKeysField);
+                    if (cause != null) {
+                        return cause;
+                    }
+                    cause = ReflectionUtil.trySetAccessible(publicSelectedKeysField);
+                    if (cause != null) {
+                        return cause;
+                    }
+
+                    selectedKeysField.set(selector, selectedKeySet);
+                    publicSelectedKeysField.set(selector, selectedKeySet);
+                    return null;
+                } catch (NoSuchFieldException e) {
+                    return e;
+                } catch (IllegalAccessException e) {
+                    return e;
+                }
+            }
+        });
+
+        if (maybeException instanceof Exception) {
+            Exception e = (Exception) maybeException;
+            logger.trace("failed to instrument a special java.util.Set into: {}", selector, e);
+            return selector;
+        }
+
+        logger.debug("instrumented a special java.util.Set into: {}", selector);
+        this.selectionKeys = selectedKeySet;
+        return selector;
     }
 
     /**

@@ -23,7 +23,7 @@ public class NioChannelGroup implements Runnable{
     private volatile boolean isShutdown = true;
 
     public void start(){
-        //定时任务删除
+        //定时任务,删除超时连接
         if(isShutdown()){
             scheduledThreadPoolExecutor.scheduleWithFixedDelay(this,
                     0,

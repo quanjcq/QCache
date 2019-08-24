@@ -62,23 +62,14 @@ public class NioChannel {
 
 
 
-    public NioChannel(NioChannelGroup nioChannelGroup,
-                      SelectionKey selectionKey) {
-        if (selectionKey == null) {
-            throw new IllegalArgumentException("selectionKey can not be null");
-        }
-        if (!selectionKey.isValid()) {
-            throw new IllegalArgumentException("invalid selectionKey");
-        }
+    public NioChannel(NioChannelGroup nioChannelGroup,SocketChannel socketChannel) {
 
         this.nioChannelGroup = nioChannelGroup;
-        this.selectionKey = selectionKey;
-        this.selector = selectionKey.selector();
-        this.channel = (SocketChannel) selectionKey.channel();
+        this.channel = socketChannel;
     }
 
     /**
-     * 将连接注册到另外一个Selector.
+     * 将连接注册到Selector.
      *
      * @param selector    selector
      * @param interestOps interestOps
@@ -87,7 +78,7 @@ public class NioChannel {
     public SelectionKey register(Selector selector, int interestOps) {
         this.selector = selector;
         try {
-            return channel.register(selector, interestOps);
+            this.selectionKey =  channel.register(selector, interestOps,this);
         } catch (ClosedChannelException e) {
             logger.error("can not register {}", e);
         }
@@ -117,7 +108,9 @@ public class NioChannel {
      */
     public void close() {
         try {
+
             nioChannelGroup.remove(this);
+
             channel.close();
             selectionKey.cancel();
         } catch (IOException e) {
