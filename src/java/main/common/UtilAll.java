@@ -233,7 +233,7 @@ public class UtilAll {
         return Integer.valueOf(runtimeMXBean.getName().split("@")[0]);
     }
 
-    public void closeThreadPool(){
+    public static void closeThreadPool(){
         if (threadPoolExecutor != null) {
             threadPoolExecutor.shutdown();
             threadPoolExecutor = null;
