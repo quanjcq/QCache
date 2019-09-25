@@ -56,7 +56,9 @@ public class FutureResult<T> implements Future,Runnable {
             runner.interrupt();
             runner = null;
             state = INTERRUPTED;
+            return true;
         }
+        state = CANCELLED;
         return true;
     }
 
