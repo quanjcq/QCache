@@ -1,6 +1,10 @@
 package pool;
 
 //非线程安全
+
+/**
+ * 负责数据逻辑上的读写,具体读写在里面的DirectByteBuffer
+ */
 public class DirectByteBufferComposition {
 
     //每个ByteBuffer长度
